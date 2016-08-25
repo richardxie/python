@@ -6,8 +6,8 @@ USECOOKIES = False
 YTURLBASE = "http://jr.yatang.cn/"
 YTURLBASESSL = "https://jr.yatang.cn/"
 YT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
-BASEDIR = '/Users/wuqh/'
-#BASEDIR='./'
+#BASEDIR = '/Users/wuqh/'
+BASEDIR='./'
 import urllib, urllib2, cookielib,json,time
 import smtplib
 import os, random
@@ -17,7 +17,15 @@ import cv2
 import PyV8
 from email.mime.text import  MIMEText
 from email.header import Header
+import pymysql
+import locale, sys
 
+def initSys():
+    if sys.getdefaultencoding() != 'utf-8':
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
+    pass
+    
 def dumpCookies(cj):
     for ck in cj:
         print ck.name + ":" + ck.value
@@ -90,8 +98,29 @@ def user_info(html):
     user = user_element[0].text
     level_ele =  dom.xpath('/html/body/div[7]/div/div[2]/div[1]/dl/dd[5]/span/img')
     level = level_ele[0].get('src').split('/')[-1][0:-4]
-    return (user, level)
+    return {'username': user,
+            'level': int(level)
+            }
 
+def account_info(html):
+    dom = soupparser.fromstring(html)
+    user_ele = dom.xpath('/html/body/div[7]/div/div/div[1]/div[1]/div[1]/p[2]/b')
+    user_name = user_ele[0].text
+    balance_ele = dom.xpath('/html/body/div[7]/div/div/div[1]/ul[1]/li[1]/p/span')
+    account_balance = money(balance_ele[0].text)
+    income_ele = dom.xpath('/html/body/div[7]/div/div/div[1]/ul[1]/li[3]/p/span')
+    account_income = money(income_ele[0].text)
+    collection_ele = dom.xpath('/html/body/div[7]/div/div/div[1]/ul[1]/li[4]/p/span')
+    account_collection = money(collection_ele[0].text)
+    payment_ele = dom.xpath('/html/body/div[7]/div/div/div[1]/ul[2]/li[4]/p/span')
+    account_payment = money(payment_ele[0].text)
+    account_info = {'user':user_name,
+                    'balance': account_balance,
+                    'income': account_income,
+                    'collection': account_collection,
+                    'payment': account_payment
+                    }
+    return account_info
 
 def send_mail(mail_list):
     #send email
@@ -104,7 +133,7 @@ def send_mail(mail_list):
     message ='<h3>本次雅堂签到的相关信息</h3>'
     message += '<ul>'
     for value in mail_list:
-        msg = '<li>%s:v%s雅堂签到：%s</li>'%(value['user'][0], value['user'][1], value['data']['data']['tomorrow'])
+        msg = '<li>%s:v%s雅堂签到：%s</li>'%(value['user']['username'], value['user']['level'], value['data']['data']['tomorrow'])
         message += msg;
     message += '</ul>'
     msg = MIMEText(message,  _subtype='html', _charset='utf-8');
@@ -124,9 +153,9 @@ def httpRequest(opener, url):
 
 def readCookies():
     cookies = [file for file in os.listdir(BASEDIR + 'cookies') if os.path.isfile(BASEDIR + 'cookies/' + file)]
-
+    names = map(lambda x: x[0:-10],cookies)
     mail_list = []
-    for cookie in cookies:
+    for index, cookie in enumerate(cookies):
         cj = cookielib.MozillaCookieJar()
         cj.load(BASEDIR + 'cookies/' + cookie)
         for ck in cj:
@@ -138,7 +167,13 @@ def readCookies():
     
         #User info
         uinfo = user_info(httpRequest(opener, YTURLBASESSL + "Account/MyNews/title/MMHPage").read())
+        uinfo['id'] = findUserDB(names[index])['id']
         
+        #Account info
+        account = account_info(httpRequest(opener, YTURLBASESSL + "index.php?s=/Account/").read())
+        
+        #update database
+        updateAccountDB(uinfo, account)
         #Checkin
         data = json.load(httpRequest(opener, YTURLBASE + "TaskCenter/checkins"))
         
@@ -148,13 +183,91 @@ def readCookies():
     listlen = len(mail_list)
     if(listlen > 0):
         send_mail(mail_list)
-    return listlen
+    return listlen 
     
+def connectDB():
+    connection = pymysql.connect(host='192.16.2.139',
+                                user='admin',
+                                password='admin',
+                                db='test',
+                                charset='utf8mb4',
+                                cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with connection.cursor() as cursor:
+            sql = 'insert into `user` (`email`, `password`) values (%s, %s)'
+            cursor.execute(sql, ("richardxieq", "admin"))
+        connection.commit()
+        
+        with connection.cursor() as cursor:
+            sql = 'select `id`, `password` from `user`'
+            cursor.execute(sql)
+            for r in cursor.fetchall():
+                print r
+
+    finally:
+        connection.close()
+        
+def findUserDB(username):
+    connection = pymysql.connect(host='192.16.2.139',
+                                user='admin',
+                                password='admin',
+                                db='test',
+                                charset='utf8mb4',
+                                cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with connection.cursor() as cursor:
+            sql = 'select `id`, `name`, `level` from `user` where name=%s';
+            effected_row = cursor.execute(sql,(username))
+            assert(cursor.rowcount == 1)
+            return cursor.fetchone()
+
+    finally:
+        connection.close()
+
+def updateAccountDB(user, account):
+    connection = pymysql.connect(host='192.16.2.139',
+                                user='admin',
+                                password='admin',
+                                db='test',
+                                charset='utf8mb4',
+                                cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with connection.cursor() as cursor:
+            sql = 'insert into `user` (`name`, `level`) values (%s, %s) on duplicate key update `level` = case when values(`level`) < level then level else values(`level`) end'
+            effected_row = cursor.execute(sql,(user['username'], user['level']))
+        connection.commit()
+        
+        with connection.cursor() as cursor:
+            sql = 'insert into `account` (`user_id`, `name`, `balance`, `income`, `collection`, `payment`) values (%s, %s, %s, %s, %s, %s) on duplicate key update `name` = values(name)'
+            effected_row = cursor.execute(sql,(user['id'], user['username'], account['balance'], account['income'], account['collection'], account['payment']))
+        connection.commit()
+
+    finally:
+        connection.close()
+    pass      
+
+def money(string):
+    locale.setlocale(locale.LC_ALL, 'zh_CN.UTF-8')
+    sym = locale.localeconv()['currency_symbol']
+    if sym:
+        string = string.replace(sym, '')
+    ts = locale.localeconv()['thousands_sep']
+    if ts:
+        string = string.replace(ts, '') #next, replace the decimal point with a 
+    dd = locale.localeconv()['decimal_point']
+    if dd:
+        string = string.replace(dd, '.') #finally, parse the string
+    return float(string)   
+
 def main():
+    initSys()
+#     connectDB();
+    
     if(readCookies()==0):
         username = raw_input(u"用户名：")
         password = raw_input(u'密码：')
-        login(username, password)
+        if(len(password) > 0):
+            login(username, password)
     
 
 if __name__ == '__main__':
