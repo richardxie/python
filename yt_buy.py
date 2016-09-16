@@ -54,13 +54,19 @@ def loan_info(html):
     ibid = ibid_element[0].attrib['value']
     borrowNum_element = dom.xpath("//*[@id=\"iborrownumid\"]")
     borrowNum = borrowNum_element[0].attrib['value']
-    
+    borrowType_element = doc.xpath('//*[@id="iborrowtype"]')
+    borrowType = borrowType_element[0].attrib['value']
     hash_element = dom.xpath("/html/body/div[3]/form/input")
     hash =  hash_element[0].attrib["value"]
+
+    cash_element = dom.xpath("/html/body/div[2]/div[1]/div[2]/div[2]/div[1]/span[2]")
+    cash = money(cash_element[0].text.replace('元',''))
     return {
         "__hash__":hash,
         "ibid":ibid,
-        "borrowNum":borrowNum
+        'borrowType':borrowType,
+        "borrowNum":borrowNum,
+        "available_cash":cash
         }
 
 def dumpInvestList(jsonresp):
@@ -68,9 +74,11 @@ def dumpInvestList(jsonresp):
         if(int(jsonresp['data']['Total']) > 0):
             list = jsonresp['data']['Rows']
             for loan in list:
-                print (loan['borrow_type'])
-                print (loan['id'])
-                print (loan['name'])
+                print (loan['borrow_type']) #借款类型
+                print (loan['id']) #借款ID
+                print (loan['name']) #借款名
+                print (loan['apr']) #借款利率
+                print (loan['remain']) #借款剩余余额
     pass
 
 def investListRequest(opener, typeList):
@@ -126,8 +134,10 @@ def couponListRequest(opener, borrowNum):
     jsonresp = json.loads(response.read().decode())
     dumpCouponList(jsonresp)
     return jsonresp
+
+def matchCouponOnLoan(coupons, loan):
     pass
- 
+
 def buyRequest(opener, values):
     #url: http://jr.yatang.cn/Invest/checkppay
     #post data
@@ -235,48 +245,51 @@ def readCookies(name):
     if(len(investList) == 0):
         return #can't find any wanted invest 
         
-     #loan info 借款信息
-    ibid = investList[0]['id']
-    loaninfo = loan_info(httpRequest(opener, YTURLBASESSL + "Invest/ViewBorrow/ibid/" + ibid))
-    print(loaninfo['borrowNum'])
+    #loan info 借款信息
+    print(len(investList))
     
-    #coupon info
-    couponinfo = couponListRequest(opener, loaninfo['borrowNum'])
-    #couponinfo = couponListRequest(opener, '1215DREVK0160')
+    for ivst in investList:
+        ibid = ivst['id']
+        loaninfo = loan_info(httpRequest(opener, YTURLBASESSL + "Invest/ViewBorrow/ibid/" + ibid))
+        print(loaninfo['borrowNum'])
+        if(int(ivst['borrow_type']) == 5):
+            #buy 秒标
+            values = {
+                '__hash__': loaninfo['__hash__'],
+                'ibnum': loaninfo['borrowNum'],
+                #'lunchId': '0',  #红包ID
+                'amount': '100',
+                'p_pay': 'root@2014',
+                'user_id': '54808'
+            }
+            buyinfo = buyRequest(opener, values)
+        else:
+            #企业或创业标
+            
+            #coupon info
+            couponinfo = couponListRequest(opener, loaninfo['borrowNum'])
     
-    #buy
-    """
-    __hash__    
-        3565f0b74518e8b60f5256e68575142f_d412a65b4b1c0ecdabca7d1192e99c93
-        4e630c2cdc2070fb29a0dce7bbf7a85a
-    amount    
-        1520
-    ibnum    
-        1214QXR5601377
-    lunchId    
-        5128529
-    p_pay    
-        root@2014
-    user_id    
-        54808
-    """
-    values = {
-        '__hash__': loaninfo['__hash__'],
-        'ibnum': loaninfo['borrowNum'],
-        'lunchId': '0',
-        'amount': '100',
-        'p_pay': 'root@2014',
-        'user_id': '54808'
-        }
-    buyinfo = buyRequest(opener, values)
-    
+            #buy
+            values = {
+                '__hash__': loaninfo['__hash__'],
+                'ibnum': loaninfo['borrowNum'],
+                'lunchId': '0',  #红包ID
+                'amount': '100',
+                'p_pay': 'root@2014',
+                'user_id': '54808'
+                }
+            buyinfo = buyRequest(opener, values) 
 
     opener.close()
     return 1 
       
 
 def money(string):
-    locale.setlocale(locale.LC_ALL, 'zh_CN.UTF-8')
+    import platform
+    if platform.system() == 'Windows':
+         locale.setlocale(locale.LC_ALL, 'chs')
+    else:
+        locale.setlocale(locale.LC_ALL, 'zh_CN.UTF-8')
     sym = locale.localeconv()['currency_symbol']
     if sym:
         string = string.replace(sym, '')
