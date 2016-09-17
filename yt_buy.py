@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 #！-*- coding: utf-8 -*-
 
 DEBUG = True
@@ -16,7 +16,7 @@ from lxml.html import html5parser
 from html5lib import HTMLParser,treebuilders
 from email.mime.text import  MIMEText
 from email.header import Header
-import os, locale, sys
+import os, locale, sys, threading
 
 def initSys():
     if sys.getdefaultencoding() != 'utf-8':
@@ -54,7 +54,7 @@ def loan_info(html):
     ibid = ibid_element[0].attrib['value']
     borrowNum_element = dom.xpath("//*[@id=\"iborrownumid\"]")
     borrowNum = borrowNum_element[0].attrib['value']
-    borrowType_element = doc.xpath('//*[@id="iborrowtype"]')
+    borrowType_element = dom.xpath('//*[@id="iborrowtype"]')
     borrowType = borrowType_element[0].attrib['value']
     hash_element = dom.xpath("/html/body/div[3]/form/input")
     hash =  hash_element[0].attrib["value"]
@@ -96,7 +96,6 @@ def investListRequest(opener, typeList):
     response = opener.open(req)
 
     jsonresp = json.loads(response.read().decode())
-    dumpInvestList(jsonresp)
     if(len(typeList)):
         list = []
         for loan in jsonresp['data']['Rows']:
@@ -136,26 +135,27 @@ def couponListRequest(opener, borrowNum):
     return jsonresp
 
 def matchCouponOnLoan(coupons, loan):
+    
     pass
 
+def tender_info(opener, borrow_num, tnum):
+    values = {
+        'borrow_num':borrow_num,
+        'tnum': tnum
+    }
+    data = urllib.parse.urlencode(values)
+    headers = {
+        'User-Agent': YT_USER_AGENT,
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    }
+    req = urllib.request.Request(YTURLBASE + 'Public/tenderinfo', data.encode(encoding='UTF8'), headers)
+    response = opener.open(req)
+
+    jsonresp = json.loads(response.read().decode())
+    print(jsonresp)
+    return jsonresp
+
 def buyRequest(opener, values):
-    #url: http://jr.yatang.cn/Invest/checkppay
-    #post data
-    """
-    __hash__    
-        3565f0b74518e8b60f5256e68575142f_d412a65b4b1c0ecdabca7d1192e99c93
-        4e630c2cdc2070fb29a0dce7bbf7a85a
-    amount    
-        1520
-    ibnum    
-        1214QXR5601377
-    lunchId    
-        5128529
-    p_pay    
-        root@2014
-    user_id    
-        54808
-    """
     
     data = urllib.parse.urlencode(values)
     headers = {
@@ -168,16 +168,6 @@ def buyRequest(opener, values):
     print(jsonresp)
     pass
 
-def user_info(html):
-    dom = soupparser.fromstring(html)
-    user_element =  dom.xpath('/html/body/div[7]/div/div[2]/div[1]/dl/dd[1]/span')
-    user = user_element[0].text
-    level_ele =  dom.xpath('/html/body/div[7]/div/div[2]/div[1]/dl/dd[5]/span/img')
-    level = level_ele[0].get('src').split('/')[-1][0:-4]
-    return {'username': user,
-            'level': int(level)
-            }
-
 def send_mail(mail_list):
     #send email
     mail_host = 'smtp.163.com'
@@ -186,16 +176,16 @@ def send_mail(mail_list):
     mail_pwd = '111111a'
     mail_receiver = ['13524470327@139.com','richard_xieq@foxmail.com']
     mail_to =','.join(mail_receiver)
-    message ='<h3>本次雅堂签到的相关信息</h3>'
+    message ='<h3>本次雅堂購買的相关信息</h3>'
     message += '<ul>'
     for value in mail_list:
-        msg = '<li>%s:v%s雅堂签到：%s</li>'%(value['user']['username'], value['user']['level'], value['data']['data']['tomorrow'])
+        msg = '<li>%s:v%s雅堂购买：%s</li>'%(value['user']['username'], value['user']['level'], value['data']['data']['tomorrow'])
         message += msg;
     message += '</ul>'
     msg = MIMEText(message,  _subtype='html', _charset='utf-8');
     msg['to'] = mail_to;
     msg['from'] = mail_user;
-    msg['Subject'] = Header(u'雅堂签到', 'UTF-8').encode()
+    msg['Subject'] = Header('雅堂购买', 'UTF-8').encode()
     server = smtplib.SMTP_SSL(mail_host, mail_port)
     server.set_debuglevel(1)
     server.login(mail_user, mail_pwd)
@@ -207,6 +197,72 @@ def httpRequest(opener, url):
     response = opener.open(request)
     
     return response
+    
+def buy_func(opener):
+    print("buy function", time.time())
+    while True:
+        #chest info 红包信息
+        #chestinfo = chest_info(httpRequest(opener, YTURLBASESSL + "index.php?s=/Chest/index/"))
+            
+        #Invest list info 投资列表
+        """
+        1： 企业标
+        5: 秒标
+        6: 净值标
+        7：股权标
+        9：创业标
+        """
+        typeList = (1, 5, 9)
+        investList = investListRequest(opener, typeList)
+        if(len(investList) == 0):
+            time.sleep(30)
+            continue #can't find any wanted invest 
+            
+        #loan info 借款信息
+        print(len(investList))
+        
+        for ivst in investList:
+            ibid = ivst['id']
+            loaninfo = loan_info(httpRequest(opener, YTURLBASESSL + "Invest/ViewBorrow/ibid/" + ibid))
+            print(loaninfo['borrowNum'])
+            if(int(ivst['borrow_type']) == 5):
+                if(loaninfo['available_cash'] > 0):
+                    #buy 秒标
+                    values = {
+                        '__hash__': loaninfo['__hash__'],
+                        'ibnum': loaninfo['borrowNum'],
+                        #'lunchId': '0',  #红包ID
+                        'amount': '100',
+                        'p_pay': 'root@2014',
+                        'user_id': '54808'
+                    }
+                    buyinfo = buyRequest(opener, values)
+                    tender_info(opener, loaninfo['borrowNum'], buyinfo['tnum'])
+                    
+            else:
+                #企业或创业标
+                
+                #coupon info
+                lunchid = "0",
+                ammount = "1000"
+                couponinfo = couponListRequest(opener, loaninfo['borrowNum'])
+                if(len(couponinfo)):
+                    lunchid = couponinfo['data'][0]['id']
+                    ammount = couponinfo['data'][0]['user_constraint']
+                #buy
+                values = {
+                    '__hash__': loaninfo['__hash__'],
+                    'ibnum': loaninfo['borrowNum'],
+                    'lunchId': lunchid,  #红包ID
+                    'amount': ammount,
+                    'p_pay': 'root@2014',
+                    'user_id': '54808'
+                    }
+                buyinfo = buyRequest(opener, values)
+                tender_info(opener, loaninfo['borrowNum'], buyinfo['tnum'])
+        time.sleep(10)
+                
+    pass
 
 def readCookies(name):
     cookies = [file for file in os.listdir(BASEDIR + 'cookies') if os.path.isfile(BASEDIR + 'cookies/' + file)]
@@ -229,56 +285,7 @@ def readCookies(name):
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
     urllib.request.install_opener(opener)
     
-    #chest info 红包信息
-    #chestinfo = chest_info(httpRequest(opener, YTURLBASESSL + "index.php?s=/Chest/index/"))
-        
-    #Invest list info 投资列表
-    """
-    1： 企业标
-    5: 秒标
-    6: 净值标
-    7：股权标
-    9：创业标
-    """
-    typeList = (1, 5, 9)
-    investList = investListRequest(opener, typeList)
-    if(len(investList) == 0):
-        return #can't find any wanted invest 
-        
-    #loan info 借款信息
-    print(len(investList))
-    
-    for ivst in investList:
-        ibid = ivst['id']
-        loaninfo = loan_info(httpRequest(opener, YTURLBASESSL + "Invest/ViewBorrow/ibid/" + ibid))
-        print(loaninfo['borrowNum'])
-        if(int(ivst['borrow_type']) == 5):
-            #buy 秒标
-            values = {
-                '__hash__': loaninfo['__hash__'],
-                'ibnum': loaninfo['borrowNum'],
-                #'lunchId': '0',  #红包ID
-                'amount': '100',
-                'p_pay': 'root@2014',
-                'user_id': '54808'
-            }
-            buyinfo = buyRequest(opener, values)
-        else:
-            #企业或创业标
-            
-            #coupon info
-            couponinfo = couponListRequest(opener, loaninfo['borrowNum'])
-    
-            #buy
-            values = {
-                '__hash__': loaninfo['__hash__'],
-                'ibnum': loaninfo['borrowNum'],
-                'lunchId': '0',  #红包ID
-                'amount': '100',
-                'p_pay': 'root@2014',
-                'user_id': '54808'
-                }
-            buyinfo = buyRequest(opener, values) 
+    buy_func(opener)
 
     opener.close()
     return 1 
@@ -303,24 +310,15 @@ def money(string):
 
 def main():
     initSys()
-#     connectDB();
     
     if(readCookies("richardxieq")==0):
         username = raw_input(u"用户名：")
         password = raw_input(u'密码：')
         if(len(password) > 0):
             login(username, password)
+    
     pass
 
-def timer_sart():
-    t = threading.Timer(5.0, buy_func)
-    t.start()
-    pass
-    
-def buy_func():
-    print("buy function", time.time())
-    timer_sart()
-    pass
     
 if __name__ == '__main__':
     main()
