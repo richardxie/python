@@ -8,7 +8,7 @@ YTURLBASESSL = "https://jr.yatang.cn/"
 YT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
 #BASEDIR = '/Users/wuqh/'
 BASEDIR='./'
-import urllib, http.cookiejar,json,time
+import urllib, urllib2, cookielib,json,time
 import smtplib
 import lxml.html.soupparser as soupparser
 from lxml.html import html5parser
@@ -17,11 +17,15 @@ from html5lib import HTMLParser,treebuilders
 from email.mime.text import  MIMEText
 from email.header import Header
 import os, locale, sys, threading
+import logging
+import PyV8
 
 def initSys():
     if sys.getdefaultencoding() != 'utf-8':
         reload(sys)
         sys.setdefaultencoding('utf-8')
+    
+    logging.basicConfig(filename='example.log',level=logging.DEBUG)
     pass
     
 def dumpCookies(cj):
@@ -29,6 +33,14 @@ def dumpCookies(cj):
         print (ck.name + ":" + ck.value)
     pass
 
+def encrypt(password, verifyCode):
+    with PyV8.JSContext() as jsctx:
+        with open("encrypt.js") as jsfile:
+            jsctx.eval(jsfile.read())
+            encryptFunc = jsctx.locals.encrypt2;
+            pwd = encryptFunc(password, verifyCode)
+    return pwd
+	
 def chest_info(html):
     try:
         dom = soupparser.parse(html, "html5lib")
@@ -46,6 +58,35 @@ def chest_info_dom(document):
     len(chest_list_element)
     pass
 
+def welfare_info(html):
+    print "welfare_info start."
+    parser = HTMLParser(tree=treebuilders.getTreeBuilder('lxml') , namespaceHTMLElements=False)
+    dom = html5parser.parse(html, parser = parser)
+    
+    ibid_element = dom.xpath('//*[@class="amountt_input"]')
+    ibid = ibid_element[0].attrib['dataid']
+    borrowNum_element = dom.xpath("//*[@id=\"iborrownumid_"+ibid+"\"]")
+    borrowNum = borrowNum_element[0].attrib['value']
+    borrowType_element = dom.xpath('//*[@id="iborrowtype_'+ibid+'"]')
+    borrowType = borrowType_element[0].attrib['value']
+    hash_element = dom.xpath("/html/body/div[3]/div[4]/div[2]/div[3]/form/input[2]")
+    hash =  hash_element[0].attrib["value"]
+
+    uniqkey_element = dom.xpath("//*[@id='uniqKey']")
+    uniqKey = uniqkey_element[0].attrib['value']
+
+    cash_element = dom.xpath('//*[@id="ktmje_'+ibid+'"]')
+    cash = money(cash_element[0].attrib["value"])
+    return {
+        "__hash__":hash,
+        "ibid":ibid,
+        'borrowType':borrowType,
+        "borrowNum":borrowNum,
+        "available_cash":cash,
+	"uniqKey":uniqKey
+        }
+    pass
+
 def loan_info(html): 
     parser = HTMLParser(tree=treebuilders.getTreeBuilder('lxml') , namespaceHTMLElements=False)
     dom = html5parser.parse(html, parser = parser)
@@ -56,7 +97,7 @@ def loan_info(html):
     borrowNum = borrowNum_element[0].attrib['value']
     borrowType_element = dom.xpath('//*[@id="iborrowtype"]')
     borrowType = borrowType_element[0].attrib['value']
-    hash_element = dom.xpath("/html/body/div[3]/form/input")
+    hash_element = dom.xpath("/html/body/div[2]/div[3]/form/input")
     hash =  hash_element[0].attrib["value"]
 
     cash_element = dom.xpath("/html/body/div[2]/div[1]/div[2]/div[2]/div[1]/span[2]")
@@ -87,12 +128,12 @@ def investListRequest(opener, typeList):
         'tpage[page]':1,
         'tpage[size]':20
     }
-    data = urllib.parse.urlencode(values)
+    data = urllib.urlencode(values)
     headers = {
         'User-Agent': YT_USER_AGENT,
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
     }
-    req = urllib.request.Request(YTURLBASE + 'index.php?s=/Invest/GetBorrowlist', data.encode(encoding='UTF8'), headers)
+    req = urllib2.Request(YTURLBASE + 'index.php?s=/Invest/GetBorrowlist', data.encode(encoding='UTF8'), headers)
     response = opener.open(req)
 
     jsonresp = json.loads(response.read().decode())
@@ -122,12 +163,12 @@ def couponListRequest(opener, borrowNum):
         'borrowNum': borrowNum,
         'pageNum':1
     }
-    data = urllib.parse.urlencode(values)
+    data = urllib.urlencode(values)
     headers = {
         'User-Agent': YT_USER_AGENT,
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
     }
-    req = urllib.request.Request(YTURLBASE + 'Ajax/getUserCoupon', data.encode(encoding='UTF8'), headers)
+    req = urllib.Request(YTURLBASE + 'Ajax/getUserCoupon', data.encode(encoding='UTF8'), headers)
     response = opener.open(req)
 
     jsonresp = json.loads(response.read().decode())
@@ -143,30 +184,31 @@ def tender_info(opener, borrow_num, tnum):
         'borrow_num':borrow_num,
         'tnum': tnum
     }
-    data = urllib.parse.urlencode(values)
+    data = urllib.urlencode(values)
     headers = {
         'User-Agent': YT_USER_AGENT,
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
     }
-    req = urllib.request.Request(YTURLBASE + 'Public/tenderinfo', data.encode(encoding='UTF8'), headers)
+    req = urllib2.Request(YTURLBASE + 'Public/tenderinfo', data.encode(encoding='UTF8'), headers)
     response = opener.open(req)
 
     jsonresp = json.loads(response.read().decode())
-    print(jsonresp)
+    logging.debug(jsonresp)
     return jsonresp
 
 def buyRequest(opener, values):
-    
-    data = urllib.parse.urlencode(values)
+    print 'buy start.'
+    data = urllib.urlencode(values)
     headers = {
         'User-Agent': YT_USER_AGENT,
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
     }
-    req = urllib.request.Request(YTURLBASE + 'Invest/checkppay', data.encode(encoding='UTF8'), headers)
+    req = urllib2.Request(YTURLBASE + 'Invest/checkppay', data.encode(encoding='UTF8'), headers)
     response = opener.open(req)
     jsonresp = json.loads(response.read().decode())
-    print(jsonresp)
-    pass
+    print jsonresp
+    logging.debug(jsonresp)
+    return jsonresp
 
 def send_mail(mail_list):
     #send email
@@ -193,8 +235,11 @@ def send_mail(mail_list):
     server.quit()
 
 def httpRequest(opener, url):
-    request = urllib.request.Request(url)
-    response = opener.open(request)
+    request = urllib2.Request(url)
+    try:
+        response = opener.open(request)
+    except urllib.error.HTTPError as e:
+        print(e.code())
     
     return response
     
@@ -219,34 +264,39 @@ def buy_func(opener):
             continue #can't find any wanted invest 
             
         #loan info 借款信息
-        print(len(investList))
+        logging.info(len(investList))
         
         for ivst in investList:
             ibid = ivst['id']
-            loaninfo = loan_info(httpRequest(opener, YTURLBASESSL + "Invest/ViewBorrow/ibid/" + ibid))
-            print(loaninfo['borrowNum'])
+           
             if(int(ivst['borrow_type']) == 5):
+                loaninfo = welfare_info(httpRequest(opener, YTURLBASESSL + "Financial/welfare"))
+		print loaninfo
                 if(loaninfo['available_cash'] > 0):
+                    salt = loaninfo['uniqKey']
+		    ppay = encrypt("root@2014", salt)
+		    print ppay
                     #buy 秒标
                     values = {
                         '__hash__': loaninfo['__hash__'],
                         'ibnum': loaninfo['borrowNum'],
-                        #'lunchId': '0',  #红包ID
+                        'lunchId': '0',  #红包ID
                         'amount': '100',
-                        'p_pay': 'root@2014',
+                        'p_pay': ppay,
                         'user_id': '54808'
                     }
                     buyinfo = buyRequest(opener, values)
-                    tender_info(opener, loaninfo['borrowNum'], buyinfo['tnum'])
+                    if('tnum' in buyinfo):
+                        tender_info(opener, loaninfo['borrowNum'], buyinfo['tnum'])
                     
             else:
                 #企业或创业标
-                
+                loaninfo = loan_info(httpRequest(opener, YTURLBASESSL + "Invest/ViewBorrow/ibid/" + ibid))
                 #coupon info
-                lunchid = "0",
+                lunchid = "0"
                 ammount = "1000"
                 couponinfo = couponListRequest(opener, loaninfo['borrowNum'])
-                if(len(couponinfo)):
+                if(len(couponinfo['data'])):
                     lunchid = couponinfo['data'][0]['id']
                     ammount = couponinfo['data'][0]['user_constraint']
                 #buy
@@ -258,9 +308,10 @@ def buy_func(opener):
                     'p_pay': 'root@2014',
                     'user_id': '54808'
                     }
-                buyinfo = buyRequest(opener, values)
-                tender_info(opener, loaninfo['borrowNum'], buyinfo['tnum'])
-        time.sleep(10)
+                #buyinfo = buyRequest(opener, values)
+                #tender_info(opener, loaninfo['borrowNum'], buyinfo['tnum'])
+        logging.info(loaninfo['borrowNum'])
+        time.sleep(10000)
                 
     pass
 
@@ -275,15 +326,15 @@ def readCookies(name):
     if not os.path.exists(cookie):
         return 0
     
-    cj = http.cookiejar.MozillaCookieJar()
+    cj = cookielib.MozillaCookieJar()
     cj.load(cookie)
     dumpCookies(cj)
     for ck in cj:
         ck.expires = int(time.time() + 30 * 24 * 3600)
     cj.save(cookie)
     
-    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
-    urllib.request.install_opener(opener)
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), urllib2.HTTPRedirectHandler())
+    urllib2.install_opener(opener)
     
     buy_func(opener)
 

@@ -6,5 +6,15 @@ function encrypt(pwd,key){
 	 if(pwd.length){
 			var en=encode64(xxtea_encrypt(utf16to8(pwd),hex_md5(key))); 
 			return en;
+	 
 		}
+	 
+}
+
+function encrypt2(pwd,salt){
+	 if(pwd.length){
+			var en=encode64(xxtea_encrypt(utf16to8(pwd), salt)); 
+			return en;
+		}
+	 
 }
