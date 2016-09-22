@@ -24,9 +24,9 @@ class Account:
         
     @staticmethod
     def account_info(html):
-		parser = HTMLParser(tree=treebuilders.getTreeBuilder('lxml') , namespaceHTMLElements=False)
-		dom = html5parser.parse(html, parser=parser)
-		user_ele = dom.xpath('/html/body/div[7]/div/div/div[1]/div[1]/div[1]/p[2]/b')
+        parser = HTMLParser(tree=treebuilders.getTreeBuilder('lxml') , namespaceHTMLElements=False)
+        dom = html5parser.parse(html, parser=parser)
+        user_ele = dom.xpath('/html/body/div[7]/div/div/div[1]/div[1]/div[1]/p[2]/b')
         user_name = user_ele[0].text
         balance_ele = dom.xpath('/html/body/div[7]/div/div/div[1]/ul[1]/li[1]/p/span')
         account_balance = utils.money(balance_ele[0].text)
