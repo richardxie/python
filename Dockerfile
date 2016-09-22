@@ -8,6 +8,7 @@ RUN apt-get update -q && \
 	apt-get clean && \
 	apt-get autoclean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN locale-gen zh_CN.UTF-8
 
 RUN pip install html5lib && \
 	pip install lxml && \
