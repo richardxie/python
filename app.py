@@ -38,7 +38,7 @@ def signin_command():
         account = Account(cookie).accountRequest()
         
         mail_list.append({'user':account, 'data': data})
-    utils.EMailUtils().send(mail_list)
+    utils.EmailUtils().send(mail_list)
     
     pass
 
