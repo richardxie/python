@@ -1,11 +1,16 @@
 from EmailUtils import EmailUtils
 from urllib2 import Request
-import sys
+import logging, logging.config
+import yaml, sys
 
 def initSys():
     if sys.getdefaultencoding() != 'utf-8':
         reload(sys)
         sys.setdefaultencoding('utf-8')
+    
+    with open("logging-conf.yaml") as f:
+        D = yaml.load(f)
+        logging.config.dictConfig(D)
     pass
 
 def httpRequest(opener, url):
@@ -16,7 +21,7 @@ def httpRequest(opener, url):
 def money(string):
     import platform, locale
     if platform.system() == 'Windows':
-         locale.setlocale(locale.LC_ALL, 'chs')
+        locale.setlocale(locale.LC_ALL, 'chs')
     else:
         locale.setlocale(locale.LC_ALL, 'zh_CN.UTF-8')
     sym = locale.localeconv()['currency_symbol']

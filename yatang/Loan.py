@@ -1,18 +1,15 @@
 #!/usr/bin/python2.7
 # ！-*- coding: utf-8 -*-
 
-import lxml.html.soupparser as soupparser
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
 import utils, yatang
 
 from Borrow import Borrow
 class Loan(Borrow): 
-    def __init__(self, hash, ibid, bt, bn, cash, minAmount, uniqKey):
-        print Borrow.__module__
-        print Borrow.__class__
+    def __init__(self, __hash__, ibid, bt, bn, cash, minAmount, uniqKey):
         Borrow.__init__(self, ibid, bt, bn)
-        self.__hash__ = hash
+        self.__hash__ = __hash__
         self.available_cash = cash
         self.minAmount = minAmount
         self.uniqKey = uniqKey
@@ -30,7 +27,7 @@ class Loan(Borrow):
         borrowType_element = dom.xpath('//*[@id="iborrowtype"]')
         borrowType = borrowType_element[0].attrib['value']
         hash_element = dom.xpath("/html/body/div[2]/div[3]/form/input")
-        hash = hash_element[0].attrib["value"]
+        hash_value = hash_element[0].attrib["value"]
     
         uniqkey_element = dom.xpath("//*[@id='uniqKey']")
         uniqKey = uniqkey_element[0].attrib['value']
@@ -44,7 +41,7 @@ class Loan(Borrow):
         minAmount = utils.money(minAmount_elemetn[0].attrib['value'])
         
         return Loan(
-            hash=hash,
+            __hash__=hash_value,
             ibid=ibid,
             bt=borrowType,
             bn=borrowNum,

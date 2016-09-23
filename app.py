@@ -1,11 +1,12 @@
 #!/usr/bin/python2.7
 # ！-*- coding: utf-8 -*-
-from yatang import  Cookies, Signin, Invest, Account
+
+from yatang import  Cookies, Signin, Invest, Account, Welfare
 from yatang.Loan import Loan
-from urllib2 import install_opener, build_opener, HTTPCookieProcessor
 from sched import scheduler
 from random import randint
-import utils, time
+from tzj import Signin as TZJSignin
+import utils, time, logging
 DEBUG = True
 AUTO_TENDER = False
 SIGNIN = True
@@ -13,7 +14,8 @@ reserved_amount = 5000
 
 c = Cookies("./")
 schedule = scheduler(time.time, time.sleep) 
-tender_schedule = scheduler(time.time, time.sleep) 
+tender_schedule = scheduler(time.time, time.sleep)
+logger = logging.getLogger("app")
 
 def signin():
     # enter用来安排某事件的发生时间，从现在起第n秒开始启动     
@@ -23,13 +25,17 @@ def signin():
     pass
 
 def signin_command():
-    inc = randint(86400,172800)
+    inc = randint(86400,93600)
     schedule.enter(inc, 0, signin_command, ( ))
     global signin_time
     orginal_time = signin_time
     signin_time=time.time()  
-    print 'start signin command after ' + str(signin_time-orginal_time) + ' seconds'  
+    logger.info('start signin command after ' + str(signin_time-orginal_time) + ' seconds')
     
+    #投之家签到
+    TZJSignin("cmljaGFyZHhpZXE=", 'dHpqcm9vdEAyMDE2').signin()
+    
+    #雅堂签到
     cookies = c.readCookies()
     
     mail_list = []
@@ -43,7 +49,7 @@ def signin_command():
     pass
 
 def auto_tender():
-     # enter用来安排某事件的发生时间，从现在起第n秒开始启动     
+    # enter用来安排某事件的发生时间，从现在起第n秒开始启动     
     tender_schedule.enter(1, 0, tender_command, ( ))         
     #  # 持续运行，直到计划时间队列变成空为止         
     tender_schedule.run()
@@ -55,7 +61,7 @@ def tender_command():
     global tender_time
     orginal_time = tender_time
     tender_time=time.time()  
-    print 'start tender command after ' + str(tender_time-orginal_time) + ' seconds'  
+    logger.debug('start tender command after ' + str(tender_time-orginal_time) + ' seconds')
     cookie = c.readCookie("richardxieq")
     i = Invest(cookie)
     investList = i.investListRequest()
@@ -67,7 +73,8 @@ def tender_command():
             continue
                 
         if(int(ivst['borrow_type']) == 5):
-            loaninfo = Welfare.walfareRequest(i.opener)        
+            loaninfo = Welfare.Welfare.walfareRequest(i.opener)  
+            i.tenderWF(loaninfo)      
         else:
             loaninfo = Loan.loanRequest(i.opener, ibid)
             i.tender(loaninfo)

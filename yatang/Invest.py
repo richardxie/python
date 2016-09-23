@@ -5,7 +5,9 @@ from PyV8 import JSContext
 from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler
 from urllib import urlencode
 from math import floor
-import yatang, json
+import yatang, json, logging
+
+logger = logging.getLogger("app")
 
 class Invest: 
 
@@ -15,7 +17,7 @@ class Invest:
         install_opener(self.opener)
               
     def tender(self, loan, tradepwd="root@2014"):
-        print "i'm tendering a Loan."
+        logger.info("i'm tendering a Loan.")
         ammount = int(floor(loan.available_cash))
         import app
         if(ammount > loan.minAmount and ammount > app.reserved_amount):
@@ -43,14 +45,27 @@ class Invest:
                 
         pass 
     
-    def tenderWF(self, Welfare, tradepwd= "root@2014"):
-        print "i'm tendering a Welfare."
-        encryptedPwd = self.encryptTradePassword(tradepwd, "hao123")
-        print encryptedPwd
+    def tenderWF(self, welfare, tradepwd= "root@2014"):
+        logging.info("i'm tendering a Welfare.")
+        if(welfare.available_cash > 0):
+            salt = welfare.uniqKey
+            ppay = self.encryptTradePassword("root@2014", salt)
+            # buy 秒标
+            values = {
+                '__hash__': welfare.__hash__,
+                'ibnum': welfare.borrowNum,
+                'lunchId': '0',  # 红包ID
+                'amount': welfare.available_cash,
+                'p_pay': ppay,
+                'user_id': '54808'
+            }
+            buyinfo = self.buyRequest(values)
+            if('tnum' in buyinfo):
+                self.tender_info(welfare.borrowNum, buyinfo['tnum'])
         pass     
     
     def buyRequest(self, values):
-        print 'buy start.'
+        logging.info('tender start:' + values['ammount'])
         data = urlencode(values)
         headers = {
             'User-Agent': yatang.YT_USER_AGENT,

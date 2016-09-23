@@ -15,6 +15,7 @@ RUN pip install html5lib && \
 	pip install BeautifulSoup && \
 	pip install numpy && \
 	pip install tesserpy && \
+	pip install pyyaml && \
 	mkdir -p /usr/src/app/python/cookies && \
 	mkdir -p /usr/src/app/python/images
 

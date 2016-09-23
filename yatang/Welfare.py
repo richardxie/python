@@ -1,15 +1,14 @@
 #!/usr/bin/python2.7
 # ！-*- coding: utf-8 -*-
 
-import lxml.html.soupparser as soupparser
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
-import utils
+import utils, yatang
 
-import Borrow
-class Welfare(Borrow.Borrow): 
-    def __init__(self, hash, ibid, bt, bn, cash,uniqkey):
-        Borrow.self.__init__(ibid, bt, bn)
+from Borrow import Borrow
+class Welfare(Borrow): 
+    def __init__(self, __hash__, ibid, bt, bn, cash,uniqkey):
+        Borrow.__init__(self, ibid, bt, bn)
         self.__hash__ = hash
         self.available_cash = cash
         self.uniqkey = uniqkey
@@ -28,15 +27,15 @@ class Welfare(Borrow.Borrow):
         borrowType_element = dom.xpath('//*[@id="iborrowtype_' + ibid + '"]')
         borrowType = borrowType_element[0].attrib['value']
         hash_element = dom.xpath("/html/body/div[3]/div[4]/div[2]/div[3]/form/input[2]")
-        hash = hash_element[0].attrib["value"]
+        hash_value = hash_element[0].attrib["value"]
     
         uniqkey_element = dom.xpath("//*[@id='uniqKey']")
         uniqKey = uniqkey_element[0].attrib['value']
     
         cash_element = dom.xpath('//*[@id="ktmje_' + ibid + '"]')
-        cash = money(cash_element[0].attrib["value"])
+        cash = utils.money(cash_element[0].attrib["value"])
         return Welfare(
-            __hash__ = hash,
+            __hash__ = hash_value,
             ibid = ibid,
             borrowType=borrowType,
             borrowNum=borrowNum,
@@ -47,5 +46,5 @@ class Welfare(Borrow.Borrow):
     
     @staticmethod
     def walfareRequest(opener):
-        return walfarem_info(utils.httpRequest(self.opener, utils.YTURLBASESSL + "Financial/welfare"))
+        return Welfare.walfarem_info(utils.httpRequest(opener, yatang.YTURLBASESSL + "Financial/welfare"))
     
