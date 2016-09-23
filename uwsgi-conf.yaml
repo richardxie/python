@@ -1,0 +1,6 @@
+uwsgi:
+  socket: 127.0.0.1:8000
+  master: 1
+  workers: 2
+  mount: /pyproj=web:app
+  manage-script-name: true
