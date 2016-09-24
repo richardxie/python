@@ -7,6 +7,7 @@ from sched import scheduler
 from random import randint
 from tzj import Signin as TZJSignin
 import utils, time, logging
+import yatang.modules
 DEBUG = True
 AUTO_TENDER = False
 SIGNIN = True
@@ -19,7 +20,7 @@ logger = logging.getLogger("app")
 
 def signin():
     # enter用来安排某事件的发生时间，从现在起第n秒开始启动     
-    schedule.enter(1, 0, signin_command, ( ))         
+    schedule.enter(10, 0, signin_command, ( ))         
     #  # 持续运行，直到计划时间队列变成空为止         
     schedule.run()
     pass
@@ -50,7 +51,7 @@ def signin_command():
 
 def auto_tender():
     # enter用来安排某事件的发生时间，从现在起第n秒开始启动     
-    tender_schedule.enter(1, 0, tender_command, ( ))         
+    tender_schedule.enter(10, 0, tender_command, ( ))         
     #  # 持续运行，直到计划时间队列变成空为止         
     tender_schedule.run()
     pass

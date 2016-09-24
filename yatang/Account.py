@@ -7,6 +7,7 @@ import lxml.html.soupparser as soupparser
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
 import yatang, utils, logging
+from modules import AccountInfo
 
 logger = logging.getLogger("app")
 
@@ -40,7 +41,7 @@ class Account:
             level_ele = dom.xpath("/html/body/div[7]/div/div/div[1]/div[1]/div[1]/p[2]/a/img")
             level = level_ele[0].get("src").split("/")[-1].split(".")[0]
             import uuid
-            account_info = yatang.AccountInfo.AccountInfo(
+            account_info = AccountInfo(
                                 id=str(uuid.uuid1()),                             
                                    name=user_name,
                                    level=level,
@@ -50,6 +51,12 @@ class Account:
                                    collection=account_collection,
                                    payment = account_payment
                             )
+            session = yatang.Session()
+            query = session.query(AccountInfo).filter(AccountInfo.name == account_info.name)
+            if(query.count() == 0):
+                session.add(account_info)
+                session.commit()
+
             return account_info
         except Exception,e:
             print(e)

@@ -4,14 +4,19 @@
 from email.mime.text import  MIMEText
 from email.header import Header
 from smtplib import  SMTP_SSL
+import logging
 
+logger = logging.getLogger("app")
 class EmailUtils: 
+    
     def __init__(self):
         pass
-    
           
     def send(self, mail_list):
         print "i'm sending email."
+        if len(mail_list) ==0:
+            return
+            
         #send email
         mail_host = 'smtp.163.com'
         mail_port = 465
@@ -25,15 +30,20 @@ class EmailUtils:
             msg = '<li>%s:v%s雅堂签到：%s</li>'%(value['user'].name, value['user'].level, value['data']['data']['tomorrow'])
             message += msg;
         message += '</ul>'
+        logger.info('email content:' + message)
         msg = MIMEText(message,  _subtype='html', _charset='utf-8');
         msg['to'] = mail_to;
         msg['from'] = mail_user;
         msg['Subject'] = Header(u'雅堂签到', 'UTF-8').encode()
-        server = SMTP_SSL(mail_host, mail_port)
-        server.set_debuglevel(1)
-        server.login(mail_user, mail_pwd)
-        server.sendmail(mail_user, mail_to, msg.as_string())
-        server.quit()
+        try:
+            server = SMTP_SSL(mail_host, mail_port)
+            #server.set_debuglevel(1)
+            server.login(mail_user, mail_pwd)
+            server.sendmail(mail_user, mail_to, msg.as_string())
+            server.quit()
+        except Exception,e:
+            print(e)
+            logger.warn("sendmail error.")
         pass
 
     def send_mail(self, data):
@@ -49,13 +59,18 @@ class EmailUtils:
         msg = '<li>%s投之家签到：%d</li>'%(data['info']['Username'], data['info']['Score'])
         message += msg;
         message += '</ul>'
+        logger.info('email content:' + message)
         msg = MIMEText(message,  _subtype='html', _charset='utf-8');
         msg['to'] = mail_to;
         msg['from'] = mail_user;
         msg['Subject'] = Header(u'投之家签到', 'UTF-8').encode()
-        server = SMTP_SSL(mail_host, mail_port)
-        server.set_debuglevel(1)
-        server.login(mail_user, mail_pwd)
-        server.sendmail(mail_user, mail_to, msg.as_string())
-        server.quit()
+        try:
+            server = SMTP_SSL(mail_host, mail_port)
+            #server.set_debuglevel(1)
+            server.login(mail_user, mail_pwd)
+            server.sendmail(mail_user, mail_to, msg.as_string())
+            server.quit()
+        except Exception,e:
+            print(e)
+            logger.warn("sendmail error.")
     

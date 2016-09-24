@@ -6,6 +6,7 @@ from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HT
 from urllib import urlencode
 from math import floor
 import yatang, json, logging
+from modules import InvestInfo
 
 logger = logging.getLogger("app")
 
@@ -13,8 +14,9 @@ class Invest:
 
     def __init__(self, cookie):
         self.cookie = cookie
-        self.opener = build_opener(HTTPCookieProcessor(self.cookie), HTTPRedirectHandler())
-        install_opener(self.opener)
+        if cookie is not None:
+            self.opener = build_opener(HTTPCookieProcessor(self.cookie), HTTPRedirectHandler())
+            install_opener(self.opener)
               
     def tender(self, loan, tradepwd="root@2014"):
         logger.info("i'm tendering a Loan.")
@@ -42,6 +44,13 @@ class Invest:
                 buyinfo = self.buyRequest(values)
                 if('tnum' in buyinfo):
                     self.tender_info(loan.borrowNum, buyinfo['tnum'])
+                    import uuid
+                    invest = InvestInfo(id=str(uuid.uuid1()),                             
+                        name=loan.uid,
+                        amount = 100)
+                    session = yatang.Session()
+                    session.add(invest)
+                    session.commit()
                 
         pass 
     

@@ -7,12 +7,13 @@ import utils, yatang
 
 from Borrow import Borrow
 class Loan(Borrow): 
-    def __init__(self, __hash__, ibid, bt, bn, cash, minAmount, uniqKey):
+    def __init__(self, __hash__, ibid, bt, bn, cash, minAmount, uniqKey, uid):
         Borrow.__init__(self, ibid, bt, bn)
         self.__hash__ = __hash__
         self.available_cash = cash
         self.minAmount = minAmount
         self.uniqKey = uniqKey
+        self.uid = uid
           
     def __repr__(self):
         return "<Loan(ibid='%s', borrowType='%s', borrowNum='%s')>" % (
@@ -38,7 +39,11 @@ class Loan(Borrow):
             # kyye
             cash_element = dom.xpath('//*[@id="zhkyye"]')
             cash = utils.money(cash_element[0].attrib['value'])
-            
+
+            #user id
+            uid_element = dom.xpath('//*[@id="cuid"]')
+            uid = uid_element[0].attrib['value']
+
             # 最低投资金额
             minAmount_elemetn = dom.xpath('//*[@id="zxtbe"]')
             minAmount = utils.money(minAmount_elemetn[0].attrib['value'])
@@ -50,7 +55,8 @@ class Loan(Borrow):
                 bn=borrowNum,
                 cash=cash,
                 minAmount=minAmount,
-                uniqKey=uniqKey
+                uniqKey=uniqKey,
+                uid = uid
                 )
         except:
             logger.warn("oops, parse Loan html failed!")

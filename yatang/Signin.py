@@ -25,8 +25,8 @@ class Signin:
         logger.debug("I'm signining")
         #Checkin
         response = utils.httpRequest(self.opener, yatang.YTURLBASE + "TaskCenter/checkins")
-        #TODO check reponse valid
-        data = json.load(response)
+        if response.code == 200:
+            data = json.load(response)
         
         return data
     
