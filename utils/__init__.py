@@ -1,7 +1,7 @@
 from EmailUtils import EmailUtils
 from urllib2 import Request
 import logging, logging.config
-import yaml, sys
+import yaml, sys, os
 
 def initSys():
     if sys.getdefaultencoding() != 'utf-8':
@@ -11,6 +11,14 @@ def initSys():
     with open("logging-conf.yaml") as f:
         D = yaml.load(f)
         logging.config.dictConfig(D)
+
+    sys.path.append(os.path.dirname(__file__))
+    pythonpath = os.getenv('PYTHONPATH')
+    if pythonpath is not None:
+        paths = pythonpath.split(':' if os.name=='posix' else ';')
+        for path in paths:
+            if not path in sys.path:
+                sys.path.append(path)
     pass
 
 def httpRequest(opener, url):

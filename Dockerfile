@@ -5,7 +5,7 @@ ENV VERSION 2.28
 RUN apt-get update -q && \
 	apt-get install -qy python python-dev python-pip \
 	curl build-essential python-lxml tesseract-ocr \
-	tesseract-ocr-dev python-opencv nginx supervisor && \
+	tesseract-ocr-dev python-opencv nginx supervisor sqlite3 && \
 	apt-get clean && \
 	apt-get autoclean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

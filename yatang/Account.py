@@ -55,7 +55,6 @@ class Account:
             query = session.query(AccountInfo).filter(AccountInfo.name == account_info.name)
             if(query.count() == 0):
                 session.add(account_info)
-                session.commit()
 
             return account_info
         except Exception,e:
