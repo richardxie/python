@@ -7,8 +7,9 @@ from Invest import Invest
 from Welfare import Welfare
 from Coupon import Coupon
 from Account import Account
+from sqlalchemy.ext.declarative import declarative_base
 
-
+Base = declarative_base()
 YTURLBASE = "http://jr.yatang.cn/"
 YTURLBASESSL = "https://jr.yatang.cn/"
 YT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'

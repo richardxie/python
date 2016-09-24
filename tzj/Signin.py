@@ -24,13 +24,15 @@ class Signin:
     def signinRequest(self):
         req = Request(tzj.TZJURLBASESSL + 'shop/signin')
         response = self.opener.open(req)
-        jsonData = json.load(response)
-        print jsonData 
-        ###{u'info': {u'Username': u'YfzGvk6Ih6', u'SignCount': 1, 
-        ###u'LastSignDate': u'2016-09-07T14:26:38+08:00', u'Score': 1, 
-        ###u'SignInReward': {u'1': 1, u'3': 5, u'2': 3, u'5': 9, u'4': 7, u'7': 15, u'6': 11}}, u'ret': 1}
-        if(jsonData['ret'] == 1):
-            EmailUtils().send_mail(jsonData)
+
+        if response.code == 200:
+            jsonData = json.load(response)
+            print(jsonData)
+            ###{u'info': {u'Username': u'YfzGvk6Ih6', u'SignCount': 1, 
+            ###u'LastSignDate': u'2016-09-07T14:26:38+08:00', u'Score': 1, 
+         ###u'SignInReward': {u'1': 1, u'3': 5, u'2': 3, u'5': 9, u'4': 7, u'7': 15, u'6': 11}}, u'ret': 1}
+            if(jsonData['ret'] == 1):
+                EmailUtils().send_mail(jsonData)
         pass
     
     def login(self):

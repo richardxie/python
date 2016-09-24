@@ -1,6 +1,0 @@
-# Netscape HTTP Cookie File
-# http://curl.haxx.se/rfc/cookie_spec.html
-# This is a generated file!  Do not edit.
-
-jr.yatang.cn	FALSE	/	FALSE	1477038730	itbt_auth	0ed5feybBFvra8aUb80w%2Fz1a9o4gF2RGz9kG5zKQx3%2FtNarqK%2B7r6j91iX3%2Bg4oMp6J%2B9g
-jr.yatang.cn	FALSE	/	FALSE	1477038730	itbt_layer	8c11tsp%2FlxUz7xkNIeZdgR%2FDRD4G%2BUt9tOA%2FJcHdZ%2Fbx5wkVcz%2FKDdIWFotB5xOnenhslLIw5qk

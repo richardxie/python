@@ -20,6 +20,8 @@ RUN pip install html5lib && \
 	pip install pyyaml && \
 	pip install Flask && \
 	pip install uwsgi && \
+	pip install SQLAlchemy && \
+	pip install supervisor-stdout && \
 	mkdir -p /usr/src/app/python/cookies && \
 	mkdir -p /usr/src/app/python/images
 

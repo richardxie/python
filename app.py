@@ -42,8 +42,8 @@ def signin_command():
     for cookie in cookies:
         data = Signin(cookie).signin()
         account = Account(cookie).accountRequest()
-        
-        mail_list.append({'user':account, 'data': data})
+        if account is not None and data is not None:
+            mail_list.append({'user':account, 'data': data})
     utils.EmailUtils().send(mail_list)
     
     pass

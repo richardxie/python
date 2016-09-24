@@ -24,7 +24,9 @@ class Signin:
     def signin(self):
         logger.debug("I'm signining")
         #Checkin
-        data = json.load(utils.httpRequest(self.opener, yatang.YTURLBASE + "TaskCenter/checkins"))
+        response = utils.httpRequest(self.opener, yatang.YTURLBASE + "TaskCenter/checkins")
+        #TODO check reponse valid
+        data = json.load(response)
         
         return data
     

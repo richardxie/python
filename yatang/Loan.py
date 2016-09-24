@@ -14,43 +14,53 @@ class Loan(Borrow):
         self.minAmount = minAmount
         self.uniqKey = uniqKey
           
-    
+    def __repr__(self):
+        return "<Loan(ibid='%s', borrowType='%s', borrowNum='%s')>" % (
+                self.ibid, self.borrowType, self.borrowNum)
+
     @staticmethod
     def loan_info(html):
         parser = HTMLParser(tree=treebuilders.getTreeBuilder('lxml') , namespaceHTMLElements=False)
         dom = html5parser.parse(html, parser=parser)
+        try:
+            ibid_element = dom.xpath('//*[@id="ibid"]')
+            ibid = ibid_element[0].attrib['value']
+            borrowNum_element = dom.xpath("//*[@id=\"iborrownumid\"]")
+            borrowNum = borrowNum_element[0].attrib['value']
+            borrowType_element = dom.xpath('//*[@id="iborrowtype"]')
+            borrowType = borrowType_element[0].attrib['value']
+            hash_element = dom.xpath("/html/body/div[2]/div[3]/form/input")
+            hash_value = hash_element[0].attrib["value"]
         
-        ibid_element = dom.xpath('//*[@id="ibid"]')
-        ibid = ibid_element[0].attrib['value']
-        borrowNum_element = dom.xpath("//*[@id=\"iborrownumid\"]")
-        borrowNum = borrowNum_element[0].attrib['value']
-        borrowType_element = dom.xpath('//*[@id="iborrowtype"]')
-        borrowType = borrowType_element[0].attrib['value']
-        hash_element = dom.xpath("/html/body/div[2]/div[3]/form/input")
-        hash_value = hash_element[0].attrib["value"]
-    
-        uniqkey_element = dom.xpath("//*[@id='uniqKey']")
-        uniqKey = uniqkey_element[0].attrib['value']
-        
-        # kyye
-        cash_element = dom.xpath('//*[@id="zhkyye"]')
-        cash = utils.money(cash_element[0].attrib['value'])
-        
-        # 最低投资金额
-        minAmount_elemetn = dom.xpath('//*[@id="zxtbe"]')
-        minAmount = utils.money(minAmount_elemetn[0].attrib['value'])
-        
-        return Loan(
-            __hash__=hash_value,
-            ibid=ibid,
-            bt=borrowType,
-            bn=borrowNum,
-            cash=cash,
-            minAmount=minAmount,
-            uniqKey=uniqKey
-            )
+            uniqkey_element = dom.xpath("//*[@id='uniqKey']")
+            uniqKey = uniqkey_element[0].attrib['value']
+            
+            # kyye
+            cash_element = dom.xpath('//*[@id="zhkyye"]')
+            cash = utils.money(cash_element[0].attrib['value'])
+            
+            # 最低投资金额
+            minAmount_elemetn = dom.xpath('//*[@id="zxtbe"]')
+            minAmount = utils.money(minAmount_elemetn[0].attrib['value'])
+            
+            return Loan(
+                __hash__=hash_value,
+                ibid=ibid,
+                bt=borrowType,
+                bn=borrowNum,
+                cash=cash,
+                minAmount=minAmount,
+                uniqKey=uniqKey
+                )
+        except:
+            logger.warn("oops, parse Loan html failed!")
+
     
     @staticmethod
     def loanRequest(opener, ibid):
-        return Loan.loan_info(utils.httpRequest(opener, yatang.YTURLBASESSL + "Invest/ViewBorrow/ibid/" + ibid))
+        response = utils.httpRequest(opener, yatang.YTURLBASESSL + "Invest/ViewBorrow/ibid/" + ibid)
+        if response.code == 200:
+            return Loan.loan_info(response)
+        else:
+            return None
     

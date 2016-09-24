@@ -26,7 +26,7 @@ class Invest:
                 # coupon info
                 lunchid = "0"
                 
-                couponinfo = yatang.Coupon.couponListRequest(self.opener, loan.borrowNum)
+                couponinfo = yatang.Coupon(self.cookie, loan.borrowNum).couponListRequest()
                 if('data' in couponinfo and len(couponinfo['data'])):
                     lunchid = couponinfo['data'][0]['id']
                     ammount = couponinfo['data'][0]['user_constraint']
@@ -73,8 +73,9 @@ class Invest:
         }
         req = Request(yatang.YTURLBASE + 'Invest/checkppay', data.encode(encoding='UTF8'), headers)
         response = self.opener.open(req)
-        jsonresp = json.loads(response.read().decode())
-        print jsonresp
+        if response.code == 200 :
+            jsonresp = json.loads(response.read().decode())
+            print jsonresp
         return jsonresp
 
     def tender_info(self, borrow_num, tnum):
@@ -89,10 +90,10 @@ class Invest:
         }
         req = Request(yatang.YTURLBASE + 'Public/tenderinfo', data.encode(encoding='UTF8'), headers)
         response = self.opener.open(req)
-    
-        jsonresp = json.loads(response.read().decode())
-        print jsonresp
-        return jsonresp
+        if response.code == 200 :
+            jsonresp = json.loads(response.read().decode())
+            print jsonresp
+            return jsonresp
 
     def encryptTradePassword(self, tradepassword, uniqkey):
         with JSContext() as jsctx:
@@ -115,13 +116,15 @@ class Invest:
         }
         req = Request(yatang.YTURLBASE + 'index.php?s=/Invest/GetBorrowlist', data.encode(encoding='UTF8'), headers)
         response = self.opener.open(req)
-    
-        jsonresp = json.loads(response.read().decode())
-        if(len(typeList)):
-            aList = []
-            for loan in jsonresp['data']['Rows']:
-                if int(loan['borrow_type']) in typeList:
-                    aList.append(loan)
-            return aList
+        if response.code == 200:
+            jsonresp = json.loads(response.read().decode())
+            if(len(typeList)):
+                aList = []
+                for loan in jsonresp['data']['Rows']:
+                    if int(loan['borrow_type']) in typeList:
+                        aList.append(loan)
+                return aList
+            else:
+                return jsonresp['data']['Rows']
         else:
-            return jsonresp['data']['Rows']
+            return []

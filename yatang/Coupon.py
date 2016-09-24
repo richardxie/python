@@ -9,14 +9,18 @@ class Coupon:
     def __init__(self, cookie, borrowNum):
         self.cookie = cookie
         self.borrowNum = borrowNum
-        self.opener = build_opener(HTTPCookieProcessor(self.cookie), HTTPRedirectHandler())
-        install_opener(self.opener)
+        if cookie is not None:
+            self.opener = build_opener(HTTPCookieProcessor(self.cookie), HTTPRedirectHandler())
+            install_opener(self.opener)
 
-    @staticmethod
-    def couponListRequest(opener, borrowNum):
+    def __repr__(self):
+        return "<Coupon(borrowNum='%s')>" % (
+                self.borrowNum)
+
+    def couponListRequest(self):
         values = {
             'investMoney':'',
-            'borrowNum': borrowNum,
+            'borrowNum': self.borrowNum,
             'pageNum':1
         }
         data = urlencode(values)
@@ -25,8 +29,10 @@ class Coupon:
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
         req = Request(yatang.YTURLBASE + 'Ajax/getUserCoupon', data.encode(encoding='UTF8'), headers)
-        response = opener.open(req)
-    
-        jsonresp = json.loads(response.read().decode())
-        print(jsonresp)
-        return jsonresp
+        response = self.opener.open(req)
+        if response.code == 200:
+            jsonresp = json.loads(response.read().decode())
+            print(jsonresp)
+            return jsonresp
+        else:
+            return None
