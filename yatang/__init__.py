@@ -19,7 +19,7 @@ YT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20
 db_name = 'test.db'
 
 from sqlalchemy import create_engine
-engine = create_engine('sqlite:///usr/src/vagrant'+db_name, echo=True)
+engine = create_engine('sqlite:////usr/src/vagrant'+db_name, echo=True)
 	 
 from sqlalchemy.orm import sessionmaker
 Session = sessionmaker()
