@@ -32,6 +32,7 @@ ADD pyv8.tar.gz .
 RUN mv default /etc/nginx/sites-available/default && \
 	echo "daemon off;" >> /etc/nginx/nginx.conf
 COPY supervisor.conf /etc/supervisor/conf.d/
+COPY webapp /usr/share/nginx/html
 
 EXPOSE 8082
 CMD ["supervisord", "-n"]
