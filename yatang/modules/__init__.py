@@ -2,7 +2,8 @@
 # ！-*- coding: utf-8 -*-
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, Integer, DECIMAL
+from sqlalchemy import Column, String, Integer, DECIMAL, DateTime, func
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -47,13 +48,14 @@ class SigninInfo(Base):
     # 表的结构:
     id = Column(String(64), primary_key=True, autoincrement = True)
     name = Column(String(20))
-    signin_date = Column(String(10))
-    prev_signin_data = Column(String(10))
+    website = Column(String(20))
+    signin_date = Column(DateTime, default=func.now())
+    prev_signin_date = Column(DateTime)
     pass
 
     def __repr__(self):
-        return "<Signin(name='%s', data='%s', previous_data='%s')>" % (
-                self.name, self.signin_date, self.prev_signin_data)
+        return "<Signin(name='%s', web='%s', signin_date='%s', prev_signin_date='%s')>" % (
+                self.name, self.website, str(self.signin_date), str(self.prev_signin_date))
 
 class InvestInfo(Base):
      # 表的名字:

@@ -5,11 +5,16 @@ from urllib2 import build_opener, HTTPCookieProcessor, Request
 from urllib import urlencode
 from cookielib import MozillaCookieJar
 from utils import EmailUtils
-import base64, json
-import tzj
+import base64, json, logging
+import tzj, yatang
+from yatang.modules import SigninInfo
+from datetime import datetime
 
 DEBUG = True
 BASEDIR = "./"
+
+logger = logging.getLogger("app")
+
 class Signin:
 
     def __init__(self, name, passwd):
@@ -27,10 +32,28 @@ class Signin:
 
         if response.code == 200:
             jsonData = json.load(response)
-            print(jsonData)
+            logger.info(jsonData)
             ###{u'info': {u'Username': u'YfzGvk6Ih6', u'SignCount': 1, 
             ###u'LastSignDate': u'2016-09-07T14:26:38+08:00', u'Score': 1, 
-         ###u'SignInReward': {u'1': 1, u'3': 5, u'2': 3, u'5': 9, u'4': 7, u'7': 15, u'6': 11}}, u'ret': 1}
+            ###u'SignInReward': {u'1': 1, u'3': 5, u'2': 3, u'5': 9, u'4': 7, u'7': 15, u'6': 11}}, u'ret': 1}
+            session = yatang.Session()
+            query = session.query(SigninInfo).filter(SigninInfo.name == self.username, SigninInfo.website=='tzj')
+            if(query.count() == 0):
+                import uuid
+                signinf_info = SigninInfo(
+                                id=str(uuid.uuid1()),                             
+                                   name=self.username,
+                                   website='tzj',
+                                   signin_date = datetime.now()
+                            )
+                session.add(signinf_info)
+                session.commit()
+            else:
+                signin_info = query.one();
+                signin_info.prev_signin_date = signin_info.signin_date
+                signin_info.signin_date = datetime.now()
+                session.commit()
+            
             if(jsonData['ret'] == 1):
                 EmailUtils().send_mail(jsonData)
         pass
@@ -52,6 +75,7 @@ class Signin:
         return res
     
     def loginRequest(self):
+        logger.info(self.username + ' wants to login.')
         values = {
             'url':'https://account.touzhijia.com',
             'remeber':1,

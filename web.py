@@ -3,7 +3,8 @@
 
 from flask import Flask, request
 from yatang import Cookies, Signin
-import utils, logging
+from tzj import Signin as TZJSignin
+import utils, logging, base64
 
 app = Flask(__name__)
 logger = logging.getLogger("web")
@@ -31,6 +32,18 @@ def ytsignin():
         signin = Signin(cookie = cookie)
     return signin.signin()
 
+"""
+curl  -X POST -H "Content-Type:application/x-www-form-urlencoded" \
+    -d 'username=richardxieq' -d 'password=tzjroot@2016' \
+    http://localhost:8000/pyproj/tzj/signin
+"""
+@app.route("/tzj/signin", methods=['POST'])
+def tzjsignin():
+    logger.debug("tzj signin request")
+    name = request.form['username']
+    passwd = request.form['password']
+    return TZJSignin(base64.b64encode(name), base64.b64encode(passwd)).signin()
+ 
 if __name__ == '__main__':
     utils.initSys()
     app.run(

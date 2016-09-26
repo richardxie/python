@@ -26,3 +26,5 @@ Session = sessionmaker()
 Session.configure(bind=engine)
 if not path.exists(db_name):
 	Base.metadata.create_all(engine)
+else:
+	Base.metadata.bind = engine

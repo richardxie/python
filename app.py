@@ -11,6 +11,8 @@ import yatang.modules
 DEBUG = True
 AUTO_TENDER = False
 SIGNIN = True
+TZJ_SIGNIN = False
+YT_SIGNIN = True
 reserved_amount = 5000
 
 c = Cookies("./")
@@ -34,18 +36,21 @@ def signin_command():
     logger.info('start signin command after ' + str(signin_time-orginal_time) + ' seconds')
     
     #投之家签到
-    TZJSignin("cmljaGFyZHhpZXE=", 'dHpqcm9vdEAyMDE2').signin()
+    if TZJ_SIGNIN:
+        TZJSignin("cmljaGFyZHhpZXE=", 'dHpqcm9vdEAyMDE2').signin()
     
     #雅堂签到
-    cookies = c.readCookies()
-    
-    mail_list = []
-    for cookie in cookies:
-        data = Signin(cookie).signin()
-        account = Account(cookie).accountRequest()
-        if account is not None and data is not None:
-            mail_list.append({'user':account, 'data': data})
-    utils.EmailUtils().send(mail_list)
+    if YT_SIGNIN:
+        cookies = c.readCookies()
+        
+        mail_list = []
+        for cookie in cookies:
+            account = Account(cookie).accountRequest()
+            data = Signin(cookie =cookie,
+                        name = account.name).signin()
+            if account is not None and data is not None:
+                mail_list.append({'user':account, 'data': data})
+        utils.EmailUtils().send(mail_list)
     
     pass
 
