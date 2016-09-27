@@ -30,10 +30,8 @@ from sqlalchemy.orm import sessionmaker
 Session = sessionmaker()
 Session.configure(bind=engine)
 
-if not os.path.exists(db_name):
-    Base.metadata.create_all(engine)
-else:
-    Base.metadata.bind = engine
+Base.metadata.create_all(engine)
+Base.metadata.bind = engine
 
 class TestUtils(unittest.TestCase): 
     def setUp(self):

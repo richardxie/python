@@ -17,7 +17,6 @@ YTURLBASE = "http://jr.yatang.cn/"
 YTURLBASESSL = "https://jr.yatang.cn/"
 YT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
 USING_MYSQL = True
-CREATE_DB = True
 
 if USING_MYSQL:
     db_name = 'mysql+pymysql://%s:%s@%s:%s/%s'%(db_config['mysql']['user'],
@@ -34,7 +33,5 @@ engine = create_engine(db_name, echo=True)
 from sqlalchemy.orm import sessionmaker
 Session = sessionmaker()
 Session.configure(bind=engine)
-if not USING_MYSQL and not path.exists(db_name):
-	Base.metadata.create_all(engine)
-else:
-	Base.metadata.bind = engine
+Base.metadata.create_all(engine)
+Base.metadata.bind = engine
