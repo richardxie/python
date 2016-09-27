@@ -6,9 +6,19 @@ from sqlalchemy import Column, String, Integer, DECIMAL, DateTime, func
 from datetime import datetime
 
 Base = declarative_base()
+class CommonColumn(Base):
+    __abstract__ = True
+    create_date = Column(DateTime, default=func.now())
+    update_date = Column(DateTime)
+    version = Column(Integer, nullable=False)
 
-class User(Base):
-	 # 表的名字:
+    __mapper_args__ = {
+        "version_id_col": version
+    }
+    pass
+
+class User(CommonColumn):
+	# 表的名字:
     __tablename__ = 'user'
 
     # 表的结构:
@@ -22,8 +32,8 @@ class User(Base):
                 self.user_id, self.name)
 	pass
 
-class AccountInfo(Base):
-     # 表的名字:
+class AccountInfo(CommonColumn):
+    # 表的名字:
     __tablename__ = 'account'
 
     # 表的结构:
@@ -41,8 +51,8 @@ class AccountInfo(Base):
         return "<Account(name='%s', balance='%s', income='%s')>" % (
                 self.name, self.balance, self.income)
 
-class SigninInfo(Base):
-     # 表的名字:
+class SigninInfo(CommonColumn):
+    # 表的名字:
     __tablename__ = 'signin'
 
     # 表的结构:
@@ -57,8 +67,8 @@ class SigninInfo(Base):
         return "<Signin(name='%s', web='%s', signin_date='%s', prev_signin_date='%s')>" % (
                 self.name, self.website, str(self.signin_date), str(self.prev_signin_date))
 
-class InvestInfo(Base):
-     # 表的名字:
+class InvestInfo(CommonColumn):
+    # 表的名字:
     __tablename__ = 'invest'
 
     # 表的结构:
@@ -71,3 +81,17 @@ class InvestInfo(Base):
     def __repr__(self):
         return "<InvestInfo(name='%s', data='%s', amount='%s')>" % (
                 self.name, self.date, self.amount)
+
+class WelfareInfo(CommonColumn):
+    # 表的名字:
+    __tablename__ = 'welfare'
+
+    # 表的结构:
+    ibid = Column(String(64), primary_key=True, autoincrement = True)
+    borrowType = Column(String(20))
+    borrowNum = Column(String(50))
+    pass
+
+    def __repr__(self):
+        return "<WelfareInfo(ibid='%s', type='%s', number='%s')>" % (
+                self.ibid, self.borrowType, self.borrowNum)
