@@ -7,7 +7,6 @@ from sched import scheduler
 from random import randint
 from tzj import Signin as TZJSignin
 import utils, time, logging
-import yatang.modules
 DEBUG = True
 AUTO_TENDER = False
 SIGNIN = True

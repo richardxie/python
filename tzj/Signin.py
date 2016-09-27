@@ -23,8 +23,9 @@ class Signin:
         
     def signin(self):
         if self.login() :
-            self.signinRequest()
-        pass
+            return self.signinRequest()
+        else:
+            return None
     
     def signinRequest(self):
         req = Request(tzj.TZJURLBASESSL + 'shop/signin')
@@ -56,7 +57,9 @@ class Signin:
             
             if(jsonData['ret'] == 1):
                 EmailUtils().send_mail(jsonData)
-        pass
+            return jsonData
+        else:
+            return {"errorCode":"000", "errorMsg":"http request errorcode" + response.code}
     
     def login(self):
         cj = MozillaCookieJar();

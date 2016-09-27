@@ -18,12 +18,14 @@ RUN pip install html5lib && \
 	pip install numpy && \
 	pip install tesserpy && \
 	pip install pyyaml && \
+	pip install pymysql && \
 	pip install Flask && \
 	pip install uwsgi && \
 	pip install SQLAlchemy && \
 	pip install supervisor-stdout && \
 	mkdir -p /usr/src/app/python/cookies && \
 	mkdir -p /usr/src/app/python/images
+
 
 WORKDIR /usr/src/app/python
 ADD src.tar.gz .

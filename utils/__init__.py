@@ -1,7 +1,12 @@
+#!/usr/bin/python2.7
+# ！-*- coding: utf-8 -*-
+
 from EmailUtils import EmailUtils
 from urllib2 import Request
 import logging, logging.config
 import yaml, sys, os
+
+
 
 def initSys():
     if sys.getdefaultencoding() != 'utf-8':

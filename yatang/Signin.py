@@ -44,8 +44,8 @@ class Signin:
                 session.commit()
             else:
                 signin_info = query.one();
-                signin_info.prev_signin_data = signin_info.signin_date
-                signin_info.sign_date = datetime.now()
+                signin_info.prev_signin_date = signin_info.signin_date
+                signin_info.signin_date = datetime.now()
                 session.commit()
                 pass
         

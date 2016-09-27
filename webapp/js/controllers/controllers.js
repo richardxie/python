@@ -10,15 +10,17 @@ define([
   , 'controllers/AppController'
   , 'controllers/HomeController'
   , 'controllers/DataController'
+  , 'controllers/SigninController'
 
-], function (Console, _, routes, app, home,data) {
+], function (Console, _, routes, app, home,data, signin) {
   "use strict";
   Console.group("Entering controllers module.");
   Console.info("AppController", app);
 
   var controllers = {
     home: home,
-    data: data
+    data: data,
+    signin: signin
   };
 
 
