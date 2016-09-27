@@ -78,7 +78,7 @@ def tender_command():
             continue
                 
         if(int(ivst['borrow_type']) == 5):
-            loaninfo = Welfare.Welfare.walfareRequest(i.opener)  
+            loaninfo = Welfare.walfareRequest(i.opener)  
             i.tenderWF(loaninfo)      
         else:
             loaninfo = Loan.loanRequest(i.opener, ibid)

@@ -5,8 +5,8 @@ from PyV8 import JSContext
 from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler
 from urllib import urlencode
 from math import floor
-import yatang, json, logging
-from modules import InvestInfo
+import yatang, json, logging, math
+from modules import InvestInfo, WelfareInfo
 
 logger = logging.getLogger("app")
 
@@ -64,17 +64,25 @@ class Invest:
                 '__hash__': welfare.__hash__,
                 'ibnum': welfare.borrowNum,
                 'lunchId': '0',  # 红包ID
-                'amount': welfare.available_cash,
+                'amount': math.floor(welfare.available_cash),
                 'p_pay': ppay,
                 'user_id': '54808'
             }
             buyinfo = self.buyRequest(values)
             if('tnum' in buyinfo):
+                session = yatang.Session()
+                welfare_info = WelfareInfo(
+                            ibid = welfare.ibid,                          
+                            borrowType=welfare.borrowType,
+                            borrowNum=welfare.borrowNum
+                        )
+                session.add(welfare_info)
+                session.commit()
                 self.tender_info(welfare.borrowNum, buyinfo['tnum'])
         pass     
     
     def buyRequest(self, values):
-        logging.info('tender start:' + values['ammount'])
+        logging.info('tender start:' + str(values['amount']))
         data = urlencode(values)
         headers = {
             'User-Agent': yatang.YT_USER_AGENT,
@@ -112,7 +120,7 @@ class Invest:
                 pwd = encryptFunc(tradepassword, uniqkey)
         return pwd
     
-    def investListRequest(self, typeList=(1,5,9)):
+    def investListRequest(self, typeList=[5]):
         values = {
             'mode':1,
             'tpage[page]':1,

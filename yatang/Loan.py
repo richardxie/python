@@ -3,7 +3,9 @@
 
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
-import utils, yatang
+import utils, yatang, logging
+
+logger = logging.getLogger("app")
 
 from Borrow import Borrow
 class Loan(Borrow): 

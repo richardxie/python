@@ -4,13 +4,13 @@
 import unittest
 from yatang import Cookies, Account, Coupon, Invest
 import yatang.Loan as YTLoan
-from yatang.modules import AccountInfo, SigninInfo, Base
+from yatang.modules import WelfareInfo, AccountInfo, SigninInfo, Base
 from datetime import datetime
 from conf import db_config
 import utils, PyV8
 import pdb, sys, os
 
-USING_MYSQL = False
+USING_MYSQL = True
 
 if USING_MYSQL:
     db_name = 'mysql+pymysql://%s:%s@%s:%s/%s'%(db_config['mysql']['user'],
@@ -83,6 +83,17 @@ class TestUtils(unittest.TestCase):
         i = Invest(cookie)
 
         print YTLoan.Loan.loanRequest(i.opener, '625994')
+        pass
+
+    def test_welfare(self):
+        session = Session()
+        welfare_info = WelfareInfo(
+                    ibid = "1",                          
+                    borrowType="5",
+                    borrowNum="hao123"
+                )
+        session.add(welfare_info)
+        session.commit()
         pass
 
     def test_signin(self):

@@ -3,20 +3,22 @@
 
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
-import utils, yatang
+import utils, yatang, logging
+
+logger = logging.getLogger('app')
 
 from Borrow import Borrow
 class Welfare(Borrow): 
-    def __init__(self, __hash__, ibid, bt, bn, cash,uniqkey):
-        Borrow.__init__(self, ibid, bt, bn)
+    def __init__(self, __hash__, ibid, borrowType, borrowNum, available_cash,uniqKey):
+        Borrow.__init__(self, ibid, borrowType, borrowNum)
         self.__hash__ = hash
-        self.available_cash = cash
-        self.uniqkey = uniqkey
+        self.available_cash = available_cash
+        self.uniqKey = uniqKey
           
     
     @staticmethod
     def welfare_info(html):
-        print "welfare_info start."
+        logger.debug("welfare_info parsing...")
         parser = HTMLParser(tree=treebuilders.getTreeBuilder('lxml') , namespaceHTMLElements=False)
         dom = html5parser.parse(html, parser=parser)
         try:
@@ -42,11 +44,14 @@ class Welfare(Borrow):
                 available_cash = cash,
                 uniqKey=uniqKey
                 )
-        except:
+        except Exception, e:
+            print e
             logger.warn("oops, parse walfare html failed!")
         pass
     
     @staticmethod
     def walfareRequest(opener):
-        return Welfare.walfarem_info(utils.httpRequest(opener, yatang.YTURLBASESSL + "Financial/welfare"))
+        resp = utils.httpRequest(opener, yatang.YTURLBASESSL + "Financial/welfare")
+        if resp.code == 200:
+            return Welfare.welfare_info(resp)
     
