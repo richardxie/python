@@ -4,7 +4,7 @@
 from cookielib import MozillaCookieJar
 from urllib2 import HTTPCookieProcessor,Request,build_opener
 from random import random
-import utils,yatang
+import yatang
 import urllib
 import os, time, json
 import tesserpy, cv2
@@ -19,11 +19,11 @@ class Cookies:
     
     def readCookies(self):
         cookie_list = []
-        cookies = [file for file in os.listdir(self.basedir + 'cookies') if os.path.isfile(self.basedir + 'cookies/' + file)]
+        cookies = [f for f in os.listdir(self.basedir + 'cookies') if os.path.isfile(self.basedir + 'cookies/' + f)]
         names = map(lambda x: x[0:-10], cookies)
         print names
         
-        for index, cookie in enumerate(cookies):
+        for _, cookie in enumerate(cookies):
             cj = MozillaCookieJar()
             cj.load(self.basedir + 'cookies/' + cookie)
             for ck in cj:
@@ -33,7 +33,7 @@ class Cookies:
         return cookie_list
     
     def readCookie(self, name):
-        cookies = [file for file in os.listdir(self.basedir + 'cookies') if os.path.isfile(self.basedir + 'cookies/' + file)]
+        cookies = [f for f in os.listdir(self.basedir + 'cookies') if os.path.isfile(self.basedir + 'cookies/' + f)]
         names = map(lambda x: x[0:-10], cookies)
         
         cj = MozillaCookieJar()
@@ -51,7 +51,7 @@ class Cookies:
         cj = MozillaCookieJar();
         opener = build_opener(HTTPCookieProcessor(cj))
         opener.open(yatang.YTURLBASE + 'NewLogin')
-        for i in range(0, 3):
+        for _ in range(0, 3):
             try:
                 verifycode = self.verifyCode(opener).strip()
                 encryptedpwd = self.encryptPassword(password, verifycode)
@@ -63,12 +63,14 @@ class Cookies:
             except Exception, e:
                 print e
                 continue
-    pass
+        return cj
 
     def dumpCookies(self, cj):
+        aDict = {}
         for ck in cj:
             print (ck.name + ":" + ck.value)
-        pass
+            aDict[ck.name] = ck.value
+        return aDict
     
     def encryptPassword(self, password, verifycode):
         with JSContext() as jsctx:
@@ -93,6 +95,7 @@ class Cookies:
         img = cv2.imread(self.basedir + "images/verifyCode.png", cv2.IMREAD_GRAYSCALE)
         tesser.set_image(img);
         page_info = tesser.orientation();
+        print page_info
         return tesser.get_utf8_text()
     
     def loginRequest(self, opener, username, password):

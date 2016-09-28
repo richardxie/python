@@ -86,6 +86,25 @@ def signininfodetail(website, username):
         resp = Response(info, status=200, mimetype="application/json")
         return resp
 
+@app.route("/<website>/cookie", methods=['POST'])
+def cookie(website):
+    name = request.form['username'] if request.form.has_key('username') else request.form['name']
+    passwd = request.form['password']
+    cookies = Cookies("./")
+    cookie = cookies.genCookie(name, passwd)
+    resp = jsonify(cookies.dumpCookies(cookie))
+    resp.status_code = 200
+    return resp
+
+@app.route("/<website>/cookie/<username>", methods=['Get'])
+def query_cookie(website, username):
+    cookies = Cookies("./")
+    cookie = cookies.readCookie(username)
+    cookies.dumpCookies(cookie)
+    resp = jsonify(cookies.dumpCookies(cookie))
+    resp.status_code = 200
+    return resp
+
 with app.test_request_context():
     print(url_for('index'))
     print(url_for('health'))

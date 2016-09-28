@@ -13,12 +13,12 @@ handlers:
     class : logging.FileHandler
     formatter: simple
     level: WARNING
-    filename: application.log
+    filename: /usr/src/vagrant/application.log
   web:
     class : logging.FileHandler
     formatter: simple
     level: WARNING
-    filename: web.log
+    filename: /usr/src/vagrant/web.log
 loggers:
   app:
     level: DEBUG
@@ -26,7 +26,7 @@ loggers:
     propagate: no
   web:
     level: DEBUG
-    handlers: [console, web]
+    handlers: [web]
     propagate: no
   
 root:

@@ -17,11 +17,10 @@ YT_SIGNIN = True
 reserved_amount = 5000
 
 c = Cookies("./")
-schedule = scheduler(time.time, time.sleep) 
-tender_schedule = scheduler(time.time, time.sleep)
 logger = logging.getLogger("app")
 
 class signin_task(Thread):
+    schedule = scheduler(time.time, time.sleep) 
     def __init__(self):
         Thread.__init__(self)
     
@@ -29,24 +28,30 @@ class signin_task(Thread):
         self.signin_command(inc)
         
     def timming_exe(self, inc = 20):
-        global current_event
-        current_event = schedule.enter(inc, 0, self.perform_command, ( inc,))
-        schedule.run()
+        self.current_event = self.schedule.enter(inc, 0, self.perform_command, ( inc,))
+        self.signin_time = time.time()
+        self.schedule.run()
         
     def run(self):
+        self.is_exit = False
         self.timming_exe()
-        
+
+    def stop(self):
+        self.is_exit = True
+        if not self.schedule.empty():
+            self.schedule.cancel(self.current_event)
+    
+    def is_stop(self):
+        return self.is_exit
+
     def signin_command(self, inc):
-        global is_exit
-        if is_exit: 
+        if self.is_exit: 
             return
         inc = randint(86400,93600)
-        global current_event
-        current_event = schedule.enter(inc, 0, self.perform_command, ( inc,))
-        global signin_time
-        orginal_time = signin_time
-        signin_time=time.time()  
-        logger.info('start signin command after ' + str(signin_time-orginal_time) + ' seconds')
+        self.current_event = self.schedule.enter(inc, 0, self.perform_command, ( inc,))
+        orginal_time = self.signin_time
+        self.signin_time=time.time()  
+        logger.info('start signin command after ' + str(self.signin_time-orginal_time) + ' seconds')
         
         #投之家签到
         if TZJ_SIGNIN:
@@ -68,6 +73,7 @@ class signin_task(Thread):
         pass
 
 class tender_task(Thread):
+    schedule = scheduler(time.time, time.sleep) 
     def __init__(self):
         Thread.__init__(self)
         
@@ -75,23 +81,30 @@ class tender_task(Thread):
         self.tender_command(inc)
     
     def timming_exec(self, inc = 30):
-        global tender_current_event
-        tender_current_event = tender_schedule.enter(inc, 0, self.perform_command, ( inc,))
-        tender_schedule.run()
+        self.current_event = self.schedule.enter(inc, 0, self.perform_command, ( inc,))
+        self.tender_time = time.time()
+        self.schedule.run()
         
     def run(self):
+        self.is_exit = False
         self.timming_exec()
+
+    def stop(self):
+        self.is_exit = True
+        if not self.schedule.empty():
+            self.schedule.cancel(self.current_event)
+        pass
+
+    def is_stop(self):
+        return self.is_exit
         
     def tender_command(self, inc):
-        global is_exit
-        if is_exit: 
+        if self.is_exit: 
             return
-        global tender_current_event
-        tender_current_event = tender_schedule.enter(inc, 0, self.perform_command, ( inc,))
-        global tender_time
-        orginal_time = tender_time
-        tender_time=time.time()  
-        logger.debug('start tender command after ' + str(tender_time-orginal_time) + ' seconds')
+        self.current_event = self.schedule.enter(inc, 0, self.perform_command, ( inc,))
+        orginal_time = self.tender_time
+        self.tender_time=time.time()  
+        logger.debug('start tender command after ' + str(self.tender_time-orginal_time) + ' seconds')
         cookie = c.readCookie("richardxieq")
         i = Invest(cookie)
         investList = i.investListRequest()
@@ -113,17 +126,10 @@ class tender_task(Thread):
     pass
 
 def handler(signum, frame):
-    print current_event
-    print tender_current_event
-    global is_exit
-    is_exit = True
-
-    if not schedule.empty():
-        schedule.cancel(current_event)
-    if not tender_schedule.empty():
-        tender_schedule.cancel(tender_current_event)
+    t1.stop()
+    t2.stop()
     
-    print "receive a signal %d, is_exit = %d"%(signum, is_exit)
+    print "receive a signal %d, is_exit = %d"%(signum, True)
 
 def main():
     #初始化
@@ -135,22 +141,25 @@ def main():
 
     #签到
     if SIGNIN:
-        t1 = signin_task()
         t1.daemon = True
         t1.start()
     
     #自动投资
     if AUTO_TENDER:
-        t2 = tender_task()
         t2.daemon = True
         t2.start()
 
 if __name__ == '__main__':
-    signin_time=time.time()
-    current_event = None
-    tender_time=time.time()
-    tender_current_event = None
-    is_exit = False
-    main()
-    while active_count() > 1:  #1 means  current main thread 
-        time.sleep(1)
+    t1 = signin_task()
+    t2 = tender_task()
+    try:
+        main()
+        while 1:   
+            alive=True  
+            if t1.is_stop() and t2.is_stop():   
+                alive=False  
+            if not alive:   
+                break  
+    except KeyboardInterrupt, e: 
+        print e
+    
