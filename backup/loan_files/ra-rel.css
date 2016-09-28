@@ -1,0 +1,54 @@
+@charset "utf-8";
+/* 发布融资 */
+body{ background:#f8f8f8;}
+.ra-rel { padding:20px; width:934px; background:#fff;}
+.ra-rel01 { font-size:16px; font-weight:bold; color:#111;}
+.ra-rel02 img{ margin:10px 20px 30px 0px;}
+.ra-rel03 { width:900px; position:relative;}
+.ra-rel04 { width:900px; padding-left:30px;}
+.ra-rel06 { margin:10px 0px; width:808px;  color:#000;}
+.ra-rel06 p { font-size:14px; color:#000; width:75px; float:left;}
+.ra-rel-t  {height: 25px ;padding-right: 20px; width: 183px; float: left; background: url(../../Images/rmb.gif) no-repeat 185px -28px;}
+.ra-rel-t4  {height: 25px ;padding-right: 20px; width: 183px; float: left; background: url(../../Images/rmb.gif) no-repeat 185px -59px;}
+.ra-rel-t1{ width:535px; height:25px;}
+.ra-rel-t2 { float:left; width:535px; height: 360px;}
+.ra-rel-t3 { width:100px; height:25px;}
+.ra-rel08 { background:url(../../Images/raise/ra04.gif) no-repeat; width:12px; height:13px;top:10px; left:263px;}
+.ra-rel09 { font-size:14px; color:#333; padding:0px 0px 5px 75px; width:800px;}
+.ra-rel09 span{ color:#ee6327;}
+/*.ra-rel07{ background:url(../../Images/raise/ra05.gif) no-repeat; width:12px; height:13px;top:10px; left:263px;}*/
+.ra-rel10{  background:#f8f8f8; border:1px solid #e8b9bb; width:200px; padding:5px; color:#a51111;-moz-border-radius: 3px;
+-khtml-border-radius: 3px;-webkit-border-radius: 3px;border-radius:3px; left:325px; z-index:5; font-size:12px; position:absolute;}
+.ra-rel06 select { width:205px; height:30px;  color:#000; font-size:12px;}
+.ra-rel12 { float:left;  margin-right:40px; height:35px; line-height:30px; font-size:12px;}
+.ra-rel15 { float:left; margin:0px 8px 0px 0px; height:30px;}
+.ra-rel13 { width:80px; height:25px; padding-left:2px;  margin:0px 5px -5px 2px; float:left;border:1px solid #abadb3; font-size:12px;}
+.ra-rel14 { background:url(../../Images/raise/ra04.gif) no-repeat right center;}
+/*.ra-rel16 { background:url(../../Images/raise/ra05.gif) no-repeat right center;}*/
+.ra-rel17 { height:32px;}
+.ra-rel18 {width:900px; padding:0px 0px 0px 74px;}
+.ra-rel19 { width:110px; font-size:14px; text-align:center; height:30px;line-height:28px; vertical-align:middle; padding:0px;}
+.ra-rel20 { margin-top:10px; font-size:16px; margin-left:40px;}
+.ra-rel20 span{ color:#ee6327; font-weight:bold;}
+.ra-rel21 { width:535px; padding-left:74px;}
+.ra-rel22 li{ display:block; margin:10px 20px; float:left; font-size:12px;}
+.ra-rel22 span{color:#ee6327;}
+.ra-rel23 { width:535px; font-size:12px;}
+.ra-rel23 th,.ra-rel23 td{ text-align:left; display:block; padding:0px 12px; float:left; width:83px;}
+.ra-rel23 th { height:30px; background:#eee; line-height:30px;} 
+.ra-rel23 td { height:25px; line-height:25px;}
+.ra-rel24 { background:#eaeaea;}
+.ra-rel25 { font-size:12px; line-height:20px; height:20px;}
+.ra-rel25 input{ float:left; margin-right:3px;}
+.ra-rel26 { width:120px; height:32px;  font-size:14px; margin-right:20px; text-align:center; padding:0px;}
+.ra-rel27 { float:left; font-size:14px; color:#111; line-height:30px;}
+.ra-rel05 { position:absolute; left:700px; top:50px; color:#111; font-size:12px; width:188px; height:200px;}
+.ra-rel05 ul { float:left;}
+.ra-rel05 li { display:block; width:188px; text-align:center; height:35px; line-height:35px;}
+.ra-rel05a { margin-bottom:10px;padding-left:30px;}
+.ra-rel05 li img { margin-bottom:-6px;}
+.ra-rel05 span{ font-size:20px; color:#5479c2; padding-left:10px; }
+.validate { float:left; margin:2px 0px 0px 5px;}
+
+/*--定时融资--*/
+#destine_time_date,#destine_time_time{ width: 80px;}

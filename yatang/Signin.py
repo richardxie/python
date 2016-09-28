@@ -25,14 +25,19 @@ class Signin:
     
     def signin(self):
         logger.debug("I'm signining")
-
+        session = yatang.Session()
+        query = session.query(SigninInfo).filter(SigninInfo.name == self.name, SigninInfo.website=='yt')
+        #chekc already siginin today      
+        if query.count() != 0:
+            signin_info = query.one()
+            if signin_info.signin_date.date() == datetime.today().date():
+                logger.info(" Dear %s, Today(%s) already signined"%(self.name, signin_info.signin_date.strftime('%Y-%m-%d')))
+                return
         #Checkin
         response = utils.httpRequest(self.opener, yatang.YTURLBASE + "TaskCenter/checkins")
         if response.code == 200:
             data = json.load(response)
             
-            session = yatang.Session()
-            query = session.query(SigninInfo).filter(SigninInfo.name == self.name, SigninInfo.website=='yt')
             if(query.count() == 0):
                 import uuid
                 signin_info = SigninInfo(
@@ -43,7 +48,6 @@ class Signin:
                 session.add(signin_info)
                 session.commit()
             else:
-                signin_info = query.one();
                 signin_info.prev_signin_date = signin_info.signin_date
                 signin_info.signin_date = datetime.now()
                 session.commit()

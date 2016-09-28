@@ -1,0 +1,493 @@
+/*我要融资新版样式*/
+.fin-manage16 .tit:after,
+.fin-manage16:after {
+	content:'.';
+	display:block;
+	height:0;
+	clear:both;
+	visibility:hidden
+}
+.fin-manage16 .tit,
+.fin-manage16 {
+	*zoom:1
+}
+/*公用背景图片*/
+.fin-manage16 .point,
+.fin-manage8,
+.green-18,
+.red-18,
+.org-18-s,
+.org-18-i,
+.org-18-c,
+.fin-manage6 .button-red,
+.fin-manage3a,
+.fin-manage1 .amend b{
+	display: inline-block;
+	background-image: url(/Public/Images/raise/financing.png);
+	background-repeat: no-repeat;
+}
+.org-18-s,
+.org-18-i,
+.org-18-c,
+.green-18,
+.red-18{
+	width: 18px;
+	height: 18px;
+}
+.green-18 {
+	background-position: -32px 0;
+}
+.red-18 {
+	background-position: -32px -72px;
+}
+.org-18-s {
+	background-position: -32px -18px;
+}
+.org-18-i {
+	background-position: -32px -36px;
+}
+.org-18-c {
+	background-position: -32px -54px;
+}
+/*选项卡*/
+.fin-tab {
+	margin-bottom: 20px;
+	border-bottom: 1px solid #e4e4e4;
+}
+.fin-tab .tit {
+	float: left;
+	font-size: 16px;
+	font-weight: bold;	
+	line-height: 34px;
+	color: #666;
+}
+.fin-tab1 {
+	float: right;
+}
+.fin-tab1 li {
+	display: inline-block;
+	margin: 0 5px;
+	float: right;
+}
+.fin-tab1 li a {
+	display: inline-block;
+	text-align: center;
+	line-height: 34px;
+	padding: 0 5px;
+	font-size: 14px;
+	color: #666;
+	border-bottom: 2px solid #fff;
+}
+.fin-tab1 li a.active {
+	border-bottom: 2px solid #D52B33;
+	color: #D52B33;
+}
+.fin-tab1 li a:hover {
+	color: #D52B33;
+	text-decoration: none;
+}
+.fin-tab1 li .line {
+	display: inline-block;
+	margin: 10px 0 0;
+	height: 18px;
+	width: 1px;
+	background: #ddd;
+}
+.fin-manage1 {
+	margin-bottom: 20px;
+	text-align: center;
+}
+.fin-manage1 .pass {
+	font-size: 12px;
+	color: #393;
+	margin-right: 15px;
+	line-height: 18px;
+	display:inline;
+	*zoom:1;
+}
+.fin-manage1 .green-18 {
+	margin: 0 2px -4px 0;
+}
+.fin-manage1 .amend {
+	display:inline;
+	font-size: 14px;
+	line-height: 18px;
+	color: #888;
+	*zoom:1
+}
+.fin-manage1 .amend:hover {
+	text-decoration: none;
+	color: #D52B33;
+}
+.fin-manage1 .amend b {
+	margin: 0 2px -3px 0;
+	width: 16px;
+	height: 16px;
+	background-position: -52px 0;
+}
+.fin-manage1 .amend:hover b {
+	background-position: -52px -16px;
+}
+.fin-prompt {
+	text-align: center;
+	padding: 5px 20px;
+	position: relative;
+	font-size: 14px;
+	line-height: 20px;
+	margin-bottom: 20px;
+}
+
+.fin-prompt .close {
+	display: block;
+	position: absolute;
+	width: 18px;
+	height: 18px;
+	top:1px;
+	right:2px;
+	font-size: 18px;
+	line-height: 20px;
+	color:#bbb;
+}
+.fin-prompt .close:hover {
+	color: #999;
+	text-decoration: none;
+}
+.fin-prompt b{
+	margin: 0 3px -3px 0;
+	*display: inline;
+	*zoom: 0;
+}
+
+.fin-prompt.info {
+	border: 1px solid #EFBF8F;
+	background: #FFFAF4;
+	color: #F27130;
+}
+
+.fin-prompt.info-red {
+	border: 1px solid #EF8F95;
+	background: #FFF4F5;
+	color: #FF0000;
+}
+.fin-prompt.succeed {
+	border: 1px solid #98E798;
+	background: #F4FFF4;
+	color: #339933;
+}
+
+.fin-manage2 {
+	width: 100%;
+	vertical-align: middle;
+	margin-bottom: 20px;
+}
+.fin-manage2 th,.fin-manage2 td {
+	text-align: left;
+	padding:8px 12px;
+	font-size: 14px;
+	color: #666;
+	line-height: 20px;
+	border: 1px solid #e4e4e4;
+}
+.fin-manage2 th{
+	background: #FAFAFA;
+	font-size: 14px;
+	font-weight: normal;
+}
+
+.fin-manage2 .f-l {
+	margin-top: 8px;
+	font-size: 14px;
+	color: #999;
+}
+.fin-manage3 {
+	position: relative;
+	float: right;
+	width: 40px;
+	height: 40px;
+	margin-left: 10px;
+}
+.fin-manage3 .org-18-c {
+	display: none;
+	position: absolute;
+	top:-5px;
+	right:-5px;
+}
+.fin-manage3:hover .org-18-c {
+	display: block;
+}
+.fin-manage3 .a1 {
+	display: block;
+	float: right;
+	width: 40px;
+	height: 40px;
+	border: 2px solid #f2f2f2;
+}
+.fin-manage3 .a1:hover {
+	border: 2px solid #eee;
+}
+.fin-manage3 .a1 img {
+	display: inline-block;
+	width: 40px;
+	height: 40px;
+	background: #eee;
+}
+.fin-manage2 .state {
+	font-size: 12px;
+}
+
+.fin-manage2 .state b {
+	margin: 0 4px -4px 0;
+}
+
+.fin-manage4 {
+	margin: 0 0 10px;
+	font-size: 14px;
+	color: #666;
+}
+.fin-manage6 {
+	position: relative;
+	float: left;
+	color: #444;
+	margin: 10px 0 0 5px;
+}
+.fin-manage5 {
+	margin-bottom: 20px;
+}
+.fin-manage5 .font1 {
+	float: left;
+	font-size: 12px;
+	color: #444;
+	line-height: 30px;
+}
+.fin-manage5 .button-gray,.fin-manage5 .button-red {
+	float: right;
+	margin-left: 12px;
+	width: 90px;
+	font-size: 14px;
+}
+.fin-manage5 .button-gray {
+	line-height: 28px;
+	height: 28px;
+}
+.fin-manage5 .button-red {
+	line-height: 30px;
+	height: 30px;
+}
+
+.fin-manage3a {
+	position: relative;
+	float: right;
+	width: 40px;
+	height: 40px;
+	margin-left: 10px;
+	border: 2px solid #fafafa;
+	background-position: -70px 0;
+	cursor: pointer;
+}
+.fin-manage3a:hover {
+	border: 2px solid #eee;
+	background-position: -70px -40px;
+}
+.fin-manage6 .text {
+	float: left;
+	padding: 5px 5px;
+	width: 260px;
+	height: 16px;
+	line-height: 16px;
+	font-size: 14px;
+	color: #444;
+	border: 1px solid #fff;
+}
+.fin-manage6 .text:hover {
+	border: 1px solid #d2d2d2;
+}
+.fin-manage6 .text:focus {
+	outline: none;
+	border: 1px solid #d2d2d2;
+}
+.fin-manage6 .delete {
+	display: none;
+	position: absolute;
+	top:0;
+	right:-30px;
+	width: 20px;
+	height: 20px;
+	font-size: 22px;
+	color:#D52B33;
+}
+.fin-manage6 .delete:hover {
+	text-decoration: none;
+	color: #c41921;
+}
+.fin-manage6 .button-red {
+	display: none;
+	float: left;
+	margin-left: -1px;
+	width: 28px;
+	height: 28px;
+	background-position: -164px 0;
+}
+.fin-manage6 .button-red:hover {
+	background-position: -164px -28px;
+}
+.fin-manage2a th {
+	background: #fff;
+	border-right: none;
+}
+.fin-manage2a th:hover .delete,.fin-manage2a th:hover .button-red {
+	display: block;
+}
+.fin-manage2a td {
+	border-left: none;
+}
+.fin-manage2a tr.fin-manage7{
+	border-left: 1px solid #e4e4e4;
+}
+.fin-manage2a tr.fin-manage7 td {
+	padding: 15px 0;
+	text-align: center;
+}
+.fin-manage7 .button-gray {
+	padding: 0 15px;
+	line-height: 30px;
+}
+.fin-manage8 {
+	position: absolute;
+	top:2px;
+	left:-2px;
+	text-align: center;
+	font-size: 12px;
+	color: #444;
+	width: 100%;
+	height: 100%;
+	background: url(/Public/Images/raise/white20.png) repeat;
+}
+.fin-manage8 em {
+	display: inline-block;
+	margin-top: 12px;
+}
+.fin-manage9 {
+	padding: 0 30px;
+	line-height: 38px;
+	font-size: 16px;
+	margin-bottom: 20px;
+}
+.fin-manage10 {
+	display: none;
+	background: #fdf0e1;
+	border: 1px solid #f1d8c2;
+	margin-bottom: 20px;
+	padding: 15px;
+}
+.fin-manage10 .tit {
+	font-size: 14px;
+	margin-bottom: 10px;
+}
+.fin-manage11,.fin-manage12 {
+	margin-bottom: 10px;
+	font-size: 12px;
+	color: #666;
+	clear: both;
+}
+.fin-manage11 input,.fin-manage13{
+	float: left;
+	border: 1px solid #d2d2d2;
+	background: #fff;
+	padding: 8px 5px;
+	width: 400px;
+	height: 16px;
+	line-height: 16px;
+	font-size: 14px;
+	color: #444;
+}
+.fin-manage13 {
+	width: 180px;
+}
+.fin-manage14 {
+	width: 100%;
+	min-height: 300px;
+	overflow: hidden;
+	margin-bottom: 15px;
+}
+.fin-manage14 .edui-default.edui-editor {
+	width: 100%;
+}
+.fin-manage15 .btn {
+	float: left;
+	margin-right: 12px;
+	font-size: 14px;
+	width: 140px;
+	line-height: 38px;
+	padding: 0;
+}
+.fin-manage16 {
+	position: relative;
+	margin: 0 0 0 90px;
+	background: #fff url(/Public/Images/raise/financing01.gif) repeat-y 0 0;
+	padding: 0 0 20px 18px;
+	clear: both;
+}
+.fin-manage16 .point {
+	position: absolute;
+	width: 18px;
+	height: 18px;
+	top: -1px;
+	left: -8px;
+	background-position: -32px -109px;
+}
+.fin-manage16:hover .point,.fin-manage16.first .point{
+	background-position: -32px -91px;
+}
+.fin-manage16 .time {
+	position: absolute;
+	width: 84px;
+	font-size: 12px;
+	color: #666;
+	line-height: 16px;
+	top: 2px;
+	left: -82px;
+}
+.fin-manage16 .tit {
+	margin-bottom: 15px;
+	height: 16px;
+	overflow: hidden;
+}
+.fin-manage16 .tit .font1 {
+	float: left;
+	line-height: 16px;
+	font-size: 16px;
+	color: #666;
+}
+.fin-manage17{
+	display: none;
+	float: right;
+}
+.fin-manage16:hover .fin-manage17 {
+	display: block;
+}
+.fin-manage17 a{
+	display: inline-block;
+	font-size: 12px;
+	line-height: 14px;
+	margin-left: 10px;	
+}
+.fin-manage18 {
+	min-height: 100px;
+	border: 1px solid #e4e4e4;
+	background: #fafafa;
+	overflow: hidden;
+	padding: 20px;
+	-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+-khtml-border-radius: 5px;
+border-radius: 5px;
+}
+.fin-manage19 {
+    clear:both;
+}
+.fin-manage3b {
+  
+}
+.fin-manage3b .fin-manage20 {
+	float: right;
+}

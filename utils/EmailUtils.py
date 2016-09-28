@@ -13,10 +13,10 @@ class EmailUtils:
         pass
           
     def send(self, mail_list):
-        print "i'm sending email."
         if len(mail_list) ==0:
             return
-            
+        
+        logger.info("email sending")
         #send email
         mail_host = 'smtp.163.com'
         mail_port = 465

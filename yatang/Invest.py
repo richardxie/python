@@ -56,15 +56,15 @@ class Invest:
     
     def tenderWF(self, welfare, tradepwd= "root@2014"):
         logging.info("i'm tendering a Welfare.")
-        if(welfare.available_cash > 0):
+        if(welfare.available_cash > 0 and welfare.can_tender):
             salt = welfare.uniqKey
             ppay = self.encryptTradePassword("root@2014", salt)
             # buy 秒标
             values = {
-                '__hash__': welfare.__hash__,
+                '__hash__': welfare.hash_value,
                 'ibnum': welfare.borrowNum,
                 'lunchId': '0',  # 红包ID
-                'amount': math.floor(welfare.available_cash),
+                'amount': int(math.floor(welfare.available_cash)),
                 'p_pay': ppay,
                 'user_id': '54808'
             }

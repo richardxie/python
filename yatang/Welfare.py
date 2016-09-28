@@ -9,10 +9,13 @@ logger = logging.getLogger('app')
 
 from Borrow import Borrow
 class Welfare(Borrow): 
-    def __init__(self, __hash__, ibid, borrowType, borrowNum, available_cash,uniqKey):
+    def __init__(self,hash_value, ibid, borrowType, borrowNum, available_cash,zdtbe, remain_amount, can_tender, uniqKey):
         Borrow.__init__(self, ibid, borrowType, borrowNum)
-        self.__hash__ = hash
+        self.hash_value = hash_value
         self.available_cash = available_cash
+        self.zdtbe = zdtbe #最多投标额
+        self.remain_amount=remain_amount #剩余金额
+        self.can_tender = can_tender
         self.uniqKey = uniqKey
           
     
@@ -36,12 +39,29 @@ class Welfare(Borrow):
         
             cash_element = dom.xpath('//*[@id="ktmje_' + ibid + '"]')
             cash = utils.money(cash_element[0].attrib["value"])
+            
+            zdtbe_element = dom.xpath('//*[@id="zdtbe_' + ibid + '"]')
+            if zdtbe_element:
+                zdtbe = utils.money(zdtbe_element[0].attrib["value"])
+            else:
+                zdtbe = -1
+                
+            hxjk_element = dom.xpath('//*[@id="hxjk_' + ibid + '"]')
+            hxjk =  utils.money(hxjk_element[0].attrib["value"])
+            
+            can_tender = False
+            incheck_element = dom.xpath('//*[@id="incheck_'+ ibid + '"]')
+            if incheck_element:
+                can_tender = True
             return Welfare(
-                __hash__ = hash_value,
+                hash_value = hash_value,
                 ibid = ibid,
                 borrowType=borrowType,
                 borrowNum=borrowNum,
                 available_cash = cash,
+                zdtbe = zdtbe,
+                remain_amount = hxjk,
+                can_tender=can_tender,
                 uniqKey=uniqKey
                 )
         except Exception, e:

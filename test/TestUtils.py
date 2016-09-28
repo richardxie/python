@@ -2,7 +2,7 @@
 # ！-*- coding: utf-8 -*-
 
 import unittest
-from yatang import Cookies, Account, Coupon, Invest
+from yatang import Cookies, Account, Coupon, Invest, Welfare
 import yatang.Loan as YTLoan
 from yatang.modules import WelfareInfo, AccountInfo, SigninInfo, Base
 from datetime import datetime
@@ -86,14 +86,17 @@ class TestUtils(unittest.TestCase):
         pass
 
     def test_welfare(self):
-        session = Session()
-        welfare_info = WelfareInfo(
-                    ibid = "1",                          
-                    borrowType="5",
-                    borrowNum="hao123"
-                )
-        session.add(welfare_info)
-        session.commit()
+        pdb.set_trace()
+        with open("backup/welfare.htm") as html:
+            welfare = Welfare.welfare_info(html)
+            session = Session()
+            welfare_info = WelfareInfo(
+                        ibid = welfare.ibid,                          
+                        borrowType=welfare.borrowType,
+                        borrowNum=welfare.borrowNum
+                    )
+            session.add(welfare_info)
+            session.commit()
         pass
 
     def test_signin(self):

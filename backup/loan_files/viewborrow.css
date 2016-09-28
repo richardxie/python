@@ -1,0 +1,22 @@
+.css-tittle{font-size: 20px;font-weight: bold;font-family: 黑体; margin:30px 0px;}
+.css-essential-information .css-icon{background: url(/Public/Images/newinvest/jjxx.png) no-repeat;width: 110px;height: 112px;float: left;margin-left: 21px;}
+.css-product-information .css-text{margin-top:20px;margin-left: 27px;float: left;width: 968px;line-height: 28px;}
+.css-explain .css-icon{background: url(/Public/Images/newinvest/tzsm.png) no-repeat;width: 110px;height:115px;float: left; margin-left:21px;}
+.css-essential-information{padding-top: 24px;padding-bottom: 24px;background: #fff;}
+.css-explain{margin-top: 60px;padding-top: 24px;padding-bottom: 24px;background: #fff;}
+.css-record{background-color: #ffffff; }
+.css-list-tittle{line-height: 38px;border-bottom: 1px solid #e6e6e6;margin-top: 20px;font-weight: bold;}
+.css-list-tittle li{display: inline-block;}
+.css-sequence-num{width: 200px;margin-left: 28px;}
+.css-people-invest{width: 280px;}
+.css-time-invest{width: 586px;}
+.css-list-content li{line-height: 46px;}
+.css-list-content li span{display: inline-block;}
+.css-num{width: 200px;margin-left: 30px;}
+.css-name{width: 280px;}
+.css-time{width: 586px;}
+.css-refund{margin-bottom:30px;background-color: #ffffff;}
+.css-periods{width: 480px;margin-left: 28px;}
+.css-refund-time{width: 586px;}
+.css-record-contend{background-color: #ffffff;}
+

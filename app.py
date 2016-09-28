@@ -8,9 +8,9 @@ from random import randint
 from tzj import Signin as TZJSignin
 import utils, time, logging
 DEBUG = True
-AUTO_TENDER = False
+AUTO_TENDER = True
 SIGNIN = True
-TZJ_SIGNIN = False
+TZJ_SIGNIN = True
 YT_SIGNIN = True
 reserved_amount = 5000
 

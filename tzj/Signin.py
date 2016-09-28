@@ -22,6 +22,15 @@ class Signin:
         self.password = passwd
         
     def signin(self):
+        #Check siginin today
+        session = yatang.Session()
+        query = session.query(SigninInfo).filter(SigninInfo.name == self.username, SigninInfo.website=='tzj')
+        if query.count() != 0:
+            signin_info = query.one();
+            if signin_info.signin_date.date() == datetime.today().date():
+                logger.info(" Dear %s, Today(%s) already signined."%(self.username, signin_info.signin_date.strftime('%Y-%m-%d')))
+                return
+            
         if self.login() :
             return self.signinRequest()
         else:
@@ -50,7 +59,7 @@ class Signin:
                 session.add(signinf_info)
                 session.commit()
             else:
-                signin_info = query.one();
+                signin_info = query.one()
                 signin_info.prev_signin_date = signin_info.signin_date
                 signin_info.signin_date = datetime.now()
                 session.commit()
