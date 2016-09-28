@@ -31,7 +31,7 @@ class Signin:
         if query.count() != 0:
             signin_info = query.one()
             if signin_info.signin_date.date() == datetime.today().date():
-                logger.info(" Dear %s, Today(%s) already signined"%(self.name, signin_info.signin_date.strftime('%Y-%m-%d')))
+                logger.info(" Dear %s, Today(%s) already signined 雅堂"%(self.name, signin_info.signin_date.strftime('%Y-%m-%d')))
                 return
         #Checkin
         response = utils.httpRequest(self.opener, yatang.YTURLBASE + "TaskCenter/checkins")

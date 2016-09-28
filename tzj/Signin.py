@@ -28,7 +28,7 @@ class Signin:
         if query.count() != 0:
             signin_info = query.one();
             if signin_info.signin_date.date() == datetime.today().date():
-                logger.info(" Dear %s, Today(%s) already signined."%(self.username, signin_info.signin_date.strftime('%Y-%m-%d')))
+                logger.info(" Dear %s, Today(%s) already signined 投之家."%(self.username, signin_info.signin_date.strftime('%Y-%m-%d')))
                 return
             
         if self.login() :
