@@ -160,7 +160,7 @@ def main():
     #自动投资
     if AUTO_TENDER:
         t2.daemon = True
-        t2.start()
+        t2.run() #pyv8.so can't work in thread, run it in Main thread
 
 if __name__ == '__main__':
     t1 = signin_task()
