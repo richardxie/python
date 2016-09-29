@@ -6,7 +6,7 @@ from urllib2 import Request
 import logging, logging.config
 import yaml, sys, os
 
-
+Salt = '1234qwer'
 
 def initSys():
     if sys.getdefaultencoding() != 'utf-8':

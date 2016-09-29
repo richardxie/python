@@ -12,14 +12,15 @@ logger = logging.getLogger("app")
 
 class Invest: 
 
-    def __init__(self, cookie):
+    def __init__(self, name, cookie):
         self.cookie = cookie
+        self.name = name
         if cookie is not None:
             self.opener = build_opener(HTTPCookieProcessor(self.cookie), HTTPRedirectHandler())
             install_opener(self.opener)
               
     def tender(self, loan, tradepwd="root@2014"):
-        logger.info("i'm tendering a Loan.")
+        logger.info(self.name + " is tendering a Loan.")
         ammount = int(floor(loan.available_cash))
         import app
         if(ammount > loan.minAmount and ammount > app.reserved_amount):
@@ -55,10 +56,10 @@ class Invest:
         pass 
     
     def tenderWF(self, welfare, tradepwd= "root@2014"):
-        logging.info("i'm tendering a Welfare.")
+        logging.info(self.name +" is tendering a Welfare.")
         if(welfare.available_cash > 0 and welfare.can_tender):
             salt = welfare.uniqKey
-            ppay = self.encryptTradePassword("root@2014", salt)
+            ppay = self.encryptTradePassword(tradepwd, salt)
             # buy 秒标
             values = {
                 '__hash__': welfare.hash_value,

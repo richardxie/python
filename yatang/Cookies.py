@@ -89,8 +89,11 @@ class Cookies:
         image_type = content_type[6:]
         with open(self.basedir + "images/verifyCode." + image_type, "w") as img:
             img.write(response.read())
-        #tesser = tesserpy.Tesseract('/usr/local/share/tessdata/', language="eng")
-        tesser = tesserpy.Tesseract("/usr/share/tesseract-ocr/tessdata/", language="eng")
+        import platform
+        if platform.system() == 'Darwin':
+            tesser = tesserpy.Tesseract('/usr/local/share/tessdata/', language="eng")
+        else:
+            tesser = tesserpy.Tesseract("/usr/share/tesseract-ocr/tessdata/", language="eng")
         tesser.tessedit_char_whitelist = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
         img = cv2.imread(self.basedir + "images/verifyCode.png", cv2.IMREAD_GRAYSCALE)
         tesser.set_image(img);

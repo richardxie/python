@@ -1,14 +1,15 @@
 #!/usr/bin/python2.7
 # ！-*- coding: utf-8 -*-
 
-from yatang import  Cookies, Signin, Invest, Account
+from yatang import  Cookies, Signin, Invest, Account, Session
 from yatang.Loan import Loan
 from yatang.Welfare import Welfare
 from sched import scheduler
 from random import randint
 from tzj import Signin as TZJSignin
 from threading import Thread, active_count
-import utils, time, logging, signal, os
+from yatang.modules import UserInfo
+import utils, time, logging, signal, os, base64
 DEBUG = True
 AUTO_TENDER = True
 SIGNIN = True
@@ -23,6 +24,7 @@ class signin_task(Thread):
     schedule = scheduler(time.time, time.sleep) 
     def __init__(self):
         Thread.__init__(self)
+        self.is_exit = False
     
     def perform_command(self, inc):
         self.signin_command(inc)
@@ -76,6 +78,7 @@ class tender_task(Thread):
     schedule = scheduler(time.time, time.sleep) 
     def __init__(self):
         Thread.__init__(self)
+        self.is_exit = False
         
     def perform_command(self, inc):
         self.tender_command(inc)
@@ -105,22 +108,32 @@ class tender_task(Thread):
         orginal_time = self.tender_time
         self.tender_time=time.time()  
         logger.debug('start tender command after ' + str(self.tender_time-orginal_time) + ' seconds')
-        cookie = c.readCookie("richardxieq")
-        i = Invest(cookie)
-        investList = i.investListRequest()
-        for ivst in investList:
-            ibid = ivst['id']
-                    
-            # filter loan with password
-            if(ivst['borrowpwd']):
+        from conf import auto_tender_names
+        print auto_tender_names
+        for username in auto_tender_names:
+            cookie = c.readCookie(username)
+            session = Session()
+            query = session.query(UserInfo).filter(UserInfo.name == username)
+            if query.count() == 0:
                 continue
-                    
-            if(int(ivst['borrow_type']) == 5):
-                loaninfo = Welfare.walfareRequest(i.opener)  
-                i.tenderWF(loaninfo)      
-            else:
-                loaninfo = Loan.loanRequest(i.opener, ibid)
-                i.tender(loaninfo)
+            user_info = query.one()
+            trade_password = base64.b64decode(user_info.trade_password)
+            print trade_password
+            i = Invest(name = username, cookie=cookie)
+            investList = i.investListRequest()
+            for ivst in investList:
+                ibid = ivst['id']
+                        
+                # filter loan with password
+                if(ivst['borrowpwd']):
+                    continue
+                        
+                if(int(ivst['borrow_type']) == 5):
+                    loaninfo = Welfare.walfareRequest(i.opener)  
+                    i.tenderWF(loaninfo, trade_password)      
+                else:
+                    loaninfo = Loan.loanRequest(i.opener, ibid)
+                    i.tender(loaninfo, trade_password)
         pass
 
     pass

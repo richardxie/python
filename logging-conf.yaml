@@ -12,12 +12,12 @@ handlers:
   file:
     class : logging.FileHandler
     formatter: simple
-    level: WARNING
+    level: INFO
     filename: /usr/src/vagrant/application.log
   web:
     class : logging.FileHandler
     formatter: simple
-    level: WARNING
+    level: INFO
     filename: /usr/src/vagrant/web.log
 loggers:
   app:

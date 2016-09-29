@@ -24,3 +24,5 @@ db_config = {
         'dbname':'test.db'
     }
 }
+
+auto_tender_names = ['richardxieq','emmaye']

@@ -3,10 +3,12 @@
 
 from flask import Flask, request, Response, url_for, json, jsonify
 from yatang import Cookies, Signin, Session
-from yatang.modules import SigninInfo
+from yatang.modules import SigninInfo, UserInfo
 from tzj import Signin as TZJSignin
 import utils, logging, base64
 from utils.json_encoder import new_alchemy_encoder
+from hashlib import md5
+from datetime import datetime
 
 app = Flask(__name__)
 logger = logging.getLogger("web")
@@ -103,6 +105,84 @@ def query_cookie(website, username):
     cookies.dumpCookies(cookie)
     resp = jsonify(cookies.dumpCookies(cookie))
     resp.status_code = 200
+    return resp
+
+@app.route("/register", methods=['POST'])
+def register():
+    name = request.form['username'] if request.form.has_key('username') else request.form['name']
+    passwd = request.form['password']
+    session = Session()
+    query = session.query(UserInfo).filter(UserInfo.name == name)
+    if query.count() > 0:
+        data = {
+            'errorCode':'001',
+            'errorMsg':'用户名已存在'
+        }
+        resp = jsonify(data)
+        resp.status_code = 200
+    else:
+        import uuid
+        user_info = UserInfo(
+                id=str(uuid.uuid1()),                             
+                name=name,
+                password=md5(name + passwd + utils.Salt).hexdigest()
+            )
+        session.add(user_info)
+        session.commit()
+        info = json.dumps(user_info, cls=new_alchemy_encoder(), check_circular=False, sort_keys=True)
+        resp = Response(info, status=200, mimetype="application/json")
+    return resp
+   
+
+@app.route("/resetpwd/<username>", methods=['POST'])
+def reset_password(username):
+    password = request.form['password']
+    orginal_password = request.form['orginal_password']
+    session = Session()
+    query = session.query(UserInfo).filter(UserInfo.name == username)
+    if query.count() == 0:
+        data = {
+            'errorCode':'002',
+            'errorMsg':'用户名不存在'
+        }
+        info = json.dumps(data)
+    else:
+        user_info = query.one()
+        md5_value = md5(username + orginal_password + utils.Salt).hexdigest()
+        print md5_value
+        print user_info.password
+        if md5_value != user_info.password:
+            data = {
+                'errorCode':'003',
+                'errorMsg':'原始密码不正确'
+            }
+            info = json.dumps(data)
+        else:
+            user_info.password = md5(username + password + utils.Salt).hexdigest()
+            user_info.update_date = datetime.now()
+            info = json.dumps(user_info, cls=new_alchemy_encoder(), check_circular=False, sort_keys=True)
+            session.commit()
+    resp = Response(info, status=200, mimetype="application/json")
+    return resp
+
+@app.route("/settradepwd/<username>", methods=['POST'])
+def set_tradepassword(username):
+    tradePassword = request.form['tradePassword']
+    session = Session()
+    query = session.query(UserInfo).filter(UserInfo.name == username)
+    if query.count() == 0:
+        data = {
+            'errorCode':'002',
+            'errorMsg':'用户名不存在'
+        }
+        info = json.dumps(data)
+    else:
+        user_info = query.one()
+        user_info.trade_password = base64.b64encode(tradePassword)
+        user_info.update_date = datetime.now()
+        info = json.dumps(user_info, cls=new_alchemy_encoder(), check_circular=False, sort_keys=True)
+        session.commit()
+    resp = Response(info, status=200, mimetype="application/json")
     return resp
 
 with app.test_request_context():

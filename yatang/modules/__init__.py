@@ -17,20 +17,24 @@ class CommonColumn(Base):
     }
     pass
 
-class User(CommonColumn):
-	# 表的名字:
+class UserInfo(CommonColumn):
+    # 表的名字:
     __tablename__ = 'user'
 
     # 表的结构:
     id = Column(String(64), primary_key=True, autoincrement = True)
-    user_id = Column(String(32))
+    user_id = Column(String(32), default="000")
     name = Column(String(32))
+    password = Column(String(64))
+    trade_password = Column(String(64))
     pass
 
     def __repr__(self):
         return "<User(user_id='%s', name='%s')>" % (
                 self.user_id, self.name)
-	pass
+
+    def __json__(self):
+        return ["id", "user_id", "name", "password"]
 
 class AccountInfo(CommonColumn):
     # 表的名字:
