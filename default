@@ -41,8 +41,8 @@ server {
 		include uwsgi_params;
   		#uwsgi_pass unix:/tmp/uwsgi.sock;
 		uwsgi_pass   127.0.0.1:8000;
-		uwsgi_param UWSGI_CHDIR  /usr/src/app/pyhton; # 指向网站根目录
-		uwsgi_param UWSGI_SCRIPT web:app; # 指定启动程序
+		uwsgi_param UWSGI_CHDIR  /usr/src/app/pyhton;
+		uwsgi_param UWSGI_SCRIPT web:app;
 	}
 	# Only for nginx-naxsi used with nginx-naxsi-ui : process denied requests
 	#location /RequestDenied {

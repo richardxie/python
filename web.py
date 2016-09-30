@@ -192,7 +192,19 @@ def user_id(username):
     cookie = cookies.readCookie(username)
     opener = build_opener(HTTPCookieProcessor(cookie))
     install_opener(opener)
-    pass
+    session = Session()
+    query = session.query(UserInfo).filter(UserInfo.name == username)
+    if query.count() == 0:
+        data = {
+            'errorCode':'002',
+            'errorMsg':'用户名不存在'
+        }
+        info = json.dumps(data)
+    else:
+        user_info = query.one()
+        info = json.dumps(user_info, cls=new_alchemy_encoder(), check_circular=False, sort_keys=True)
+    resp = Response(info, status=200, mimetype="application/json")
+    return resp
 
 with app.test_request_context():
     print(url_for('index'))
