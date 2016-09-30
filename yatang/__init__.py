@@ -16,7 +16,7 @@ from conf import db_config
 YTURLBASE = "http://jr.yatang.cn/"
 YTURLBASESSL = "https://jr.yatang.cn/"
 YT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
-USING_MYSQL = True
+USING_MYSQL = False
 SIGNIN = True
 
 if USING_MYSQL:
@@ -26,7 +26,7 @@ if USING_MYSQL:
                                                           db_config['mysql']['port'],
                                                           db_config['mysql']['instancename'])
 else:
-    db_name = 'sqlite:///%s'%(db_config['sqlite3-dev']['dbname'])
+    db_name = 'sqlite:///%s'%(db_config['sqlite3']['dbname'])
 
 from sqlalchemy import create_engine
 engine = create_engine(db_name, echo=True)
