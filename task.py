@@ -51,7 +51,6 @@ class signin_task(Thread):
         self.signin_time=time.time()  
         logger.info('start signin command after ' + str(self.signin_time-orginal_time) + ' seconds')
         
-        utils.encryptTradePassword("a", "b", self)
         #投之家签到
         if tzj.SIGNIN:
             TZJSignin("cmljaGFyZHhpZXE=", 'dHpqcm9vdEAyMDE2').signin()
@@ -108,7 +107,6 @@ class tender_task(Thread):
         self.tender_time=time.time()  
         logger.debug('start tender command after ' + str(self.tender_time-orginal_time) + ' seconds')
         from conf import auto_tender_names
-        print auto_tender_names
         for username in auto_tender_names:
             cookie = c.readCookie(username)
             session = Session()
@@ -117,7 +115,6 @@ class tender_task(Thread):
                 continue
             user_info = query.one()
             trade_password = base64.b64decode(user_info.trade_password)
-            print trade_password
             i = Invest(name = username, cookie=cookie, task = self)
             investList = i.investListRequest()
             for ivst in investList:
