@@ -2,7 +2,7 @@ uwsgi:
   socket: 127.0.0.1:8000
   master: 1
   workers: 10
-  daemonize: /usr/src/vagrant/uwsgi.log
+  logto: /usr/src/vagrant/uwsgi.log
   wsgi-file: /usr/src/app/python/web.py
   chdir: /usr/src/app/python
   mount: /pyproj=web:app

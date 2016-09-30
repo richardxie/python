@@ -26,7 +26,7 @@ class UserInfo(CommonColumn):
     user_id = Column(String(32), default="000")
     name = Column(String(32))
     password = Column(String(64))
-    trade_password = Column(String(64))
+    trade_password = Column(String(64), default="000")
     pass
 
     def __repr__(self):

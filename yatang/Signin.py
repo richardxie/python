@@ -49,7 +49,7 @@ class Signin:
                 session.commit()
             else:
                 signin_info.prev_signin_date = signin_info.signin_date
-                signin_info.signin_date = datetime.now()
+                signin_info.update_date = signin_info.signin_date = datetime.now()
                 session.commit()
                 pass
         
