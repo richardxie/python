@@ -3,7 +3,7 @@ MAINTAINER "richard" <richard_xieq@hotmail.com>
 
 ENV VERSION 2.28
 RUN apt-get update -q && \
-	apt-get install -qy python python-dev python-pip \
+	apt-get install -qy --no-install-recommends python python-dev python-pip \
 	curl build-essential python-lxml tesseract-ocr \
 	tesseract-ocr-dev python-opencv nginx supervisor sqlite3 && \
 	apt-get clean && \
