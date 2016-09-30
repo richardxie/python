@@ -7,3 +7,5 @@ from Signin import Signin
 TZJURLBASE = "https://account.touzhijia.com"
 TZJURLBASESSL = "https://account.touzhijia.com/"
 TZJ_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
+
+SIGNIN = True

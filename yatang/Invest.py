@@ -1,20 +1,21 @@
 #!/usr/bin/python2.7
 # ！-*- coding: utf-8 -*-
 
-from PyV8 import JSContext
 from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler
 from urllib import urlencode
 from math import floor
 import yatang, json, logging, math
 from modules import InvestInfo, WelfareInfo
+from utils import encryptTradePassword
 
 logger = logging.getLogger("app")
 
 class Invest: 
 
-    def __init__(self, name, cookie):
+    def __init__(self, name, cookie, task):
         self.cookie = cookie
         self.name = name
+        self.task = task;
         if cookie is not None:
             self.opener = build_opener(HTTPCookieProcessor(self.cookie), HTTPRedirectHandler())
             install_opener(self.opener)
@@ -25,7 +26,7 @@ class Invest:
         import app
         if(ammount > loan.minAmount and ammount > app.reserved_amount):
                 salt = loan.uniqKey
-                ppay = self.encryptTradePassword(tradepwd, salt)
+                ppay = encryptTradePassword(tradepwd, salt, self.task)
                 # coupon info
                 lunchid = "0"
                 
@@ -33,6 +34,9 @@ class Invest:
                 if('data' in couponinfo and len(couponinfo['data'])):
                     lunchid = couponinfo['data'][0]['id']
                     ammount = couponinfo['data'][0]['user_constraint']
+                else:
+                    logger.info("没有合适的红包")
+                    return
                 # buy
                 values = {
                     '__hash__': loan.__hash__,
@@ -59,7 +63,7 @@ class Invest:
         logging.info(self.name +" is tendering a Welfare.")
         if(welfare.available_cash > 0 and welfare.can_tender):
             salt = welfare.uniqKey
-            ppay = self.encryptTradePassword(tradepwd, salt)
+            ppay = encryptTradePassword(tradepwd, salt)
             # buy 秒标
             values = {
                 '__hash__': welfare.hash_value,
@@ -112,14 +116,6 @@ class Invest:
             jsonresp = json.loads(response.read().decode())
             print jsonresp
             return jsonresp
-
-    def encryptTradePassword(self, tradepassword, uniqkey):
-        with JSContext() as jsctx:
-            with open("encrypt.js") as jsfile:
-                jsctx.eval(jsfile.read())
-                encryptFunc = jsctx.locals.encrypt2;
-                pwd = encryptFunc(tradepassword, uniqkey)
-        return pwd
     
     def investListRequest(self, typeList=[5]):
         values = {
@@ -136,10 +132,11 @@ class Invest:
         response = self.opener.open(req)
         if response.code == 200:
             jsonresp = json.loads(response.read().decode())
+
             if(len(typeList)):
                 aList = []
                 for loan in jsonresp['data']['Rows']:
-                    if int(loan['borrow_type']) in typeList:
+                    if int(loan['borrow_type']) in typeList and int(loan["time_limit"]) == 3:
                         aList.append(loan)
                 return aList
             else:

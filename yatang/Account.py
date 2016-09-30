@@ -1,9 +1,7 @@
 #!/usr/bin/python2.7
 # ！-*- coding: utf-8 -*-
 
-from urllib2 import HTTPCookieProcessor,Request,build_opener,install_opener, HTTPRedirectHandler
-from urllib import urlencode
-import lxml.html.soupparser as soupparser
+from urllib2 import HTTPCookieProcessor,build_opener,install_opener, HTTPRedirectHandler
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
 import yatang, utils, logging

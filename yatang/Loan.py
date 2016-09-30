@@ -9,20 +9,21 @@ logger = logging.getLogger("app")
 
 from Borrow import Borrow
 class Loan(Borrow): 
-    def __init__(self, __hash__, ibid, bt, bn, cash, minAmount, uniqKey, uid):
+    def __init__(self, __hash__, ibid, bt, bn, cash, minAmount, uniqKey, uid, term):
         Borrow.__init__(self, ibid, bt, bn)
         self.__hash__ = __hash__
         self.available_cash = cash
         self.minAmount = minAmount
         self.uniqKey = uniqKey
         self.uid = uid
+        self.term = term
           
     def __repr__(self):
         return "<Loan(ibid='%s', borrowType='%s', borrowNum='%s')>" % (
                 self.ibid, self.borrowType, self.borrowNum)
 
     @staticmethod
-    def loan_info(html):
+    def loan_info(html, info):
         parser = HTMLParser(tree=treebuilders.getTreeBuilder('lxml') , namespaceHTMLElements=False)
         dom = html5parser.parse(html, parser=parser)
         try:
@@ -58,17 +59,18 @@ class Loan(Borrow):
                 cash=cash,
                 minAmount=minAmount,
                 uniqKey=uniqKey,
-                uid = uid
+                uid = uid,
+                term = info['time_limit']
                 )
         except:
             logger.warn("oops, parse Loan html failed!")
 
     
     @staticmethod
-    def loanRequest(opener, ibid):
-        response = utils.httpRequest(opener, yatang.YTURLBASESSL + "Invest/ViewBorrow/ibid/" + ibid)
+    def loanRequest(opener, info):
+        response = utils.httpRequest(opener, yatang.YTURLBASESSL + "Invest/ViewBorrow/ibid/" + info['id'])
         if response.code == 200:
-            return Loan.loan_info(response)
+            return Loan.loan_info(response, info)
         else:
             return None
     

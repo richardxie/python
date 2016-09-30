@@ -8,7 +8,7 @@ import yatang
 import urllib
 import os, time, json
 import tesserpy, cv2
-from PyV8 import JSContext
+from utils import encryptPassword
 
 class Cookies: 
     BASE_DIR = '../'
@@ -54,7 +54,7 @@ class Cookies:
         for _ in range(0, 3):
             try:
                 verifycode = self.verifyCode(opener).strip()
-                encryptedpwd = self.encryptPassword(password, verifycode)
+                encryptedpwd = encryptPassword(password, verifycode)
                 print verifycode, str(len(verifycode)), encryptedpwd
                 if(self.loginRequest(opener, username, encryptedpwd)):
                     self.dumpCookies(cj)
@@ -71,14 +71,6 @@ class Cookies:
             print (ck.name + ":" + ck.value)
             aDict[ck.name] = ck.value
         return aDict
-    
-    def encryptPassword(self, password, verifycode):
-        with JSContext() as jsctx:
-            with open("encrypt.js") as jsfile:
-                jsctx.eval(jsfile.read())
-                encryptFunc = jsctx.locals.encrypt;
-                pwd = encryptFunc(password, verifycode)
-        return pwd
     
     def verifyCode(self, opener):
         response = opener.open(yatang.YTURLBASE + "index.php?s=/NewLogin/verify/%f" % (random()))

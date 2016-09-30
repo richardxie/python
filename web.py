@@ -2,6 +2,7 @@
 # ！-*- coding: utf-8 -*-
 
 from flask import Flask, request, Response, url_for, json, jsonify
+from urllib2 import HTTPCookieProcessor,build_opener,install_opener
 from yatang import Cookies, Signin, Session
 from yatang.modules import SigninInfo, UserInfo
 from tzj import Signin as TZJSignin
@@ -184,6 +185,14 @@ def set_tradepassword(username):
         session.commit()
     resp = Response(info, status=200, mimetype="application/json")
     return resp
+
+@app.route("/yt/userid/<username>", methods=['GET'])
+def user_id(username):
+    cookies = Cookies("./")
+    cookie = cookies.readCookie(username)
+    opener = build_opener(HTTPCookieProcessor(cookie))
+    install_opener(opener)
+    pass
 
 with app.test_request_context():
     print(url_for('index'))

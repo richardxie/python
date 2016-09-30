@@ -3,7 +3,9 @@
 
 from EmailUtils import EmailUtils
 from urllib2 import Request
-import logging, logging.config
+from PyV8 import JSContext
+import logging, logging.config, threading
+from random import randint
 import yaml, sys, os
 
 Salt = '1234qwer'
@@ -30,6 +32,35 @@ def httpRequest(opener, url):
     request = Request(url)
     response = opener.open(request)
     return response
+
+def encryptPassword(password, verifycode):
+    with JSContext() as jsctx:
+        with open("encrypt.js") as jsfile:
+            jsctx.eval(jsfile.read())
+            encryptFunc = jsctx.locals.encrypt;
+            pwd = encryptFunc(password, verifycode)
+    return pwd
+
+def encryptTradePassword(tradepassword, uniqkey, task = None):
+    print threading.current_thread().name
+    if threading.current_thread().name == "MainThread":
+        with JSContext() as jsctx:
+            with open("encrypt.js") as jsfile:
+                jsctx.eval(jsfile.read())
+                encryptFunc = jsctx.locals.encrypt2;
+                pwd = encryptFunc(tradepassword, uniqkey)
+    else:
+        if task:
+            data = {
+                    "type":"encrypt2",
+                    "data": {"pwd":tradepassword, "key":uniqkey},
+                    "collaborative_id": randint(1,100),
+                    "queue":task.q
+                    }
+            task.mainQueue.put(data)
+            resp = task.q.get()
+            pwd = resp['data']
+    return pwd
 
 def money(string):
     import platform, locale
