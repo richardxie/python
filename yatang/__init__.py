@@ -16,7 +16,7 @@ from conf import db_config
 YTURLBASE = "http://jr.yatang.cn/"
 YTURLBASESSL = "https://jr.yatang.cn/"
 YT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
-USING_MYSQL = True
+USING_MYSQL = False
 SIGNIN = True
 
 if USING_MYSQL:

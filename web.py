@@ -67,7 +67,7 @@ def signin(website):
 
 @app.route("/<website>/signin", methods=['GET'])
 def signininfo(website):
-    logger.debug(website +" signin info ")
+    logger.info(website +" signin info ")
     session = Session()
     query = session.query(SigninInfo).filter(SigninInfo.website == website)
     if query.count() == 0:

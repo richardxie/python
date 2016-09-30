@@ -18,7 +18,7 @@ RUN pip install html5lib && \
 	pip install numpy && \
 	pip install tesserpy && \
 	pip install pyyaml && \
-	pip install pymysql && \
+#	pip install pymysql && \
 	pip install Flask && \
 	pip install uwsgi && \
 	pip install SQLAlchemy && \
