@@ -108,12 +108,12 @@ def query_cookie(website, username):
     resp.status_code = 200
     return resp
 
-@app.route("/register", methods=['POST'])
-def register():
+@app.route("/<website>/register", methods=['POST'])
+def register(website):
     name = request.form['username'] if request.form.has_key('username') else request.form['name']
     passwd = request.form['password']
     session = Session()
-    query = session.query(UserInfo).filter(UserInfo.name == name)
+    query = session.query(UserInfo).filter(UserInfo.name == name, UserInfo.website == website)
     if query.count() > 0:
         data = {
             'errorCode':'001',
@@ -124,9 +124,10 @@ def register():
     else:
         import uuid
         user_info = UserInfo(
-                id=str(uuid.uuid1()),                             
+                id=str(uuid.uuid1()),
+                website=website,                         
                 name=name,
-                password=md5(name + passwd + utils.Salt).hexdigest()
+                password=md5(name + passwd + utils.Salt).hexdigest() if website == 'yt' else base64.b64encode(passwd)
             )
         session.add(user_info)
         session.commit()
@@ -135,12 +136,12 @@ def register():
     return resp
    
 
-@app.route("/resetpwd/<username>", methods=['POST'])
-def reset_password(username):
+@app.route("/<website>/resetpwd/<username>", methods=['POST'])
+def reset_password(website, username):
     password = request.form['password']
     orginal_password = request.form['orginal_password']
     session = Session()
-    query = session.query(UserInfo).filter(UserInfo.name == username)
+    query = session.query(UserInfo).filter(UserInfo.name == username, UserInfo.website == website)
     if query.count() == 0:
         data = {
             'errorCode':'002',
@@ -166,11 +167,12 @@ def reset_password(username):
     resp = Response(info, status=200, mimetype="application/json")
     return resp
 
-@app.route("/settradepwd/<username>", methods=['POST'])
-def set_tradepassword(username):
+@app.route("/<website>/settradepwd/<username>", methods=['POST'])
+def set_tradepassword(website, username):
     tradePassword = request.form['tradePassword']
+    password = request.form['password']
     session = Session()
-    query = session.query(UserInfo).filter(UserInfo.name == username)
+    query = session.query(UserInfo).filter(UserInfo.name == username, UserInfo.website == website)
     if query.count() == 0:
         data = {
             'errorCode':'002',
@@ -178,22 +180,39 @@ def set_tradepassword(username):
         }
         info = json.dumps(data)
     else:
+        #check password
         user_info = query.one()
-        user_info.trade_password = base64.b64encode(tradePassword)
-        user_info.update_date = datetime.now()
-        info = json.dumps(user_info, cls=new_alchemy_encoder(), check_circular=False, sort_keys=True)
-        session.commit()
+        isPwdValid = True
+        if website == 'yt':
+            pwd = md5(username + password + utils.Salt).hexdigest()
+            if pwd != user_info.password:
+                isPwdValid = False
+        else:
+            if base64.b64encode(password) != user_info.password:
+                isPwdValid = False
+
+        if not isPwdValid:
+            data = {
+                        'errorCode':'003',
+                        'errorMsg':'密码错误'
+                    }
+            info = json.dumps(data)
+        else:
+            user_info.trade_password = base64.b64encode(tradePassword)
+            user_info.update_date = datetime.now()
+            info = json.dumps(user_info, cls=new_alchemy_encoder(), check_circular=False, sort_keys=True)
+            session.commit()
     resp = Response(info, status=200, mimetype="application/json")
     return resp
 
-@app.route("/yt/userid/<username>", methods=['GET'])
-def user_id(username):
+@app.route("/<website>/userid/<username>", methods=['GET'])
+def user_id(website, username):
     cookies = Cookies("./")
     cookie = cookies.readCookie(username)
     opener = build_opener(HTTPCookieProcessor(cookie))
     install_opener(opener)
     session = Session()
-    query = session.query(UserInfo).filter(UserInfo.name == username)
+    query = session.query(UserInfo).filter(UserInfo.name == username, UserInfo.website == website)
     if query.count() == 0:
         data = {
             'errorCode':'002',

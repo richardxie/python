@@ -11,6 +11,7 @@ import yatang, tzj, utils, time, base64, logging
 from Queue import Queue
 from random import randint
 from tzj import Signin as TZJSignin
+from tzj import signin_names as tzj_signin_names
 
 logger = logging.getLogger("app")
 c = Cookies("./")
@@ -53,7 +54,8 @@ class signin_task(Thread):
         
         #投之家签到
         if tzj.SIGNIN:
-            TZJSignin("cmljaGFyZHhpZXE=", 'dHpqcm9vdEAyMDE2').signin()
+            for name in tzj_signin_names:
+                TZJSignin(name).signin()
         
         #雅堂签到
         if yatang.SIGNIN:
@@ -110,7 +112,6 @@ class tender_task(Thread):
         for username in auto_tender_names:
             cookie = c.readCookie(username)
             session = Session()
-            query = session.query(UserInfo).filter(UserInfo.name == username)
             if query.count() == 0:
                 continue
             user_info = query.one()

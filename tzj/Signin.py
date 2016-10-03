@@ -7,7 +7,7 @@ from cookielib import MozillaCookieJar
 from utils import EmailUtils
 import base64, json, logging
 import tzj, yatang
-from yatang.modules import SigninInfo
+from yatang.modules import SigninInfo, UserInfo
 from datetime import datetime
 
 DEBUG = True
@@ -17,9 +17,13 @@ logger = logging.getLogger("app")
 
 class Signin:
 
-    def __init__(self, name, passwd):
-        self.username = base64.b64decode(name)
-        self.password = passwd
+    def __init__(self, name):
+        self.username = name
+        session = yatang.Session()
+        query = session.query(UserInfo).filter(UserInfo.name == self.username, UserInfo.website=='tzj')
+        if query.count() != 0:
+            self.password = query.one().password
+            print self.password
         
     def signin(self):
         #Check siginin today

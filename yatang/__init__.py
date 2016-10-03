@@ -36,3 +36,6 @@ Session = sessionmaker()
 Session.configure(bind=engine)
 Base.metadata.create_all(engine)
 Base.metadata.bind = engine
+
+import os, sys
+sys.path.append(os.path.dirname(__file__))

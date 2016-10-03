@@ -63,7 +63,7 @@ class Invest:
         logging.info(self.name +" is tendering a Welfare.")
         if(welfare.available_cash > 0 and welfare.can_tender):
             salt = welfare.uniqKey
-            ppay = encryptTradePassword(tradepwd, salt)
+            ppay = encryptTradePassword(tradepwd, salt, self.task)
             # buy 秒标
             values = {
                 '__hash__': welfare.hash_value,
@@ -136,8 +136,12 @@ class Invest:
             if(len(typeList)):
                 aList = []
                 for loan in jsonresp['data']['Rows']:
-                    if int(loan['borrow_type']) in typeList and int(loan["time_limit"]) == 3:
-                        aList.append(loan)
+                    bt = int(loan['borrow_type'])
+                    if bt in typeList: #and int(loan["time_limit"]) == 3:
+                        if bt in [1, 9] and int(loan["time_limit"]) == 3:
+                             aList.append(loan)
+                        else:
+                            aList.append(loan)
                 return aList
             else:
                 return jsonresp['data']['Rows']

@@ -5,6 +5,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, Integer, DECIMAL, DateTime, func
 from datetime import datetime
 
+import os, sys
+sys.path.append(os.path.dirname(__file__))
+
 Base = declarative_base()
 class CommonColumn(Base):
     __abstract__ = True
@@ -23,6 +26,7 @@ class UserInfo(CommonColumn):
 
     # 表的结构:
     id = Column(String(64), primary_key=True, autoincrement = True)
+    website = Column(String(32), default="yt")
     user_id = Column(String(32), default="000")
     name = Column(String(32))
     password = Column(String(64))

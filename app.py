@@ -4,7 +4,8 @@
 
 from task import signin_task, tender_task
 from Queue import Queue
-import logging,utils,signal
+from Queue import Empty
+import logging,utils,signal,time
 DEBUG = True
 AUTO_TENDER = True
 SIGNIN = True
@@ -40,8 +41,7 @@ def main():
         t2.start()
     
     mainloop()
-    
-    
+      
 def mainloop():
     while running:
         data = mainQueue.get()
