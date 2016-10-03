@@ -44,7 +44,10 @@ def main():
       
 def mainloop():
     while running:
-        data = mainQueue.get()
+        try:
+            data = mainQueue.get(timeout=2)
+        except Empty:
+            continue
               
         if data['type'] == 'encrypt':
             responseQueue = data['queue']

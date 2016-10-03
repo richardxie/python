@@ -112,6 +112,7 @@ class tender_task(Thread):
         for username in auto_tender_names:
             cookie = c.readCookie(username)
             session = Session()
+            query = session.query(UserInfo).filter(UserInfo.name == username, UserInfo.website == 'yt')
             if query.count() == 0:
                 continue
             user_info = query.one()
