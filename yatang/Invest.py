@@ -60,8 +60,12 @@ class Invest:
         pass 
     
     def tenderWF(self, welfare, tradepwd= "root@2014"):
+        if welfare == None:
+            logging.warn("welfare is none!")
+            return
+            
         logging.info(self.name +" is tendering a Welfare.")
-        if(welfare.available_cash > 0 and welfare.can_tender):
+        if(welfare.available_cash > welfare.zxtbe and welfare.can_tender):
             salt = welfare.uniqKey
             ppay = encryptTradePassword(tradepwd, salt, self.task)
             # buy 秒标
@@ -76,13 +80,11 @@ class Invest:
             buyinfo = self.buyRequest(values)
             if('tnum' in buyinfo):
                 session = yatang.Session()
-                welfare_info = WelfareInfo(
-                            ibid = welfare.ibid,                          
-                            borrowType=welfare.borrowType,
-                            borrowNum=welfare.borrowNum
-                        )
-                session.add(welfare_info)
-                session.commit()
+                query = session.query(WelfareInfo).filter(WelfareInfo.ibid == welfare.ibid)
+                if query.count() == 0:
+                    welfare_info = WelfareInfo.fromWelfare(welfare)
+                    session.add(welfare_info)
+                    session.commit()
                 self.tender_info(welfare.borrowNum, buyinfo['tnum'])
         pass     
     

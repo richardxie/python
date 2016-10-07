@@ -9,6 +9,7 @@ from datetime import datetime
 from conf import db_config
 import utils, PyV8
 import pdb, sys, os
+import tesserpy, cv2
 
 USING_MYSQL = True
 
@@ -90,11 +91,7 @@ class TestUtils(unittest.TestCase):
         with open("backup/welfare.htm") as html:
             welfare = Welfare.welfare_info(html)
             session = Session()
-            welfare_info = WelfareInfo(
-                        ibid = welfare.ibid,                          
-                        borrowType=welfare.borrowType,
-                        borrowNum=welfare.borrowNum
-                    )
+            welfare_info = WelfareInfo.fromWelfare(welfare)
             session.add(welfare_info)
             session.commit()
         pass
@@ -127,3 +124,40 @@ class TestUtils(unittest.TestCase):
                 pwd = encryptFunc("richard", "123")
                 self.assertTrue(len(pwd) > 1)
         pass
+
+    def test_imgRecon(self):
+        import platform
+        if platform.system() == 'Darwin':
+            tesser = tesserpy.Tesseract('/usr/local/share/tessdata/', language="eng")
+        else:
+            tesser = tesserpy.Tesseract("/usr/share/tesseract-ocr/tessdata/", language="eng")
+        tesser.tessedit_char_whitelist = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        #img = self.imageProcess(cv2.imread("get_captcha.jpg", cv2.IMREAD_GRAYSCALE))
+        img = self.imageProcess(cv2.imread("get_captcha.jpg"))
+        tesser.set_image(img);
+        page_info = tesser.orientation();
+        print(page_info.textline_order == tesserpy.TEXTLINE_ORDER_TOP_TO_BOTTOM)
+        print("#####")
+        print(tesser.get_utf8_text())
+        print("#####")
+        print("Word\tConfidence\tBounding box coordinates")
+        for word in tesser.words():
+            bb = word.bounding_box
+            print("{}\t{}\tt:{}; l:{}; r:{}; b:{}".format(word.text, word.confidence, bb.top, bb.left, bb.right, bb.bottom))
+
+    def imageProcess(self, im):
+        # resize image
+        enlarge = cv2.resize(im, (0, 0), fx=6, fy=6, interpolation=cv2.INTER_CUBIC)  
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(4, 4))  
+        """
+        im = cv2.morphologyEx(enlarge, cv2.MORPH_OPEN, kernel ) #Open and close to make appear contours
+        im = cv2.morphologyEx(enlarge, cv2.MORPH_CLOSE, kernel )
+        """
+        im = cv2.erode(enlarge,kernel) 
+        im = cv2.dilate(enlarge,kernel) 
+        #im=cv2.GaussianBlur(enlarge,(5,5),0)
+        thresh = 10
+        maxValue = 255
+        th, dst = cv2.threshold(enlarge, thresh, maxValue, cv2.THRESH_BINARY);
+        cv2.imwrite('./process.png', enlarge)
+        return im

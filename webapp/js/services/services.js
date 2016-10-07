@@ -6,15 +6,18 @@ define([
   // Custom Services
   , 'services/DataService'
   , 'services/SigninService'
-], function(Console, _, ds, si) {
+  , 'services/RulesService'
+], function(Console, _, ds, si, rules) {
   "use strict";
   Console.group("Entering Service module.");
   Console.info("DataService", ds);
   Console.info("SigninService", si);
+  Console.info("SigninService", rules);
 
   var services = {
     DataService: ds,
-    SigninService: si
+    SigninService: si,
+    RulesService: rules
   };
   Console.info("Registered services: ", services);
 

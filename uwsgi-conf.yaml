@@ -3,7 +3,6 @@ uwsgi:
   master: 1
   workers: 10
   logto: /usr/src/vagrant/uwsgi.log
-  wsgi-file: /usr/src/app/python/web.py
   chdir: /usr/src/app/python
-  mount: /pyproj=web:app
+  mount: /pyproj=webservice:app
   manage-script-name: true

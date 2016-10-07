@@ -135,7 +135,21 @@ def register(website):
         resp = Response(info, status=200, mimetype="application/json")
     return resp
    
-
+@app.route("/<website>/users", methods=['GET'])
+def users_query(website):
+    logger.info("users_query")
+    session = Session()
+    query = session.query(UserInfo).filter(UserInfo.website == website)
+    user = query.all()
+    data = {
+        'code':'000',
+        'msg':'OK',
+        'data':user
+    }
+    info = json.dumps(data, cls=new_alchemy_encoder(), check_circular=False, sort_keys=True)
+    resp = Response(info, status=200, mimetype="application/json")
+    return resp
+    
 @app.route("/<website>/resetpwd/<username>", methods=['POST'])
 def reset_password(website, username):
     password = request.form['password']

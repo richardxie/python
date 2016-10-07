@@ -9,15 +9,19 @@ logger = logging.getLogger('app')
 
 from Borrow import Borrow
 class Welfare(Borrow): 
-    def __init__(self,hash_value, ibid, borrowType, borrowNum, available_cash,zdtbe, remain_amount, can_tender, uniqKey):
+    def __init__(self,hash_value, ibid, borrowType, borrowNum, available_cash,zxtbe, zdtbe, remain_amount, can_tender, uniqKey):
         Borrow.__init__(self, ibid, borrowType, borrowNum)
         self.hash_value = hash_value
         self.available_cash = available_cash
         self.zdtbe = zdtbe #最多投标额
+        self.zxtbe = zxtbe #最小投标额
         self.remain_amount=remain_amount #剩余金额
         self.can_tender = can_tender
         self.uniqKey = uniqKey
           
+    def __repr__(self):
+        return "<Welfare(ibid='%s', type='%s', number='%s', minAmount='%f', cash='%f', hash_value='%s', uniqkey='%s', can_tender='%s')>" % (
+                self.ibid, self.borrowType, self.borrowNum, self.zxtbe, self.available_cash, self.hash_value, self.uniqKey, self.can_tender)
     
     @staticmethod
     def welfare_info(html):
@@ -26,28 +30,44 @@ class Welfare(Borrow):
         dom = html5parser.parse(html, parser=parser)
         try:
             ibid_element = dom.xpath('//*[@class="amountt_input"]')
-            ibid = ibid_element[0].attrib['dataid']
+            if ibid_element and len(ibid_element) > 0:
+                ibid = ibid_element[0].attrib['dataid']
+
             borrowNum_element = dom.xpath("//*[@id=\"iborrownumid_" + ibid + "\"]")
-            borrowNum = borrowNum_element[0].attrib['value']
+            if borrowNum_element and len(borrowNum_element) > 0:
+                borrowNum = borrowNum_element[0].attrib['value']
+
             borrowType_element = dom.xpath('//*[@id="iborrowtype_' + ibid + '"]')
-            borrowType = borrowType_element[0].attrib['value']
+            if borrowType_element and len(borrowType_element) > 0:
+                borrowType = borrowType_element[0].attrib['value']
+
             hash_element = dom.xpath("/html/body/div[3]/div[4]/div[2]/div[3]/form/input[2]")
-            hash_value = hash_element[0].attrib["value"]
+            if hash_element and len(hash_element) > 0:
+                hash_value = hash_element[0].attrib["value"]
         
             uniqkey_element = dom.xpath("//*[@id='uniqKey']")
-            uniqKey = uniqkey_element[0].attrib['value']
+            if uniqkey_element and len(uniqkey_element) > 0:
+                uniqKey = uniqkey_element[0].attrib['value']
         
             cash_element = dom.xpath('//*[@id="ktmje_' + ibid + '"]')
-            cash = utils.money(cash_element[0].attrib["value"])
+            if cash_element and len(cash_element) > 0:
+                cash = utils.money(cash_element[0].attrib["value"])
             
             zdtbe_element = dom.xpath('//*[@id="zdtbe_' + ibid + '"]')
-            if zdtbe_element:
+            if zdtbe_element and len(zdtbe_element) > 0:
                 zdtbe = utils.money(zdtbe_element[0].attrib["value"])
             else:
                 zdtbe = -1
+
+            zxtbe_element = dom.xpath('//*[@id="zxtbe_' + ibid + '"]')
+            if zxtbe_element and len(zxtbe_element) > 0:
+                zxtbe = utils.money(zxtbe_element[0].attrib["value"])
+            else:
+                zxtbe = 1
                 
             hxjk_element = dom.xpath('//*[@id="hxjk_' + ibid + '"]')
-            hxjk =  utils.money(hxjk_element[0].attrib["value"])
+            if hxjk_element and len(hxjk_element) > 0:
+                hxjk =  utils.money(hxjk_element[0].attrib["value"])
             
             can_tender = False
             incheck_element = dom.xpath('//*[@id="incheck_'+ ibid + '"]')
@@ -60,6 +80,7 @@ class Welfare(Borrow):
                 borrowNum=borrowNum,
                 available_cash = cash,
                 zdtbe = zdtbe,
+                zxtbe = zxtbe,
                 remain_amount = hxjk,
                 can_tender=can_tender,
                 uniqKey=uniqKey

@@ -10,7 +10,8 @@ RUN apt-get update -q && \
 	apt-get autoclean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN locale-gen zh_CN.UTF-8 && \
-	mv /etc/nginx/sites-available/default  /etc/nginx/sites-available/default.orginal	
+	mv /etc/nginx/sites-available/default  /etc/nginx/sites-available/default.orginal && \
+	echo "daemon off;" >> /etc/nginx/nginx.conf
 
 RUN pip install html5lib && \
 	pip install lxml && \
@@ -31,8 +32,7 @@ WORKDIR /usr/src/app/python
 ADD src.tar.gz .
 ADD pyv8.tar.gz .
 
-RUN mv default /etc/nginx/sites-available/default && \
-	echo "daemon off;" >> /etc/nginx/nginx.conf
+COPY default /etc/nginx/sites-available/
 COPY supervisor.conf /etc/supervisor/conf.d/
 COPY webapp /usr/share/nginx/html
 
