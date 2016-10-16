@@ -4,9 +4,9 @@ db_config = {
     "mysql" : {
         'host':'10.10.32.51',
         'port':'3306',
-        'user':'uY2XtL5HSIqaBg8T',
-        'instancename':'vSFJz7EQNIyBdOXA',
-        'password':'pGEI8bdCqFer9mTMS'
+        'user':'uNjZxSYgbXifmCHt',
+        'instancename':'H6JqdLoA29ukwlEc',
+        'password':'pCHpS0XA4V7JWhPFZ'
     },
     "mysql-dev" : {
         'host':'192.16.2.139',
