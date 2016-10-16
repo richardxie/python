@@ -22,9 +22,9 @@ class Invest:
               
     def tender(self, loan, tradepwd="root@2014"):
         logger.info(self.name + " is tendering a Loan.")
-        ammount = int(floor(loan.available_cash))
         import app
-        if(ammount > loan.minAmount and ammount > app.reserved_amount):
+        ammount = int(floor(loan.available_cash)) - app.reserved_amount
+        if(ammount > loan.minAmount):
                 salt = loan.uniqKey
                 ppay = encryptTradePassword(tradepwd, salt, self.task)
                 # coupon info
@@ -63,9 +63,10 @@ class Invest:
         if welfare == None:
             logging.warn("welfare is none!")
             return
-            
-        logging.info(self.name +" is tendering a Welfare.")
+        logging.debug(self.name +" want to tender a Welfare:" + str(welfare.available_cash) + ":" + str(welfare.can_tender))
+
         if(welfare.available_cash > welfare.zxtbe and welfare.can_tender):
+            logging.info(self.name +" is tendering a Welfare:" + str(welfare.available_cash)+ ":" + welfare.uniqKey)
             salt = welfare.uniqKey
             ppay = encryptTradePassword(tradepwd, salt, self.task)
             # buy 秒标

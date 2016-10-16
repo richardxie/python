@@ -24,7 +24,7 @@ class Signin:
             install_opener(self.opener)
     
     def signin(self):
-        logger.debug("I'm signining")
+        logger.info(self.name + "is signining")
         session = yatang.Session()
         query = session.query(SigninInfo).filter(SigninInfo.name == self.name, SigninInfo.website=='yt')
         #chekc already siginin today      

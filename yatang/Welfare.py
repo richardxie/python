@@ -3,7 +3,7 @@
 
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
-import utils, yatang, logging
+import utils, yatang, logging, traceback
 
 logger = logging.getLogger('app')
 
@@ -87,6 +87,7 @@ class Welfare(Borrow):
                 )
         except Exception, e:
             print e
+            traceback.print_exc() 
             logger.warn("oops, parse walfare html failed!")
         pass
     

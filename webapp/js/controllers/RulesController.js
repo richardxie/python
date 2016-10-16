@@ -11,6 +11,8 @@ define(['Console'], function (Console) {
       id: 'ID'
       , status: 'Status'
       , name: 'Name'
+      , term: 'Term'
+      , operation: 'Operation'
     };
 
     $scope.orderByCol = 'id';
@@ -23,6 +25,11 @@ define(['Console'], function (Console) {
 
       Console.debug("reversed?", $scope.orderByReversed);
       Console.groupEnd();
+    }
+
+    $scope.toggle = function(id) {
+       Console.group("toggel rule setting", id);
+       Console.groupEnd();
     }
 
     Console.groupEnd();

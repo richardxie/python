@@ -9,7 +9,7 @@ import logging,utils,signal,time
 DEBUG = True
 AUTO_TENDER = True
 SIGNIN = True
-reserved_amount = 50
+reserved_amount = 5000
 
 logger = logging.getLogger("app")
 mainQueue = Queue()

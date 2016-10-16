@@ -240,7 +240,7 @@ def user_id(website, username):
     resp = Response(info, status=200, mimetype="application/json")
     return resp
 
-@app.route("/tender/rules", methods=['GET'])
+@app.route("/tender/rule", methods=['GET'])
 def queryRules():
     session = Session()
     query = session.query(TenderRule)
