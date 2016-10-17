@@ -25,7 +25,7 @@ class UserInfo(CommonColumn):
     __tablename__ = 'user'
 
     # 表的结构:
-    id = Column(String(64), primary_key=True)
+    id = Column(String(64), primary_key=True, autoincrement=False)
     website = Column(String(32), default="yt")
     user_id = Column(String(32), default="000")
     name = Column(String(32))
@@ -45,7 +45,7 @@ class AccountInfo(CommonColumn):
     __tablename__ = 'account'
 
     # 表的结构:
-    id = Column(String(64), primary_key=True)
+    id = Column(String(64), primary_key=True, autoincrement=False)
     name = Column(String(20))
     level = Column(String(10))
     balance = Column(DECIMAL())
@@ -64,7 +64,7 @@ class SigninInfo(CommonColumn):
     __tablename__ = 'signin'
 
     # 表的结构:
-    id = Column(String(64), primary_key=True)
+    id = Column(String(64), primary_key=True, autoincrement=False)
     name = Column(String(20))
     website = Column(String(20))
     signin_date = Column(DateTime, default=func.now())
@@ -80,7 +80,7 @@ class InvestInfo(CommonColumn):
     __tablename__ = 'invest'
 
     # 表的结构:
-    id = Column(String(64), primary_key=True)
+    id = Column(String(64), primary_key=True, autoincrement=False)
     name = Column(String(20))
     amount = Column(DECIMAL())
     date = Column(String(10))
@@ -95,7 +95,7 @@ class WelfareInfo(CommonColumn):
     __tablename__ = 'welfare'
 
     # 表的结构:
-    ibid = Column(String(64), primary_key=True)
+    ibid = Column(String(64), primary_key=True, autoincrement=False)
     borrowType = Column(String(20))
     borrowNum = Column(String(50))
     maxAmount = Column(DECIMAL())
@@ -121,7 +121,7 @@ class TenderRule(CommonColumn):
     __tablename__ = 'tenderrules'
 
     # 表的结构:
-    id = Column(String(64), primary_key=True)
+    id = Column(String(64), primary_key=True, autoincrement=False)
     borrowType = Column(String(20))
     term = Column(Integer())
     minAPR = Column(DECIMAL())#Annual Percentage Rate
