@@ -1,7 +1,7 @@
 #!/usr/bin/python2.7
 # ！-*- coding: utf-8 -*-
 
-from flask import Flask, request, Response, url_for, json, jsonify
+from flask import request, Response, json, jsonify
 
 from urllib2 import HTTPCookieProcessor,build_opener,install_opener
 from yatang import Cookies, Signin, Session
@@ -245,18 +245,22 @@ def queryRules():
     session = Session()
     query = session.query(TenderRule)
     if query.count() == 0:
-        return "No tender rule information"
+        data = {
+            'code':'000',
+            'msg':'No tender rules.'
+            }
+        resp = Response(json.dumps(data), status=200, mimetype="application/json")
     else:
         info = json.dumps(query.all(), cls=new_alchemy_encoder(), check_circular=False, sort_keys=True)
         resp = Response(info, status=200, mimetype="application/json")
-        return resp
+    return resp
 
 @app.route("/tender/rule", methods=['POST'])
 def createRules():
     session = Session()
     import uuid
     rule = TenderRule(
-        id = uuid.uuid1(),
+        id = str(uuid.uuid1()),
         borrowType = request.json['borrowType'],
         term = request.json['term'],
         minAPR = request.json['minAPR'],
@@ -269,7 +273,7 @@ def createRules():
         'msg':'OK',
         'data':rule
             }
-    resp = Response(json.dumps(data), status=200, mimetype="application/json")
+    resp = Response(json.dumps(data, cls=new_alchemy_encoder()), status=200, mimetype="application/json")
     return resp
 
 @app.route("/test", methods=['GET'])

@@ -35,8 +35,8 @@ class Loan(Borrow):
             borrowType = borrowType_element[0].attrib['value']
             hash_element = dom.xpath("//input[@type='hidden' and @name='__hash__']/@value")
             if hash_element and len(hash_element) > 0:
-                hash_value = hash_element[0].attrib["value"]
-        
+                hash_value = hash_element[0]
+                
             uniqkey_element = dom.xpath("//*[@id='uniqKey']")
             uniqKey = uniqkey_element[0].attrib['value']
             
