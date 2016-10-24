@@ -105,7 +105,7 @@ class Invest:
             except ValueError:
                 logger.warn("data was not valid JSON")
                 logger.warn(resp_data)
-				jsonresp = {}
+                jsonresp = {}
         return jsonresp
 
     def tender_info(self, borrow_num, tnum):
@@ -127,7 +127,7 @@ class Invest:
             except ValueError:
                 logger.warn("data was not valid JSON")
                 logger.warn(resp_data)
-				jsonresp = {}
+                jsonresp = {}
             return jsonresp
     
     def investListRequest(self, typeList=[5]):
@@ -159,7 +159,7 @@ class Invest:
                     bt = int(loan['borrow_type'])
                     if bt in typeList: #and int(loan["time_limit"]) == 3:
                         if bt in [1, 9] and int(loan["time_limit"]) == 3:
-                             aList.append(loan)
+                            aList.append(loan)
                         else:
                             aList.append(loan)
                 return aList

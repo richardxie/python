@@ -5,7 +5,7 @@
 from task import signin_task, tender_task
 from Queue import Queue
 from Queue import Empty
-import logging,utils,signal,time
+import logging,utils,signal
 DEBUG = True
 AUTO_TENDER = True
 SIGNIN = True

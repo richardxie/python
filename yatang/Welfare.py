@@ -41,9 +41,9 @@ class Welfare(Borrow):
             if borrowType_element and len(borrowType_element) > 0:
                 borrowType = borrowType_element[0].attrib['value']
 
-            hash_element = dom.xpath("/html/body/div[3]/div[4]/div[2]/div[3]/form/input[2]")
+            hash_element = dom.xpath("//input[@type='hidden' and @name='__hash__']/@value")
             if hash_element and len(hash_element) > 0:
-                hash_value = hash_element[0].attrib["value"]
+                hash_value = hash_element[0]
         
             uniqkey_element = dom.xpath("//*[@id='uniqKey']")
             if uniqkey_element and len(uniqkey_element) > 0:
