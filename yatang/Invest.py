@@ -99,8 +99,12 @@ class Invest:
         req = Request(yatang.YTURLBASE + 'Invest/checkppay', data.encode(encoding='UTF8'), headers)
         response = self.opener.open(req)
         if response.code == 200 :
-            jsonresp = json.loads(response.read().decode())
-            print jsonresp
+            resp_data =response.read().decode()
+            try:
+                jsonresp = json.loads(resp_data)
+            except ValueError:
+                logger.warn("data was not valid JSON")
+                logger.warn(resp_data)
         return jsonresp
 
     def tender_info(self, borrow_num, tnum):
@@ -116,8 +120,12 @@ class Invest:
         req = Request(yatang.YTURLBASE + 'Public/tenderinfo', data.encode(encoding='UTF8'), headers)
         response = self.opener.open(req)
         if response.code == 200 :
-            jsonresp = json.loads(response.read().decode())
-            print jsonresp
+            resp_data =response.read().decode()
+            try:
+                jsonresp = json.loads(resp_data)
+            except ValueError:
+                logger.warn("data was not valid JSON")
+                logger.warn(resp_data)
             return jsonresp
     
     def investListRequest(self, typeList=[5]):
@@ -134,7 +142,14 @@ class Invest:
         req = Request(yatang.YTURLBASE + 'index.php?s=/Invest/GetBorrowlist', data.encode(encoding='UTF8'), headers)
         response = self.opener.open(req)
         if response.code == 200:
-            jsonresp = json.loads(response.read().decode())
+            resp_data = response.read().decode()
+            try:
+                jsonresp = json.loads(resp_data)
+            except ValueError:
+                logger.warn("data was not valid JSON")
+                logger.warn(resp_data)
+                return [];
+        
 
             if(len(typeList)):
                 aList = []
