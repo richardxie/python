@@ -105,6 +105,7 @@ class Invest:
             except ValueError:
                 logger.warn("data was not valid JSON")
                 logger.warn(resp_data)
+				jsonresp = {}
         return jsonresp
 
     def tender_info(self, borrow_num, tnum):
@@ -126,6 +127,7 @@ class Invest:
             except ValueError:
                 logger.warn("data was not valid JSON")
                 logger.warn(resp_data)
+				jsonresp = {}
             return jsonresp
     
     def investListRequest(self, typeList=[5]):
