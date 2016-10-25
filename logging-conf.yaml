@@ -13,12 +13,12 @@ handlers:
     class : logging.FileHandler
     formatter: simple
     level: INFO
-    filename: /usr/src/vagrant/application.log
+    filename: /usr/src/app/python/application.log
   web:
     class : logging.FileHandler
     formatter: simple
     level: INFO
-    filename: /usr/src/vagrant/web.log
+    filename: /usr/src/app/python/web.log
 loggers:
   app:
     level: DEBUG

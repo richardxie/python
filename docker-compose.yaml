@@ -1,9 +1,9 @@
 web:
-  build: ./python
+  build: .
   ports: 
     - "8082:8082"
   volumes:
-    - ./python:/usr/src/app/python
+    - .:/usr/src/app/python
   links:
     - redis
     - mysql

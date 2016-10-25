@@ -9,11 +9,11 @@ db_config = {
         'password':'pCHpS0XA4V7JWhPFZ'
     },
     "mysql-dev" : {
-        'host':'192.16.2.139',
+        'host':'mysql',
         'port':'3306',
-        'user':'admin',
-        'instancename':'test',
-        'password':'admin'
+        'user':'root',
+        'instancename':'mysqldb',
+        'password':'admin123'
     },
     "sqlite3" : {
         'host':'',

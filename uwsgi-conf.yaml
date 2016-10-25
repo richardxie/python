@@ -2,7 +2,7 @@ uwsgi:
   socket: 127.0.0.1:8000
   master: 1
   workers: 10
-  logto: /usr/src/vagrant/uwsgi.log
+  logto: /usr/src/app/python/uwsgi.log
   chdir: /usr/src/app/python
   mount: /pyproj=webservice:app
   manage-script-name: true

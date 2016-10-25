@@ -23,14 +23,10 @@ RUN pip install html5lib && \
 	pip install Flask && \
 	pip install uwsgi && \
 	pip install SQLAlchemy && \
-	pip install supervisor-stdout && \
-	mkdir -p /usr/src/app/python/cookies && \
-	mkdir -p /usr/src/app/python/images
+	pip install supervisor-stdout
 
 
 WORKDIR /usr/src/app/python
-ADD src.tar.gz .
-ADD pyv8.tar.gz .
 
 COPY default /etc/nginx/sites-available/
 COPY supervisor.conf /etc/supervisor/conf.d/
