@@ -19,6 +19,9 @@ YT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20
 USING_MYSQL = True
 SIGNIN = True
 
+SUPPLY_CHAIN_BID = '1' #供应链金融标
+WELFARE_BID = '5' #秒标
+
 if USING_MYSQL:
     db_name = 'mysql+pymysql://%s:%s@%s:%s/%s'%(db_config['mysql']['user'],
                                                           db_config['mysql']['password'],
