@@ -43,7 +43,7 @@ class Welfare(Borrow):
 
             hash_element = dom.xpath("//input[@type='hidden' and @name='__hash__']/@value")
             if hash_element and len(hash_element) > 0:
-                hash_value = hash_element[0]
+                hash_value = str(hash_element[0])
         
             uniqkey_element = dom.xpath("//*[@id='uniqKey']")
             if uniqkey_element and len(uniqkey_element) > 0:
