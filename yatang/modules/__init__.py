@@ -49,10 +49,10 @@ class AccountInfo(CommonColumn):
     name = Column(String(20))
     level = Column(String(10))
     balance = Column(DECIMAL())
-    available = Column(DECIMAL())
-    income = Column(DECIMAL())
-    collection= Column(DECIMAL())
-    payment= Column(DECIMAL())
+    available = Column(DECIMAL(8, 2))
+    income = Column(DECIMAL(8, 2))
+    collection= Column(DECIMAL(8, 2))
+    payment= Column(DECIMAL(8, 2))
     pass
 
     def __repr__(self):
@@ -82,7 +82,7 @@ class InvestInfo(CommonColumn):
     # 表的结构:
     id = Column(String(64), primary_key=True, autoincrement=False)
     name = Column(String(20))
-    amount = Column(DECIMAL())
+    amount = Column(DECIMAL(8, 2))
     date = Column(String(10))
     pass
 
@@ -98,8 +98,8 @@ class WelfareInfo(CommonColumn):
     ibid = Column(String(64), primary_key=True, autoincrement=False)
     borrowType = Column(String(20))
     borrowNum = Column(String(50))
-    maxAmount = Column(DECIMAL())
-    minAmount = Column(DECIMAL())
+    maxAmount = Column(DECIMAL(8, 2))
+    minAmount = Column(DECIMAL(8, 2))
     pass
 
     @staticmethod
@@ -124,7 +124,7 @@ class TenderRule(CommonColumn):
     id = Column(String(64), primary_key=True, autoincrement=False)
     borrowType = Column(String(20))
     term = Column(Integer())
-    minAPR = Column(DECIMAL())#Annual Percentage Rate
+    minAPR = Column(DECIMAL(8, 2))#Annual Percentage Rate
     enabled = Column(Boolean())
 
     def __repr__(self):
