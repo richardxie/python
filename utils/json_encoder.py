@@ -4,6 +4,7 @@
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from flask import json
 from datetime import datetime
+from decimal import Decimal
   
 def new_alchemy_encoder():
     _visited_objs = []
@@ -21,6 +22,9 @@ def new_alchemy_encoder():
                         try:
                             if isinstance(value, datetime):
                                 value = value.strftime('%y-%m-%d %H:%M:%S')
+                            elif isinstance(value, Decimal):
+                                value = float(value)
+
                             json.dumps(value)
                             data[field] = value
                         except TypeError:
