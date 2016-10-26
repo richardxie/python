@@ -32,7 +32,7 @@ else:
     db_name = 'sqlite:///%s'%(db_config['sqlite3']['dbname'])
 
 from sqlalchemy import create_engine
-engine = create_engine(db_name, echo=True)
+engine = create_engine(db_name, pool_size=100, pool_recycle=3600, echo=True)
 
 from sqlalchemy.orm import sessionmaker
 Session = sessionmaker()
