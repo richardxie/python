@@ -61,12 +61,12 @@ class Invest:
     
     def tenderWF(self, welfare, tradepwd= "root@2014"):
         if welfare == None:
-            logging.warn("welfare is none!")
+            logger.warn("welfare is none!")
             return
-        logging.debug(self.name +" want to tender a Welfare:" + str(welfare.available_cash) + ":" + str(welfare.can_tender))
+        logger.debug(self.name +" want to tender a Welfare:" + str(welfare.available_cash) + ":" + str(welfare.can_tender))
 
         if(welfare.available_cash > welfare.zxtbe and welfare.can_tender):
-            logging.info(self.name +" is tendering a Welfare:" + str(welfare.available_cash)+ ":" + welfare.uniqKey)
+            logger.info(self.name +" is tendering a Welfare:" + str(welfare.available_cash)+ ":" + welfare.uniqKey)
             salt = welfare.uniqKey
             ppay = encryptTradePassword(tradepwd, salt, self.task)
             # buy 秒标
@@ -157,7 +157,7 @@ class Invest:
                 aList = []
                 for loan in jsonresp['data']['Rows']:
                     bt = int(loan['borrow_type'])
-                    if bt in typeList: #and int(loan["time_limit"]) == 3:
+                    if bt in typeList:
                         if bt in [1, 9] and int(loan["time_limit"]) == 3:
                             aList.append(loan)
                         else:
