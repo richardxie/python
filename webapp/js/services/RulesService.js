@@ -3,7 +3,7 @@ define(['Console'], function (Console) {
   Console.group("Entering RulesService module.");
 
   var service = ['$resource', 'constant',function ($resource, constant) {
-    var url =  constant.url + ':port/pyproj/tender/rules';
+    var url =  constant.url + ':port/pyproj/tender/rule';
     return $resource(url, {
        port: constant.port
     }, {

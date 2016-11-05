@@ -23,7 +23,7 @@ define([
     Console.group("Setup Angular");
 
     var mainModule = angular.module('myApp',['ngResource']);
-    mainModule.constant('const', {
+    mainModule.constant('constant', {
       'url': 'http://182.254.218.161',
       'port':':80'
     });
