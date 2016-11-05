@@ -1,5 +1,5 @@
- #!/usr/bin/python2.7
-# ！-*- coding: utf-8 -*-
+#!/usr/bin/python2.7
+# -*- coding: utf-8 -*-
 
 import unittest
 from yatang import Cookies, Account, Coupon, Invest, Welfare, Financing
