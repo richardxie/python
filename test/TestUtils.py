@@ -14,22 +14,23 @@ from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HT
 from urllib import urlencode
 from cookielib import MozillaCookieJar
 from flask import Blueprint,request, Response, json, jsonify
+from utils.json_encoder import new_object_encoder
 
 USING_MYSQL = True
 
 if USING_MYSQL:
-    db_name = 'mysql+pymysql://%s:%s@%s:%s/%s'%(db_config['mysql']['user'],
-                                                          db_config['mysql']['password'],
-                                                          db_config['mysql']['host'],
-                                                          db_config['mysql']['port'],
-                                                          db_config['mysql']['instancename'])
+    db_name = 'mysql+pymysql://%s:%s@%s:%s/%s?charset=utf8mb4'%(db_config['mysql-dev']['user'],
+                                                          db_config['mysql-dev']['password'],
+                                                          db_config['mysql-dev']['host'],
+                                                          db_config['mysql-dev']['port'],
+                                                          db_config['mysql-dev']['instancename'])
 else:
     db_name = 'sqlite:///%s'%(db_config['sqlite3-dev']['dbname'])
 
 print db_name
 
 from sqlalchemy import create_engine
-engine = create_engine(db_name, echo=True)
+engine = create_engine(db_name, pool_size=100, pool_recycle=3600, echo=True)
  
 from sqlalchemy.orm import sessionmaker
 Session = sessionmaker()
@@ -123,10 +124,10 @@ class TestUtils(unittest.TestCase):
     def test_financing(self):
         c = Cookies("./")
         cookie = c.readCookie("richardxieq")
-        opener = build_opener(HTTPCookieProcessor(cookie))
-        response = opener.open('https://jr.yatang.cn/Account/FinancingManagement/title/RepayFina')
-        l = Financing.Financing.financing_info(response, opener)
-        print l
+        opener = build_opener(HTTPCookieProcessor(cookie), HTTPRedirectHandler())
+        response = opener.open('https://jr.yatang.cn/Account/FinancingManagement/title/ReimbDetail')
+        l = Financing.Financing.financing_info2(response, opener)
+        print json.dumps(l, cls=new_object_encoder(), check_circular=False, sort_keys=True)
         pass
 
     def test_encryptPassword(self):

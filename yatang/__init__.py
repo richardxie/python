@@ -23,7 +23,7 @@ SUPPLY_CHAIN_BID = '1' #供应链金融标
 WELFARE_BID = '5' #秒标
 
 if USING_MYSQL:
-    db_name = 'mysql+pymysql://%s:%s@%s:%s/%s?charset=utf8'%(db_config['mysql-dev']['user'],
+    db_name = 'mysql+pymysql://%s:%s@%s:%s/%s?charset=utf8mb4'%(db_config['mysql-dev']['user'],
                                                           db_config['mysql-dev']['password'],
                                                           db_config['mysql-dev']['host'],
                                                           db_config['mysql-dev']['port'],
