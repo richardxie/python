@@ -8,10 +8,10 @@ define(['Console'], function (Console) {
     $scope.queue = RulesService.query();
   
     $scope.queueHead = {
-      name: 'Ãû³Æ'
-      , term: 'ÆÚÏŞ'
-      , status: '×´Ì¬'
-      , operation: '²Ù×÷'
+      name: 'ç±»å‹'
+      , term: 'æœŸé™'
+      , status: 'çŠ¶æ€'
+      , operation: 'æ“ä½œ'
     };
 
     $scope.orderByCol = 'name';
