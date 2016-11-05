@@ -1,8 +1,8 @@
-#!/usr/bin/python2.7
+ #!/usr/bin/python2.7
 # ！-*- coding: utf-8 -*-
 
 import unittest
-from yatang import Cookies, Account, Coupon, Invest, Welfare
+from yatang import Cookies, Account, Coupon, Invest, Welfare, Financing
 import yatang.Loan as YTLoan
 from yatang.modules import WelfareInfo, AccountInfo, SigninInfo, Base
 from datetime import datetime
@@ -10,6 +10,10 @@ from conf import db_config
 import utils, PyV8
 import pdb, sys, os
 import tesserpy, cv2
+from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler
+from urllib import urlencode
+from cookielib import MozillaCookieJar
+from flask import Blueprint,request, Response, json, jsonify
 
 USING_MYSQL = True
 
@@ -114,6 +118,15 @@ class TestUtils(unittest.TestCase):
             signin_info.signin_date = datetime.now()
             session.commit()
         self.assertTrue(signin_info.name == "richardxieq")
+        pass
+
+    def test_financing(self):
+        c = Cookies("./")
+        cookie = c.readCookie("richardxieq")
+        opener = build_opener(HTTPCookieProcessor(cookie))
+        response = opener.open('https://jr.yatang.cn/Account/FinancingManagement/title/RepayFina')
+        l = Financing.Financing.financing_info(response, opener)
+        print l
         pass
 
     def test_encryptPassword(self):

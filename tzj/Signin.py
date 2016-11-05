@@ -1,5 +1,5 @@
 #!/usr/bin/python2.7
-#！-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 
 from urllib2 import build_opener, HTTPCookieProcessor, Request
 from urllib import urlencode
@@ -41,6 +41,7 @@ class Signin:
             return None
     
     def signinRequest(self):
+        logger.info(self.username + "is signining in tzj")
         req = Request(tzj.TZJURLBASESSL + 'shop/signin')
         response = self.opener.open(req)
 

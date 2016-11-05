@@ -1,5 +1,5 @@
 #!/usr/bin/python2.7
-# ！-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 
 from flask import request, Response, json, jsonify
 
@@ -12,9 +12,10 @@ from utils.json_encoder import new_alchemy_encoder
 from hashlib import md5
 from datetime import datetime
 from webservice import app
+from web2 import web2
 
 logger = logging.getLogger("web")
-
+app.register_blueprint(web2)
 @app.route("/")
 def index():
     logger.info("index page!")

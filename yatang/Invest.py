@@ -1,5 +1,5 @@
 #!/usr/bin/python2.7
-# ！-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 
 from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler
 from urllib import urlencode
@@ -96,7 +96,7 @@ class Invest:
             'User-Agent': yatang.YT_USER_AGENT,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
-        req = Request(yatang.YTURLBASESSL + 'Invest/checkppay', data.encode(encoding='UTF8'), headers)
+        req = Request(yatang.YTURLBASESSL + '/Invest/checkppay', data.encode(encoding='UTF8'), headers)
         response = self.opener.open(req)
         if response.code == 200 :
             resp_data =response.read().decode()

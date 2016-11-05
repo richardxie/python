@@ -1,5 +1,5 @@
 #!/usr/bin/python2.7
-# ！-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
@@ -93,7 +93,7 @@ class Welfare(Borrow):
     
     @staticmethod
     def walfareRequest(opener):
-        resp = utils.httpRequest(opener, yatang.YTURLBASESSL + "Financial/welfare")
+        resp = utils.httpRequest(opener, yatang.YTURLBASESSL + "/Financial/welfare")
         if resp.code == 200:
             return Welfare.welfare_info(resp)
     

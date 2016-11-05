@@ -1,5 +1,5 @@
 #!/usr/bin/python2.7
-# ！-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 db_config = {
     "mysql" : {
         'host':'10.10.32.51',

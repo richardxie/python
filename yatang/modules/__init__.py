@@ -1,9 +1,10 @@
 #!/usr/bin/python2.7
-# ！-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, Integer, DECIMAL, Boolean, DateTime, func
+from sqlalchemy import Column, String, Integer, DECIMAL, Boolean, DateTime, func, ForeignKey
 from datetime import datetime
+from sqlalchemy.orm import relationship
 
 import os, sys
 sys.path.append(os.path.dirname(__file__))
@@ -134,3 +135,69 @@ class TenderRule(CommonColumn):
     def __json__(self):
         return ["id", "borrowType", "term", "minAPR","enabled"]
     pass
+
+class LoanInfo(CommonColumn):
+    # 表的名字:
+    __tablename__ = 'loan' #借款
+
+    # 表的结构:
+    ibid = Column(String(64), primary_key=True, autoincrement=False)
+    name = Column(String(50)) #名称
+    uniqKey = Column(String(20))
+    _hash = Column(String(100))
+    amount = Column(DECIMAL(8, 2)) #融资金额
+    minAmount = Column(DECIMAL(8, 2)) # 起投金额
+    repayType = Column(String(20)) #还款方式
+    term = Column(Integer()) #期数
+    apr = Column(DECIMAL(8, 2))#年化利率
+
+    @staticmethod
+    def fromLoan(loan):
+        info = LoanInfo()
+        info.ibid = loan.ibid
+        info.uniqKey = loan.uniqKey
+        info._hash = loan.__hash__
+        info.name = loan.name
+        info.minAmount = loan.minAmount
+        info.term = loan.term
+        info.apr = loan.apr
+        return info
+
+    def __repr__(self):
+        return "<Financing(name='%s', repayType='%s', term='%d', apr='%f', amount='%f', repay='%f')>" % (
+                self.name, self.repayType, self.term, self.apr, self.amount, self.replayAmount)
+
+    def __json__(self):
+        return ["id", "name","repayType", "term", "apr","amount","replayAmount"]
+    pass
+
+class FinancingInfo(CommonColumn):
+    # 表的名字:
+    __tablename__ = 'financing' #融资
+
+    # 表的结构:
+    id = Column(String(64), primary_key=True, autoincrement=False)
+    name = Column(String(50)) #名称
+    repaymentAmount = Column(DECIMAL(8, 2)) #还款总额
+    datetime = Column(DateTime())
+    recievedate = Column(String(20)) #应还日期
+    status = Column(String(20)) #还款状态
+    loan_id = Column(String(64), ForeignKey(LoanInfo.ibid))
+    loan = relationship(LoanInfo)
+
+    @staticmethod
+    def fromFinancing(financing):
+        info = FinancingInfo()
+        import uuid
+        info.id = str(uuid.uuid1())
+        info.name = financing.name
+        info.recievedate = financing.recievedate
+        info.repaymentAmount = financing.repaymentAmount
+        info.status = financing.status
+        info.loan = LoanInfo.fromLoan(financing.loan)
+        return info
+
+    def __repr__(self):
+        return "<Financing(name='%s')>" % (
+                self.name)
+        pass

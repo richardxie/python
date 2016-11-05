@@ -1,5 +1,5 @@
 #!/usr/bin/python2.7
-# ！-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 
 from yatang import Cookies
 from urllib2 import install_opener,build_opener,HTTPCookieProcessor

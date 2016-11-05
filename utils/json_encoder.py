@@ -32,3 +32,9 @@ def new_alchemy_encoder():
                 return data
             return json.JSONEncoder.default(self, o)
     return AlchemyEncoder
+
+def new_object_encoder():
+    class ObjectEncoder(json.JSONEncoder):
+        def default(self, o):
+            return o.__dict__  
+    return ObjectEncoder

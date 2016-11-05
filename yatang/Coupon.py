@@ -1,5 +1,5 @@
 #!/usr/bin/python2.7
-# ！-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 
 from urllib2 import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler
 from urllib import urlencode

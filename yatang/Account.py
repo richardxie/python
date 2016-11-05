@@ -1,5 +1,5 @@
 #!/usr/bin/python2.7
-# ！-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 
 from urllib2 import HTTPCookieProcessor,build_opener,install_opener, HTTPRedirectHandler
 from lxml.html import html5parser
@@ -62,7 +62,7 @@ class Account:
 
     
     def accountRequest(self):
-        response = utils.httpRequest(self.opener, yatang.YTURLBASESSL + "index.php?s=/Account/")
+        response = utils.httpRequest(self.opener, yatang.YTURLBASESSL + "/index.php?s=/Account/")
         if response.code == 200 :
             return Account.account_info(response)
 
