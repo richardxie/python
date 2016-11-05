@@ -8,14 +8,13 @@ define(['Console'], function (Console) {
     $scope.queue = RulesService.query();
   
     $scope.queueHead = {
-      id: 'ID'
-      , status: 'Status'
-      , name: 'Name'
-      , term: 'Term'
-      , operation: 'Operation'
+      name: '名称'
+      , term: '期限'
+      , status: '状态'
+      , operation: '操作'
     };
 
-    $scope.orderByCol = 'id';
+    $scope.orderByCol = 'name';
     $scope.orderByReversed = false;
 
     $scope.flipOrderBy = function(col) {

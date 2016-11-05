@@ -11,9 +11,10 @@
 
   <tbody>
     <tr ng:repeat="item in queue" >
-      <td>{{item.id}}</td>
       <td>{{item.borrowType}}</td>
       <td>{{item.term}}</td>
+      <td>{{item.enabled}}</td>
+      <td> <button ng-click="toggle(item.id)">toggle</button> </td>
     </tr>
   </tbody>
 </table>
