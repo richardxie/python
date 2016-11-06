@@ -3,17 +3,20 @@
 <table>
   <thead>
     <tr>
-      <th ng:repeat="(id, tableHead) in queueHead" scope="col">
-        <a ng:click="flipOrderBy( id )">{{tableHead}}</a>
+      <th ng:repeat="tableHead in queueHead" scope="col">
+          {{tableHead}}</a>
       </th>
     </tr>
   </thead>
 
   <tbody>
     <tr ng:repeat="item in queue" >
-      <td>{{item.borrowType}}</td>
-      <td>{{item.term}}</td>
-      <td>{{item.enabled}}</td>
+      <td>{{item.name}}</td>
+      <td>{{item.repaymentAmount}}</td>
+      <td>{{item.recievedate}}</td>
+      <td>{{item.loan.term}}</td>
+      <td>{{item.loan.apr}}%</td>
+      <td>{{item.status}}</td>
       <td> <button ng-click="toggle(item.id)">toggle</button> </td>
     </tr>
   </tbody>

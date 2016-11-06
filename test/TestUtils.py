@@ -42,7 +42,6 @@ Base.metadata.bind = engine
 class TestUtils(unittest.TestCase): 
     def setUp(self):
         utils.initSys()
-        pdb.set_trace()
         
         sys.path.append(os.path.dirname(os.path.dirname(__file__)))
         
@@ -86,9 +85,8 @@ class TestUtils(unittest.TestCase):
     def test_loan(self):
         c = Cookies("./")
         cookie = c.readCookie("richardxieq")
-        i = Invest(cookie)
-
-        print YTLoan.Loan.loanRequest(i.opener, '625994')
+        i = Invest('richardxieq',cookie, None)
+        print YTLoan.Loan.loanRequest(i.opener, {'id':'670629'})
         pass
 
     def test_welfare(self):
