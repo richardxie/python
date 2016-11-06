@@ -2,8 +2,9 @@ define([
   'text!templates/Home.html',
   'text!templates/Data.html',
   'text!templates/Signin.html',
-  'text!templates/Rules.html'
-],function(homeTemplate,dataTemplate, signinTemplate, rulesTemplate){
+  'text!templates/Rules.html',
+  'text!templates/Financing.html',
+],function(homeTemplate,dataTemplate, signinTemplate, rulesTemplate,financingTemplate){
   return {
     home: {
       title: 'Home'
@@ -28,6 +29,12 @@ define([
       , route: '/rules'
       , controller: 'rules'
       , template: rulesTemplate
+    }
+    , financing: {
+      title: '融资情况'
+      , route: '/financing'
+      , controller: 'financing'
+      , template: financingTemplate
     }
   };
 })

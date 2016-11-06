@@ -1,0 +1,20 @@
+<p>This is the template for Financing.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th ng:repeat="(id, tableHead) in queueHead" scope="col">
+        <a ng:click="flipOrderBy( id )">{{tableHead}}</a>
+      </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr ng:repeat="item in queue" >
+      <td>{{item.borrowType}}</td>
+      <td>{{item.term}}</td>
+      <td>{{item.enabled}}</td>
+      <td> <button ng-click="toggle(item.id)">toggle</button> </td>
+    </tr>
+  </tbody>
+</table>

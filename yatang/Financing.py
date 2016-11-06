@@ -44,7 +44,7 @@ class Financing():
                     status = element[7].text.strip()
                     financing = Financing(name, date, repaymentAmount, status)
                     financing.loan = Loan.Loan.loanRequest(opener, {'path':ibid, 'time_limit':15})
-                    time.sleep(0.5) #避免频繁请求，被流控
+                    time.sleep(0.2) #避免频繁请求，被流控
                     session = Session()
                     query = session.query(FinancingInfo).filter(FinancingInfo.name == name, FinancingInfo.status == status)
                     if query.count() == 0:
@@ -56,7 +56,7 @@ class Financing():
         except Exception, e:
             print e
             traceback.print_exc() 
-            logger.warn("oops, parse walfare html failed!")
+            logger.warn("oops, parse financing html failed!")
         #update 已还
         names = map(lambda x: x.name, financing_list)
 

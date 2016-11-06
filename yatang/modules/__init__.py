@@ -148,8 +148,11 @@ class LoanInfo(CommonColumn):
     amount = Column(DECIMAL(8, 2)) #融资金额
     minAmount = Column(DECIMAL(8, 2)) # 起投金额
     repayType = Column(String(20)) #还款方式
-    term = Column(Integer()) #期数
+    term = Column(String(20)) #期限
+    limit = Column(Integer(), default=1) #期数
     apr = Column(DECIMAL(8, 2))#年化利率
+    repaymentAmount = Column(DECIMAL(8, 2)) #还款总额
+
 
     @staticmethod
     def fromLoan(loan):
@@ -161,10 +164,12 @@ class LoanInfo(CommonColumn):
         info.minAmount = loan.minAmount
         info.term = loan.term
         info.apr = loan.apr
+        info.repaymentAmount = loan.repaymentAmount
+        info.repayType = loan.repayType
         return info
 
     def __repr__(self):
-        return "<Financing(name='%s', repayType='%s', term='%d', apr='%f', amount='%f', repay='%f')>" % (
+        return "<Financing(name='%s', repayType='%s', term='%s', apr='%f', amount='%f', repay='%f')>" % (
                 self.name, self.repayType, self.term, self.apr, self.amount, self.replayAmount)
 
     def __json__(self):

@@ -12,8 +12,9 @@ define([
   , 'controllers/DataController'
   , 'controllers/SigninController'
   , 'controllers/RulesController'
+  , 'controllers/FinancingController'
 
-], function (Console, _, routes, app, home,data, signin, rules) {
+], function (Console, _, routes, app, home,data, signin, rules, financing) {
   "use strict";
   Console.group("Entering controllers module.");
   Console.info("AppController", app);
@@ -22,7 +23,8 @@ define([
     home: home,
     data: data,
     signin: signin,
-    rules: rules
+    rules: rules,
+    financing:financing
   };
 
 

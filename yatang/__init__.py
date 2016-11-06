@@ -19,9 +19,6 @@ YT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20
 USING_MYSQL = True
 SIGNIN = True
 
-SUPPLY_CHAIN_BID = '1' #供应链金融标
-WELFARE_BID = '5' #秒标
-
 if USING_MYSQL:
     db_name = 'mysql+pymysql://%s:%s@%s:%s/%s?charset=utf8mb4'%(db_config['mysql-dev']['user'],
                                                           db_config['mysql-dev']['password'],
@@ -42,3 +39,15 @@ Base.metadata.bind = engine
 
 import os, sys
 sys.path.append(os.path.dirname(__file__))
+
+SUPPLY_CHAIN_BID = '1' #供应链金融标
+WELFARE_BID = '5' #秒标
+def borrowTypeName(borrowType):
+	names = {
+			'1':'供应链金融标 - 企业标'
+			,'5':'秒标-开心利是'
+			,'6':'净值标-资产一号'
+			,'7':'净值标-资产二号'
+			,'9':'供应链金融标 - 创业标'
+			} 
+	return names[borrowType];

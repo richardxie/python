@@ -4,14 +4,14 @@
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
 import utils, yatang, logging
-from yatang import YTURLBASESSL
+from yatang import YTURLBASESSL, borrowTypeName
 import pdb,traceback
 
 logger = logging.getLogger("app")
 
 from Borrow import Borrow
 class Loan(Borrow): 
-    def __init__(self, __hash__, ibid, bt, bn, name, cash, minAmount, uniqKey, uid, term, apr):
+    def __init__(self, __hash__, ibid, bt, bn, name, cash, minAmount, uniqKey, uid, term, apr, repayType,repaymentAmount):
         Borrow.__init__(self, ibid, bt, bn)
         self.name = name
         self.__hash__ = __hash__
@@ -21,10 +21,12 @@ class Loan(Borrow):
         self.uid = uid
         self.term = term
         self.apr = apr
+        self.repaymentAmount=repaymentAmount
+        self.repayType = repayType
           
     def __repr__(self):
-        return "<Loan(ibid='%s', borrowType='%s', borrowNum='%s')>" % (
-                self.ibid, self.borrowType, self.borrowNum)
+        return "<Loan(ibid='%s', borrowType='%s', borrowNum='%s', 期限 = '%s', 还款方式='%s', 还款总额='%s', 年利率='%.2f')>" % (
+                self.ibid, self.borrowType, self.borrowNum, self.term, self.repayType, self.repaymentAmount, self.apr)
 
     @staticmethod
     def loan_info(html, info = None):
@@ -49,7 +51,7 @@ class Loan(Borrow):
                 borrowNum=''
             borrowType_element = dom.xpath('//*[@id="iborrowtype"]')
             if borrowType_element and len(borrowType_element) > 0:
-                borrowType = borrowType_element[0].attrib['value']
+                borrowType = borrowTypeName(borrowType_element[0].attrib['value'])
             else:
                 borrowType=''
             hash_element = dom.xpath("//input[@type='hidden' and @name='__hash__']/@value")
@@ -92,7 +94,25 @@ class Loan(Borrow):
             else:
                 print("apr unknown")
                 apr = 0
- 
+
+            repayType_element = dom.xpath('/html/body/div[2]/div[1]/div[2]/div[1]/div[2]/div[3]/div[2]/span')
+            if repayType_element and len(repayType_element) > 0:
+                repayType = repayType_element[0].text
+            else:
+                repayType = '按月分期'
+
+            repayAmount_element = dom.xpath('/html/body/div[2]/div[1]/div[2]/div[1]/div[3]/div[1]/div[2]/div[2]')
+            if repayAmount_element and len(repayAmount_element) > 0:
+                repayAmount = utils.money(repayAmount_element[0].text)
+            else:
+                repayAmount = 0
+
+            term_element = dom.xpath('/html/body/div[2]/div[1]/div[2]/div[1]/div[2]/div[2]/div[2]')
+            if term_element and len(term_element) > 0:
+                term = term_element[0].text
+            else:
+                term = '1个月'
+
             return Loan(
                 name = name,
                 __hash__=hash_value,
@@ -103,8 +123,10 @@ class Loan(Borrow):
                 minAmount=minAmount,
                 uniqKey=uniqKey,
                 uid = uid,
-                term = 30,
-                apr = apr
+                term = term,
+                apr = apr,
+                repaymentAmount = repayAmount,
+                repayType = repayType
                 )
         except:
             logger.warn("oops, parse Loan html failed!")
