@@ -15,6 +15,7 @@ from urllib import urlencode
 from cookielib import MozillaCookieJar
 from flask import Blueprint,request, Response, json, jsonify
 from utils.json_encoder import new_object_encoder
+from task import Financing_daily_task
 
 USING_MYSQL = True
 
@@ -122,10 +123,15 @@ class TestUtils(unittest.TestCase):
     def test_financing(self):
         c = Cookies("./")
         cookie = c.readCookie("richardxieq")
-        opener = build_opener(HTTPCookieProcessor(cookie), HTTPRedirectHandler())
-        response = opener.open('https://jr.yatang.cn/Account/FinancingManagement/title/ReimbDetail')
-        l = Financing.Financing.financing_info2(response, opener)
+        financing = Financing.Financing(name = 'richardxieq', cookie = cookie)
+
+        l = financing.financingRequestPagable()
         print json.dumps(l, cls=new_object_encoder(), check_circular=False, sort_keys=True)
+        pass
+
+    def test_financing_task(self):
+        task = Financing_daily_task()
+        print json.dumps(task.dailyCheck(), cls=new_object_encoder(), check_circular=False, sort_keys=True)
         pass
 
     def test_encryptPassword(self):

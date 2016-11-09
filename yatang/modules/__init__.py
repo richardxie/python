@@ -169,11 +169,11 @@ class LoanInfo(CommonColumn):
         return info
 
     def __repr__(self):
-        return "<Financing(name='%s', repayType='%s', term='%s', apr='%f', amount='%f', repay='%f')>" % (
-                self.name, self.repayType, self.term, self.apr, self.amount, self.replayAmount)
+        return "<Financing(name='%s', repayType='%s', term='%s', apr='%f', amount='%f', repaymentAmount='%f')>" % (
+                self.name, self.repayType, self.term, self.apr, self.amount, self.repaymentAmount)
 
     def __json__(self):
-        return ["id", "name","repayType", "term", "apr","amount","replayAmount"]
+        return ["id", "name","repayType", "term", "apr","amount","repaymentAmount"]
     pass
 
 class FinancingInfo(CommonColumn):

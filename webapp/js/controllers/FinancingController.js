@@ -5,7 +5,7 @@ define(['Console'], function (Console) {
   var controller = ['$scope', 'FinancingService', function ($scope,FinancingService) {
     Console.group("FinancingController entered.");
 
-    $scope.queue = FinancingService.query();
+    $scope.queue = FinancingService.queryme();
   
     $scope.queueHead = ['项目标题','还款总额', '应还日期', '期限', '利率', '状态','操作'];
 
