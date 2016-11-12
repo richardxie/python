@@ -1,7 +1,7 @@
 #!/usr/bin/python2.7
 # -*- coding: utf-8 -*- 
 
-from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler
+from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler, URLError, HTTPError
 from urllib import urlencode
 from math import floor
 import yatang, json, logging, math
@@ -79,7 +79,7 @@ class Invest:
                 'user_id': '54808'
             }
             buyinfo = self.buyRequest(values)
-            if('tnum' in buyinfo):
+            if buyinfo and 'tnum' in buyinfo:
                 session = yatang.Session()
                 query = session.query(WelfareInfo).filter(WelfareInfo.ibid == welfare.ibid)
                 if query.count() == 0:
@@ -97,15 +97,20 @@ class Invest:
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
         req = Request(yatang.YTURLBASESSL + '/Invest/checkppay', data.encode(encoding='UTF8'), headers)
-        response = self.opener.open(req)
-        if response.code == 200 :
-            resp_data =response.read().decode()
-            try:
+        jsonresp = {}
+        try:
+            response = self.opener.open(req, timeout=30)
+            if response.code == 200 :
+                resp_data =response.read().decode()
                 jsonresp = json.loads(resp_data)
-            except ValueError:
-                logger.warn("data was not valid JSON")
-                logger.warn(resp_data)
-                jsonresp = {}
+        except URLError as e:
+            logger.warn(e)
+        except HTTPError as h:
+             logger.warn(h)
+        except ValueError: 
+            logger.warn("data was not valid JSON")
+            logger.warn(resp_data)
+            
         return jsonresp
 
     def tender_info(self, borrow_num, tnum):
@@ -119,16 +124,21 @@ class Invest:
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
         req = Request(yatang.YTURLBASE + 'Public/tenderinfo', data.encode(encoding='UTF8'), headers)
-        response = self.opener.open(req)
-        if response.code == 200 :
-            resp_data =response.read().decode()
-            try:
+        jsonresp = {}
+        try:
+            response = self.opener.open(req, timeout=30)
+            if response.code == 200 :
+                resp_data =response.read().decode()
                 jsonresp = json.loads(resp_data)
-            except ValueError:
-                logger.warn("data was not valid JSON")
-                logger.warn(resp_data)
-                jsonresp = {}
-            return jsonresp
+        except URLError as e:
+            logger.warn(e)
+        except HTTPError as h:
+             logger.warn(h)
+        except ValueError:
+            logger.warn("data was not valid JSON")
+            lgger.warn(resp_data)
+           
+        return jsonresp
     
     def investListRequest(self, typeList=[5]):
         values = {
@@ -142,19 +152,21 @@ class Invest:
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
         req = Request(yatang.YTURLBASE + 'index.php?s=/Invest/GetBorrowlist', data.encode(encoding='UTF8'), headers)
-        response = self.opener.open(req)
-        if response.code == 200:
-            resp_data = response.read().decode()
-            try:
+        aList = []
+        try:
+            response = self.opener.open(req, timeout=30)
+            if response.code == 200:
+                resp_data = response.read().decode()
                 jsonresp = json.loads(resp_data)
-            except ValueError:
-                logger.warn("data was not valid JSON")
-                logger.warn(resp_data)
-                return [];
+        except URLError as e:
+            logger.warn(e)
+        except HTTPError as h:
+             logger.warn(h)
+        except ValueError:
+            logger.warn("data was not valid JSON")
+            logger.warn(resp_data)
         
-
             if(len(typeList)):
-                aList = []
                 for loan in jsonresp['data']['Rows']:
                     bt = int(loan['borrow_type'])
                     if bt in typeList:
@@ -162,8 +174,6 @@ class Invest:
                             aList.append(loan)
                         else:
                             aList.append(loan)
-                return aList
             else:
-                return jsonresp['data']['Rows']
-        else:
-            return []
+                aList = jsonresp['data']['Rows']
+        return aList;
