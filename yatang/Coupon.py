@@ -29,10 +29,14 @@ class Coupon:
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
         req = Request(yatang.YTURLBASE + 'Ajax/getUserCoupon', data.encode(encoding='UTF8'), headers)
-        response = self.opener.open(req)
-        if response.code == 200:
-            jsonresp = json.loads(response.read().decode())
-            print(jsonresp)
-            return jsonresp
-        else:
-            return None
+        jsonresp = None;
+        try:
+            response = self.opener.open(req, timeout=30)
+            if response.code == 200:
+                jsonresp = json.loads(response.read().decode())
+        except URLError, e:
+            loadsgging.getLogger("app").warn(e)
+        except HTTPError as h:
+            logging.getLogger("app").warn(h)
+
+         return jsonresp

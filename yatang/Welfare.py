@@ -94,6 +94,6 @@ class Welfare(Borrow):
     @staticmethod
     def walfareRequest(opener):
         resp = utils.httpRequest(opener, yatang.YTURLBASESSL + "/Financial/welfare")
-        if resp.code == 200:
+        if resp and resp.code == 200:
             return Welfare.welfare_info(resp)
     

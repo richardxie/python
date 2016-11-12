@@ -142,7 +142,7 @@ class Loan(Borrow):
             url = YTURLBASESSL + info['path']
         print url
         response = utils.httpRequest(opener, url)
-        if response.code == 200:
+        if response and response.code == 200:
             return Loan.loan_info(response, info)
         else:
             return None

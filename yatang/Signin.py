@@ -35,7 +35,7 @@ class Signin:
                 return
         #Checkin
         response = utils.httpRequest(self.opener, yatang.YTURLBASE + "TaskCenter/checkins")
-        if response.code == 200:
+        if response and response.code == 200:
             data = json.load(response)
             
             if(query.count() == 0):

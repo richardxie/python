@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- 
 
 from EmailUtils import EmailUtils
-from urllib2 import Request
+from urllib2 import Request, URLError, HTTPError
 from PyV8 import JSContext
 import logging, logging.config, threading
 from random import randint
@@ -11,14 +11,17 @@ import yaml, sys, os
 Salt = '1234qwer'
 
 def initSys():
+    # UTF-8
     if sys.getdefaultencoding() != 'utf-8':
         reload(sys)
         sys.setdefaultencoding('utf-8')
     
+    # logging
     with open("logging-conf.yaml") as f:
         D = yaml.load(f)
         logging.config.dictConfig(D)
 
+    #System path
     sys.path.append(os.path.dirname(__file__))
     pythonpath = os.getenv('PYTHONPATH')
     if pythonpath is not None:
@@ -26,11 +29,24 @@ def initSys():
         for path in paths:
             if not path in sys.path:
                 sys.path.append(path)
+
+    #socket timeout
+    import socket
+    socket.setdefaulttimeout(10.0) 
+
     pass
 
 def httpRequest(opener, url):
     request = Request(url)
-    response = opener.open(request)
+    try:
+        response = opener.open(request, timeout=20)
+    except URLError, e:
+        print e
+        logging.getLogger("app").warn(e)
+     except HTTPError as h:
+        print h
+        logging.getLogger("app").warn(h)
+ 
     return response
 
 def encryptPassword(password, verifycode):

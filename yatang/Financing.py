@@ -90,6 +90,6 @@ class Financing():
             url = yatang.YTURLBASESSL + info['next_page_url']
         print url
         resp = utils.httpRequest(self.opener, url)
-        if resp.code == 200:
+        if resp and resp.code == 200:
             return self.financing_info2(resp)
     
