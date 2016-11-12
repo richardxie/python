@@ -39,4 +39,4 @@ class Coupon:
         except HTTPError as h:
             logging.getLogger("app").warn(h)
 
-         return jsonresp
+        return jsonresp

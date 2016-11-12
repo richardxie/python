@@ -43,7 +43,7 @@ def httpRequest(opener, url):
     except URLError, e:
         print e
         logging.getLogger("app").warn(e)
-     except HTTPError as h:
+    except HTTPError as h:
         print h
         logging.getLogger("app").warn(h)
  
