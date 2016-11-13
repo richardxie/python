@@ -92,7 +92,7 @@ class Signin:
         return res
     
     def loginRequest(self):
-        logger.info(self.username + ' wants to login.')
+        logger.info(self.username + ' wants to login 投之家.')
         values = {
             'url':'https://account.touzhijia.com',
             'remeber':1,
@@ -105,9 +105,14 @@ class Signin:
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
         req = Request(tzj.TZJURLBASESSL + 'signin.html', data, headers)
-        response = self.opener.open(req)
+        try:
+            response = self.opener.open(req, timeout = 30)
     
-        if(response.getcode() == 200):
-            return True
+            if(response.getcode() == 200):
+                return True
+        except URLError, e:
+            logger.warn(e)
+        except HTTPError as h:
+            logger.warn(h)
         
         return False

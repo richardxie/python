@@ -31,17 +31,15 @@ def financings(user):
     if query.count() == 0:
         data = {
             'errorCode':'002',
-            'errorMsg':'用户名不存在'
+            'errorMsg':'鐢ㄦ埛鍚嶄笉瀛樺湪'
         }
         info = json.dumps(data)
     else:
-        print '222222222222222222222222'
-        query = session.query(FinancingInfo).filter(FinancingInfo.status == '未还')
-        print '1111111111111111'
+        query = session.query(FinancingInfo).filter(FinancingInfo.status == '鏈繕')
         if query.count() == 0:
             data = {
                 'errorCode':'001',
-                'errorMsg':'没有未还融资'
+                'errorMsg':'娌℃湁鏈繕铻嶈祫'
             }
             info = json.dumps(data)
         else:
@@ -58,15 +56,15 @@ def financing(user, title):
     if query.count() == 0:
         data = {
             'errorCode':'002',
-            'errorMsg':'用户名不存在'
+            'errorMsg':'鐢ㄦ埛鍚嶄笉瀛樺湪'
         }
         info = json.dumps(data)
     else:
-        query = session.query(FinancingInfo).filter(FinancingInfo.name == title, FinancingInfo.status == '未还')
+        query = session.query(FinancingInfo).filter(FinancingInfo.name == title, FinancingInfo.status == '鏈繕')
         if query.count() == 0:
             data = {
                 'errorCode':'001',
-                'errorMsg':'没有未还融资'
+                'errorMsg':'娌℃湁鏈繕铻嶈祫'
             }
             info = json.dumps(data)
         else:

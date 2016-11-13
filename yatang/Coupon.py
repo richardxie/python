@@ -35,7 +35,7 @@ class Coupon:
             if response.code == 200:
                 jsonresp = json.loads(response.read().decode())
         except URLError, e:
-            loadsgging.getLogger("app").warn(e)
+            logging.getLogger("app").warn(e)
         except HTTPError as h:
             logging.getLogger("app").warn(h)
 
