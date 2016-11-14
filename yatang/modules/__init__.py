@@ -203,9 +203,12 @@ class FinancingInfo(CommonColumn):
         info.repaymentAmount = financing.repaymentAmount
         info.status = financing.status
         info.loan = LoanInfo.fromLoan(financing.loan)
+        info.user_id = financing.userId
         return info
 
     def __repr__(self):
         return "<FinancingInfo(标题='%s', 还款总额='%.2f', 状态='%s')>" % (
                 self.name, self.repaymentAmount, self.status)
-        pass
+     
+    def __json__(self):
+        return ["id", "name","datetime", "user_id", "loan_id","recievedate","repaymentAmount", "status"]
