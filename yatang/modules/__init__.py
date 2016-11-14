@@ -190,6 +190,9 @@ class FinancingInfo(CommonColumn):
     loan_id = Column(String(64), ForeignKey(LoanInfo.ibid))
     loan = relationship(LoanInfo)
 
+    user_id = Column(String(64), ForeignKey(UserInfo.id))
+    user = relationship(UserInfo)
+
     @staticmethod
     def fromFinancing(financing):
         info = FinancingInfo()
@@ -203,6 +206,6 @@ class FinancingInfo(CommonColumn):
         return info
 
     def __repr__(self):
-        return "<Financing(name='%s')>" % (
-                self.name)
+        return "<FinancingInfo(标题='%s', 还款总额='%.2f', 状态='%s')>" % (
+                self.name, self.repaymentAmount, self.status)
         pass

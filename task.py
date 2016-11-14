@@ -7,11 +7,14 @@ from yatang import  Cookies, Signin, Invest, Account, Session
 from yatang.Loan import Loan
 from yatang.Welfare import Welfare
 from yatang.modules import UserInfo
+from yatang.Financing import Financing
 import yatang, tzj, utils, time, base64, logging
 from Queue import Queue
 from random import randint
 from tzj import Signin as TZJSignin
 from tzj import signin_names as tzj_signin_names
+from modules import LoanInfo, FinancingInfo
+import pdb
 
 logger = logging.getLogger("app")
 c = Cookies("./")
@@ -137,3 +140,30 @@ class tender_task(Thread):
         pass
 
     pass
+
+class Financing_daily_task():
+    def dailyCheck(self):
+        cookie = c.readCookie("richardxieq")
+        financing = Financing(name = 'richardxieq', cookie = cookie)
+        financing_list = financing.financingRequestPagable()
+        names = map(lambda x: x.name, financing_list)
+
+        session = Session()
+        query = session.query(FinancingInfo).filter(~FinancingInfo.name.in_(names));
+
+        for row in query.all():
+            print row
+            row.status = '已还'
+
+        session.commit()
+
+
+        return financing_list
+    pass
+
+if __name__ == '__main__':
+    print 'cron job: 融资信息同步器'
+    #初始化
+    utils.initSys()
+    Financing_daily_task().dailyCheck()
+
