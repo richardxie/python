@@ -12,10 +12,10 @@ from utils.json_encoder import new_alchemy_encoder
 from hashlib import md5
 from datetime import datetime
 from webservice import app
-from web2 import web2
+import web2
 
 logger = logging.getLogger("web")
-app.register_blueprint(web2)
+app.register_blueprint(web2.web2)
 @app.route("/")
 def index():
     logger.info("index page!")

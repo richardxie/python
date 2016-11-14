@@ -1,9 +1,9 @@
 #!/usr/bin/python2.7
 # -*- coding: utf-8 -*- 
 
-from urllib2 import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler
+from urllib2 import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
 from urllib import urlencode
-import yatang, json
+import yatang, json, logging
 
 class Coupon: 
     def __init__(self, cookie, borrowNum):

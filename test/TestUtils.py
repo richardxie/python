@@ -2,20 +2,22 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+from datetime import datetime
+import pdb, sys, os
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import tesserpy, cv2
+
+from conf import db_config
+from task import Financing_daily_task
+import utils, PyV8
+from utils.json_encoder import new_object_encoder
+
 from yatang import Cookies, Account, Coupon, Invest, Welfare, Financing
 import yatang.Loan as YTLoan
 from yatang.modules import WelfareInfo, AccountInfo, SigninInfo, Base
-from datetime import datetime
-from conf import db_config
-import utils, PyV8
-import pdb, sys, os
-import tesserpy, cv2
-from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler
-from urllib import urlencode
-from cookielib import MozillaCookieJar
-from flask import Blueprint,request, Response, json, jsonify
-from utils.json_encoder import new_object_encoder
-from task import Financing_daily_task
+from flask import json
 
 USING_MYSQL = True
 
@@ -30,10 +32,10 @@ else:
 
 print db_name
 
-from sqlalchemy import create_engine
+
 engine = create_engine(db_name, pool_size=100, pool_recycle=3600, echo=True)
  
-from sqlalchemy.orm import sessionmaker
+
 Session = sessionmaker()
 Session.configure(bind=engine)
 
@@ -70,11 +72,8 @@ class TestUtils(unittest.TestCase):
         c = Cookies("./")
         cookie = c.readCookie("richardxieq")
         account = Account(cookie).accountRequest()
-        session.add(account)
-        session.commit()
         aAccount = session.query(AccountInfo).filter_by(name='richardxieq').first()
         self.assertTrue(account.name == 'richardxieq')
-        self.assertTrue(account == aAccount)
         pass 
 
     def test_coupon(self):

@@ -49,10 +49,10 @@ def financings(user):
 
 @web2.route("/<user>/financing/<title>")
 def financing(user, title):
-    logger.info('query financing( %s) for %s '%(title, name))
+    logger.info('query financing( %s) for %s '%(title, user))
 
     session = Session()
-    query = session.query(UserInfo).filter(UserInfo.name == username, UserInfo.website == 'yt')
+    query = session.query(UserInfo).filter(UserInfo.name == user, UserInfo.website == 'yt')
     if query.count() == 0:
         data = {
             'errorCode':'002',

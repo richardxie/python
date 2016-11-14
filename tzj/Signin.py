@@ -1,11 +1,11 @@
 #!/usr/bin/python2.7
 # -*- coding: utf-8 -*- 
 
-from urllib2 import build_opener, HTTPCookieProcessor, Request
+from urllib2 import build_opener, HTTPCookieProcessor, Request, URLError, HTTPError
 from urllib import urlencode
 from cookielib import MozillaCookieJar
 from utils import EmailUtils
-import base64, json, logging
+import json, logging
 import tzj, yatang
 from yatang.modules import SigninInfo, UserInfo
 from datetime import datetime
