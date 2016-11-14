@@ -43,11 +43,11 @@ sys.path.append(os.path.dirname(__file__))
 SUPPLY_CHAIN_BID = '1' #供应链金融标
 WELFARE_BID = '5' #秒标
 def borrowTypeName(borrowType):
-	names = {
-			'1':'供应链金融标 - 企业标'
-			,'5':'秒标-开心利是'
-			,'6':'净值标-资产一号'
-			,'7':'净值标-资产二号'
-			,'9':'供应链金融标 - 创业标'
-			} 
-	return names[borrowType];
+    names = {
+            '1':'供应链金融标 - 企业标'
+            ,'5':'秒标-开心利是'
+            ,'6':'净值标-资产一号'
+            ,'7':'净值标-资产二号'
+            ,'9':'供应链金融标 - 创业标'
+            } 
+    return names[borrowType];

@@ -133,7 +133,7 @@ class Invest:
         except URLError as e:
             logger.warn(e)
         except HTTPError as h:
-             logger.warn(h)
+            logger.warn(h)
         except ValueError:
             logger.warn("data was not valid JSON")
             lgger.warn(resp_data)
@@ -161,7 +161,7 @@ class Invest:
         except URLError as e:
             logger.warn(e)
         except HTTPError as h:
-             logger.warn(h)
+            logger.warn(h)
         except ValueError:
             logger.warn("data was not valid JSON")
             logger.warn(resp_data)

@@ -16,7 +16,7 @@ from utils.json_encoder import new_object_encoder
 
 from yatang import Cookies, Account, Coupon, Invest, Welfare, Financing
 import yatang.Loan as YTLoan
-from yatang.modules import WelfareInfo, AccountInfo, SigninInfo, Base
+from yatang.modules import UserInfo, WelfareInfo, AccountInfo, SigninInfo, Base
 from flask import json
 
 USING_MYSQL = True
@@ -122,7 +122,14 @@ class TestUtils(unittest.TestCase):
     def test_financing(self):
         c = Cookies("./")
         cookie = c.readCookie("richardxieq")
-        financing = Financing.Financing(name = 'richardxieq', cookie = cookie)
+        session = Session()
+        query = session.query(UserInfo).filter(UserInfo.name == 'richardxieq', UserInfo.website == 'yt')
+        if query.count() == 0:
+            return
+            
+        user_info = query.one()
+
+        financing = Financing.Financing(name = '≤‚ ‘', userId = user_info.id, cookie = cookie)
 
         l = financing.financingRequestPagable()
         print json.dumps(l, cls=new_object_encoder(), check_circular=False, sort_keys=True)

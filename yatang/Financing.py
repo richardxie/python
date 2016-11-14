@@ -15,7 +15,7 @@ import pdb
 logger = logging.getLogger('app')
 
 class Financing(): 
-    def __init__(self, name, cookie=None, date = None, repayment = None, status = None):
+    def __init__(self, name, cookie=None, userId = None, date = None, repayment = None, status = None):
         self.name = name
         self.recievedate = date
         self.repaymentAmount = repayment
@@ -24,6 +24,7 @@ class Financing():
         if cookie:
             self.opener = build_opener(HTTPCookieProcessor(self.cookie))
             install_opener(self.opener)
+        self.userId = userId
           
     def __repr__(self):
         return "<Financing(项目标题='%s', 应还日期='%s', 还款总额='%f', 还款状态='%s', 年利率='%f')>" % (
@@ -52,7 +53,7 @@ class Financing():
                     ibid = element[3][0].attrib['href']
                     repaymentAmount = utils.money(element[4].text)
                     status = element[7].text.strip()
-                    financing = Financing(name = name, date=date, repayment=repaymentAmount, status=status)
+                    financing = Financing(name = name, userId = self.userId, date=date, repayment=repaymentAmount, status=status)
                     financing.loan = Loan.Loan.loanRequest(self.opener, {'path':ibid, 'time_limit':15})
                     time.sleep(0.2) #避免频繁请求，被流控
                     session = Session()
