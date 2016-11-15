@@ -6,15 +6,13 @@ from sched import scheduler
 from yatang import  Cookies, Signin, Invest, Account, Session
 from yatang.Loan import Loan
 from yatang.Welfare import Welfare
-from yatang.modules import UserInfo
+from yatang.modules import UserInfo, FinancingInfo
 from yatang.Financing import Financing
 import yatang, tzj, utils, time, base64, logging
 from Queue import Queue
 from random import randint
 from tzj import Signin as TZJSignin
 from tzj import signin_names as tzj_signin_names
-from modules import LoanInfo, FinancingInfo
-import pdb
 
 logger = logging.getLogger("app")
 c = Cookies("./")
@@ -143,8 +141,16 @@ class tender_task(Thread):
 
 class Financing_daily_task():
     def dailyCheck(self):
-        cookie = c.readCookie("richardxieq")
-        financing = Financing(name = 'richardxieq', cookie = cookie)
+        username = 'richardxieq'
+        cookie = c.readCookie(username)
+        session = Session()
+
+        query = session.query(UserInfo).filter(UserInfo.name == username, UserInfo.website == 'yt')
+        if query.count() == 0:
+            return
+        user_info = query.one()
+
+        financing = Financing(name = 'richardxieq', cookie = cookie, userId = user_info.id)
         financing_list = financing.financingRequestPagable()
         names = map(lambda x: x.name, financing_list)
 

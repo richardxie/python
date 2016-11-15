@@ -129,7 +129,7 @@ class TestUtils(unittest.TestCase):
             
         user_info = query.one()
 
-        financing = Financing.Financing(name = '²âÊÔ', userId = user_info.id, cookie = cookie)
+        financing = Financing.Financing(name = 'æµ‹è¯•', userId = user_info.id, cookie = cookie)
 
         l = financing.financingRequestPagable()
         print json.dumps(l, cls=new_object_encoder(), check_circular=False, sort_keys=True)

@@ -23,7 +23,8 @@ RUN pip install html5lib && \
 	pip install Flask && \
 	pip install uwsgi && \
 	pip install SQLAlchemy && \
-	pip install supervisor-stdout
+	pip install supervisor-stdout && \
+	pip install python-crontab
 
 
 WORKDIR /usr/src/app/python

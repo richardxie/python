@@ -36,5 +36,5 @@ def new_alchemy_encoder():
 def new_object_encoder():
     class ObjectEncoder(json.JSONEncoder):
         def default(self, o):
-            return o.__dict__  
+            return o.__dict__  if hasattr(o, '__dict__') else None
     return ObjectEncoder

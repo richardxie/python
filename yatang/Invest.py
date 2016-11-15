@@ -136,7 +136,7 @@ class Invest:
             logger.warn(h)
         except ValueError:
             logger.warn("data was not valid JSON")
-            lgger.warn(resp_data)
+            logger.warn(resp_data)
            
         return jsonresp
     
