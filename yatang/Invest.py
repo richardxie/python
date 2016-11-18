@@ -166,14 +166,15 @@ class Invest:
             logger.warn("data was not valid JSON")
             logger.warn(resp_data)
         
-            if(len(typeList)):
-                for loan in jsonresp['data']['Rows']:
-                    bt = int(loan['borrow_type'])
-                    if bt in typeList:
-                        if bt in [1, 9] and int(loan["time_limit"]) == 3:
-                            aList.append(loan)
-                        else:
-                            aList.append(loan)
-            else:
-                aList = jsonresp['data']['Rows']
+        if(len(typeList)):
+            for loan in jsonresp['data']['Rows']:
+                bt = int(loan['borrow_type'])
+                if bt in typeList:
+                    if bt in [1, 9] and int(loan["time_limit"]) == 3:
+                        aList.append(loan)
+                    else:
+                        aList.append(loan)
+        else:
+            aList = jsonresp['data']['Rows']
+            
         return aList;
