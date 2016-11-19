@@ -5,10 +5,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, Integer, DECIMAL, Boolean, DateTime, func, ForeignKey
 from datetime import datetime
 from sqlalchemy.orm import relationship
+from marshmallow import Schema, fields, ValidationError, pre_load
 
 import os, sys
 sys.path.append(os.path.dirname(__file__))
 
+##### MODELS #####
 Base = declarative_base()
 class CommonColumn(Base):
     __abstract__ = True
@@ -202,6 +204,7 @@ class FinancingInfo(CommonColumn):
         info.recievedate = financing.recievedate
         info.repaymentAmount = financing.repaymentAmount
         info.status = financing.status
+        info.loan_id = financing.loan.ibid
         info.loan = LoanInfo.fromLoan(financing.loan)
         info.user_id = financing.userId
         return info
@@ -211,4 +214,18 @@ class FinancingInfo(CommonColumn):
                 self.name, self.repaymentAmount, self.status)
      
     def __json__(self):
-        return ["id", "name","datetime", "user_id", "loan_id","recievedate","repaymentAmount", "status"]
+        return ["id", "name","datetime", "user_id", "loan_id","recievedate","repaymentAmount", "status", "loan"]
+
+##### SCHEMAS #####
+class LoanSchema(Schema):
+    ibid = fields.Str(dump_only=True)
+    name = fields.Str()
+    term = fields.Str()
+    apr  = fields.Decimal()
+
+class FinancingSchema(Schema):
+    id = fields.uuid(dump_only=True)
+    name = fields.Str()
+    recievedate = fields.Str()
+    repaymentAmount  = fields.Decimal()
+    loan = fields.Nested(LoanSchema)

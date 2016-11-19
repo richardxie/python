@@ -16,7 +16,7 @@ from utils.json_encoder import new_object_encoder
 
 from yatang import Cookies, Account, Coupon, Invest, Welfare, Financing
 import yatang.Loan as YTLoan
-from yatang.modules import UserInfo, WelfareInfo, AccountInfo, SigninInfo, Base
+from yatang.modules import UserInfo, WelfareInfo, AccountInfo, SigninInfo, Base, FinancingInfo, FinancingSchema
 from flask import json
 
 USING_MYSQL = True
@@ -133,6 +133,14 @@ class TestUtils(unittest.TestCase):
 
         l = financing.financingRequestPagable()
         print json.dumps(l, cls=new_object_encoder(), check_circular=False, sort_keys=True)
+        pass
+
+    def test_financingInfo(self):
+        session = Session()
+        query = session.query(FinancingInfo).filter(FinancingInfo.status == '未还')
+
+        financings_schema = FinancingSchema(many=True)
+        prnt financings_schema.dump(query.all())
         pass
 
     def test_financing_task(self):
