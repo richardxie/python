@@ -140,7 +140,7 @@ class TestUtils(unittest.TestCase):
         query = session.query(FinancingInfo).filter(FinancingInfo.status == '未还')
 
         financings_schema = FinancingSchema(many=True)
-        prnt financings_schema.dump(query.all())
+        print financings_schema.dump(query.all())
         pass
 
     def test_financing_task(self):
