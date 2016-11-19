@@ -117,7 +117,6 @@ class tender_task(Thread):
             if query.count() == 0:
                 continue
             user_info = query.one()
-            trade_password = base64.b64decode(user_info.trade_password)
             i = Invest(name = username, cookie=cookie, task = self)
             investList = i.investListRequest()
             for ivst in investList:
@@ -131,10 +130,10 @@ class tender_task(Thread):
                         
                 if(int(ivst['borrow_type']) == 5):
                     loaninfo = Welfare.walfareRequest(i.opener)  
-                    i.tenderWF(loaninfo, trade_password)      
+                    i.tenderWF(loaninfo, user_info)      
                 else:
                     loaninfo = Loan.loanRequest(i.opener, ivst)
-                    i.tender(loaninfo, trade_password)
+                    i.tender(loaninfo, user_info)
         pass
 
     pass

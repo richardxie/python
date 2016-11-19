@@ -20,13 +20,13 @@ class Invest:
             self.opener = build_opener(HTTPCookieProcessor(self.cookie), HTTPRedirectHandler())
             install_opener(self.opener)
               
-    def tender(self, loan, tradepwd="root@2014"):
+    def tender(self, loan, user_info):
         logger.info(self.name + " is tendering a Loan.")
         import app
         ammount = int(floor(loan.available_cash)) - app.reserved_amount
         if(ammount > loan.minAmount):
                 salt = loan.uniqKey
-                ppay = encryptTradePassword(tradepwd, salt, self.task)
+                ppay = encryptTradePassword(user_info.trade_password, salt, self.task)
                 # coupon info
                 lunchid = "0"
                 
@@ -44,7 +44,7 @@ class Invest:
                     'lunchId': lunchid,  # 红包ID
                     'amount': ammount,
                     'p_pay': ppay,
-                    'user_id': '54808'
+                    'user_id': user_info.user_id
                     }
                 buyinfo = self.buyRequest(values)
                 if('tnum' in buyinfo):
@@ -59,7 +59,7 @@ class Invest:
                 
         pass 
     
-    def tenderWF(self, welfare, tradepwd= "root@2014"):
+    def tenderWF(self, welfare, user_info):
         if welfare == None:
             logger.warn("welfare is none!")
             return
@@ -68,7 +68,7 @@ class Invest:
         if(welfare.available_cash > welfare.zxtbe and welfare.can_tender):
             logger.info(self.name +" is tendering a Welfare:" + str(welfare.available_cash)+ ":" + welfare.uniqKey)
             salt = welfare.uniqKey
-            ppay = encryptTradePassword(tradepwd, salt, self.task)
+            ppay = encryptTradePassword(user_info.trade_password, salt, self.task)
             # buy 秒标
             values = {
                 '__hash__': welfare.hash_value,
@@ -76,7 +76,7 @@ class Invest:
                 'lunchId': '0',  # 红包ID
                 'amount': int(math.floor(welfare.available_cash)),
                 'p_pay': ppay,
-                'user_id': '54808'
+                'user_id': user_info.user_id
             }
             buyinfo = self.buyRequest(values)
             if buyinfo and 'tnum' in buyinfo:
