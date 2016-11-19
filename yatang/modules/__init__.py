@@ -224,7 +224,7 @@ class LoanSchema(Schema):
     apr  = fields.Decimal()
 
 class FinancingSchema(Schema):
-    id = fields.uuid(dump_only=True)
+    id = fields.Str(dump_only=True)
     name = fields.Str()
     recievedate = fields.Str()
     repaymentAmount  = fields.Decimal()
