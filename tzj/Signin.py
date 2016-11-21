@@ -41,7 +41,7 @@ class Signin:
             return None
     
     def signinRequest(self):
-        logger.info(self.username + "is signining in tzj")
+        logger.info(self.username + "is signining in 投之家")
         req = Request(tzj.TZJURLBASESSL + 'shop/signin')
         response = self.opener.open(req)
 

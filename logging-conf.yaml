@@ -3,6 +3,7 @@ formatters:
   simple:
     format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     datefmt: '%Y/%m/%d %H:%M:%S'
+
 handlers:
   console:
     class: logging.StreamHandler
@@ -10,10 +11,11 @@ handlers:
     formatter: simple
     stream: ext://sys.stdout
   file:
-    class : logging.FileHandler
+    class : logging.handlers.TimedRotatingFileHandler
     formatter: simple
     level: INFO
     filename: /usr/src/app/python/application.log
+    when: D
   web:
     class : logging.FileHandler
     formatter: simple

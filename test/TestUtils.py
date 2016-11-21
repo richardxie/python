@@ -18,6 +18,7 @@ from yatang import Cookies, Account, Coupon, Invest, Welfare, Financing
 import yatang.Loan as YTLoan
 from yatang.modules import UserInfo, WelfareInfo, AccountInfo, SigninInfo, Base, FinancingInfo, FinancingSchema
 from flask import json
+from utils import  encryptTradePassword
 
 USING_MYSQL = True
 
@@ -155,6 +156,10 @@ class TestUtils(unittest.TestCase):
                 encryptFunc = jsctx.locals.encrypt
                 pwd = encryptFunc("richard", "123")
                 self.assertTrue(len(pwd) > 1)
+        pass
+
+    def test_encrpyt(self):
+        print encryptTradePassword("richard",'1234qwer', None)
         pass
 
     def test_imgRecon(self):
