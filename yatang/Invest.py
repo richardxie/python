@@ -4,7 +4,7 @@
 from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler, URLError, HTTPError
 from urllib import urlencode
 from math import floor
-import yatang, json, logging, math
+import yatang, json, logging, math, base64
 from modules import InvestInfo, WelfareInfo
 from utils import encryptTradePassword
 
@@ -26,7 +26,7 @@ class Invest:
         ammount = int(floor(loan.available_cash)) - app.reserved_amount
         if(ammount > loan.minAmount):
                 salt = loan.uniqKey
-                ppay = encryptTradePassword(user_info.trade_password, salt, self.task)
+                ppay = encryptTradePassword(base64.b64decode(user_info.trade_password), salt, self.task)
                 # coupon info
                 lunchid = "0"
                 
@@ -68,7 +68,7 @@ class Invest:
         if(welfare.available_cash > welfare.zxtbe and welfare.can_tender):
             logger.info(self.name +" is tendering a Welfare:" + str(welfare.available_cash)+ ":" + welfare.uniqKey)
             salt = welfare.uniqKey
-            ppay = encryptTradePassword(user_info.trade_password, salt, self.task)
+            ppay = encryptTradePassword(base64.b64decode(user_info.trade_password), salt, self.task)
             # buy 秒标
             values = {
                 '__hash__': welfare.hash_value,
