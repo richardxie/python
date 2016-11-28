@@ -6,7 +6,7 @@ from urllib2 import Request, URLError, HTTPError
 from PyV8 import JSContext
 import logging, logging.config, threading
 from random import randint
-import yaml, sys, os
+import yaml, sys, os, socket
 
 Salt = '1234qwer'
 
@@ -31,8 +31,7 @@ def initSys():
                 sys.path.append(path)
 
     #socket timeout
-    import socket
-    socket.setdefaulttimeout(10.0) 
+    socket.setdefaulttimeout(30.0) 
 
     pass
 
@@ -46,7 +45,8 @@ def httpRequest(opener, url):
     except HTTPError as h:
         print h
         logging.getLogger("app").warn(h)
- 
+    except socket.timeout as t:
+         logging.getLogger("app").warn(t)
     return response
 
 def encryptPassword(password, verifycode):

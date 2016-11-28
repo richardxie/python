@@ -4,7 +4,7 @@
 from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler, URLError, HTTPError
 from urllib import urlencode
 from math import floor
-import yatang, json, logging, math, base64
+import yatang, json, logging, math, base64, socket
 from modules import InvestInfo, WelfareInfo
 from utils import encryptTradePassword
 
@@ -107,6 +107,8 @@ class Invest:
             logger.warn(e)
         except HTTPError as h:
             logger.warn(h)
+        except socket.timeout as t:
+            logger.warn(t)
         except ValueError: 
             logger.warn("data was not valid JSON")
             logger.warn(resp_data)
@@ -134,6 +136,8 @@ class Invest:
             logger.warn(e)
         except HTTPError as h:
             logger.warn(h)
+        except socket.timeout as t:
+            logger.warn(t)
         except ValueError:
             logger.warn("data was not valid JSON")
             logger.warn(resp_data)
@@ -162,6 +166,8 @@ class Invest:
             logger.warn(e)
         except HTTPError as h:
             logger.warn(h)
+        except socket.timeout as t:
+            logger.warn(t)
         except ValueError:
             logger.warn("data was not valid JSON")
             logger.warn(resp_data)
