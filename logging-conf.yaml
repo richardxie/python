@@ -13,13 +13,13 @@ handlers:
   file:
     class : logging.handlers.TimedRotatingFileHandler
     formatter: simple
-    level: INFO
+    level: DEBUG
     filename: /usr/src/app/python/application.log
     when: D
   web:
     class : logging.FileHandler
     formatter: simple
-    level: INFO
+    level: DEBUG
     filename: /usr/src/app/python/web.log
 loggers:
   app:
