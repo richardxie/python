@@ -4,7 +4,7 @@
 from urllib2 import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler, URLError, HTTPError
 from urllib import urlencode
 from math import floor
-import yatang, json, logging, math, base64, socket
+import yatang, json, logging, math, base64, socket, sys
 from modules import InvestInfo, WelfareInfo
 from utils import encryptTradePassword
 
@@ -112,6 +112,9 @@ class Invest:
         except ValueError: 
             logger.warn("data was not valid JSON")
             logger.warn(resp_data)
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
             
         return jsonresp
 
@@ -141,6 +144,9 @@ class Invest:
         except ValueError:
             logger.warn("data was not valid JSON")
             logger.warn(resp_data)
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
            
         return jsonresp
     
@@ -171,8 +177,11 @@ class Invest:
         except ValueError:
             logger.warn("data was not valid JSON")
             logger.warn(resp_data)
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
         
-        if(len(typeList)):
+        if(len(typeList) and jsonresp):
             for loan in jsonresp['data']['Rows']:
                 bt = int(loan['borrow_type'])
                 if bt in typeList:
@@ -181,6 +190,7 @@ class Invest:
                     else:
                         aList.append(loan)
         else:
-            aList = jsonresp['data']['Rows']
+            if jsonresp:
+                aList = jsonresp['data']['Rows']
             
         return aList;

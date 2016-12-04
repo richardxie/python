@@ -108,7 +108,7 @@ class Cookies:
         response = opener.open(req)
         #resp = response.read().encode("utf-8")
         jsonresp = json.load(response)
-        if(jsonresp['status'] == 1):
+        if(jsonresp and jsonresp['status'] == 1):
             return True
         
         return False

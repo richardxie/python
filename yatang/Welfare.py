@@ -55,7 +55,11 @@ class Welfare(Borrow):
             
             zdtbe_element = dom.xpath('//*[@id="zdtbe_' + ibid + '"]')
             if zdtbe_element and len(zdtbe_element) > 0:
-                zdtbe = utils.money(zdtbe_element[0].attrib["value"])
+                val = zdtbe_element[0].attrib["value"]
+                if val == '无限制':
+                    zdtbe = 80000
+                else:
+                    zdtbe = utils.money(val)
             else:
                 zdtbe = -1
 

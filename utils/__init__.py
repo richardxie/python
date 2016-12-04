@@ -47,6 +47,10 @@ def httpRequest(opener, url):
         logging.getLogger("app").warn(h)
     except socket.timeout as t:
          logging.getLogger("app").warn(t)
+		 
+	except:
+        print "Unexpected error:", sys.exc_info()[0]
+        logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
     return response
 
 def encryptPassword(password, verifycode):
