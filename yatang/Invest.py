@@ -168,6 +168,18 @@ class Invest:
             if response.code == 200:
                 resp_data = response.read().decode()
                 jsonresp = json.loads(resp_data)
+
+                if(len(typeList) and jsonresp):
+                    for loan in jsonresp['data']['Rows']:
+                        bt = int(loan['borrow_type'])
+                        if bt in typeList:
+                            if bt in [1, 9] and int(loan["time_limit"]) == 3:
+                                aList.append(loan)
+                            else:
+                                aList.append(loan)
+                else:
+                    if jsonresp:
+                        aList = jsonresp['data']['Rows']
         except URLError as e:
             logger.warn(e)
         except HTTPError as h:
@@ -181,16 +193,6 @@ class Invest:
             print "Unexpected error:", sys.exc_info()[0]
             logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
         
-        if(len(typeList) and jsonresp):
-            for loan in jsonresp['data']['Rows']:
-                bt = int(loan['borrow_type'])
-                if bt in typeList:
-                    if bt in [1, 9] and int(loan["time_limit"]) == 3:
-                        aList.append(loan)
-                    else:
-                        aList.append(loan)
-        else:
-            if jsonresp:
-                aList = jsonresp['data']['Rows']
+        
             
         return aList;

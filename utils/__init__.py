@@ -39,6 +39,7 @@ def httpRequest(opener, url):
     request = Request(url)
     try:
         response = opener.open(request, timeout=20)
+        return response
     except URLError, e:
         print e
         logging.getLogger("app").warn(e)
@@ -50,7 +51,7 @@ def httpRequest(opener, url):
     except:
         print "Unexpected error:", sys.exc_info()[0]
         logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
-    return response
+   
 
 def encryptPassword(password, verifycode):
     with JSContext() as jsctx:

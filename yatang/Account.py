@@ -63,7 +63,7 @@ class Account:
 
     
     def accountRequest(self):
-        response = utils.httpRequest(self.opener, yatang.YTURLBASESSL + "/index.php?s=/Account/")
+        response = utils.httpRequest(self.opener, yatang.YTURLBASESSL + "/Account/")
         if response and response.code == 200 :
             return Account.account_info(response)
 

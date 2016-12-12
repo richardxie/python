@@ -5,7 +5,7 @@ from urllib2 import build_opener, HTTPCookieProcessor, Request, URLError, HTTPEr
 from urllib import urlencode
 from cookielib import MozillaCookieJar
 from utils import EmailUtils
-import json, logging
+import json, logging, base64
 import tzj, yatang
 from yatang.modules import SigninInfo, UserInfo
 from datetime import datetime
@@ -22,7 +22,7 @@ class Signin:
         session = yatang.Session()
         query = session.query(UserInfo).filter(UserInfo.name == self.username, UserInfo.website=='tzj')
         if query.count() != 0:
-            self.password = query.one().password
+            self.password = base64.b64decode(query.one().password)
             print self.password
         
     def signin(self):
@@ -42,7 +42,11 @@ class Signin:
     
     def signinRequest(self):
         logger.info(self.username + "is signining in 投之家")
-        req = Request(tzj.TZJURLBASESSL + 'shop/signin')
+        headers = {
+            'User-Agent': tzj.TZJ_USER_AGENT,
+            'Content-Type': 'application/json; charset=UTF-8'
+        }
+        req = Request(url = tzj.TZJURLBASESSL + 'checkin', headers=headers)
         response = self.opener.open(req)
 
         if response.code == 200:
@@ -94,17 +98,17 @@ class Signin:
     def loginRequest(self):
         logger.info(self.username + ' wants to login 投之家.')
         values = {
-            'url':'https://account.touzhijia.com',
-            'remeber':1,
+            'next':'https://account.touzhijia.com',
+            'remember':'on',
             'password':self.password,
-            'username':self.username
+            'userID':self.username
         }
         data = urlencode(values)
         headers = {
             'User-Agent': tzj.TZJ_USER_AGENT,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
-        req = Request(tzj.TZJURLBASESSL + 'signin.html', data, headers)
+        req = Request(tzj.TZJURLBASESSL + 'signin', data, headers)
         try:
             response = self.opener.open(req, timeout = 30)
     

@@ -1,18 +1,13 @@
 #!/usr/bin/python2.7
 # -*- coding: utf-8 -*- 
 
-from threading import Thread
-from sched import scheduler
 from yatang import  Cookies, Signin, Invest, Account, Session
 from yatang.Loan import Loan
 from yatang.Welfare import Welfare
 from yatang.modules import UserInfo, FinancingInfo
 from yatang.Financing import Financing
 import yatang, tzj, utils, time, base64, logging
-from Queue import Queue
-from random import randint
-from tzj import Signin as TZJSignin
-from tzj import signin_names as tzj_signin_names
+
 
 logger = logging.getLogger("app")
 c = Cookies("./")
