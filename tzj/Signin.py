@@ -73,7 +73,7 @@ class Signin:
                 signin_info.signin_date = datetime.now()
                 session.commit()
             
-            if(jsonData['ret'] == 1):
+            if(jsonData['canSign'] == 1):
                 EmailUtils().send_mail(jsonData)
             return jsonData
         else:
