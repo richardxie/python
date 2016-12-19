@@ -32,6 +32,9 @@ class Welfare(Borrow):
             ibid_element = dom.xpath('//*[@class="amountt_input"]')
             if ibid_element and len(ibid_element) > 0:
                 ibid = ibid_element[0].attrib['dataid']
+            else:
+                logger.warn("oops, 无效的html格式!")
+                return #无效的html格式
 
             borrowNum_element = dom.xpath("//*[@id=\"iborrownumid_" + ibid + "\"]")
             if borrowNum_element and len(borrowNum_element) > 0:

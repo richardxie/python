@@ -56,7 +56,7 @@ class EmailUtils:
         mail_to =','.join(mail_receiver)
         message ='<h3>本次投之家签到的相关信息</h3>'
         message += '<ul>'
-        msg = '<li>%s投之家签到：%d</li>'%(data['info']['Username'], data['info']['Score'])
+        msg = '<li>投之家签到：%d</li>'%(data['todayScore'])
         message += msg;
         message += '</ul>'
         logger.info('email content:' + message)
