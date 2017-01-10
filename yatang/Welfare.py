@@ -78,8 +78,15 @@ class Welfare(Borrow):
             
             can_tender = False
             incheck_element = dom.xpath('//*[@id="incheck_'+ ibid + '"]')
+            wks_element = dom.xpath('//*[@id="wks_'+ ibid + '"]')
+            if wks_element:
+                wks_style = wks_element[0].getparent().attrib['style']
+                if 'display:none' in wks_style:
+                    can_tender = True
             if incheck_element:
-                can_tender = True
+                incheck_style = incheck_element[0].getparent.attrib['style']
+                if not 'display:none' in incheck_style:
+                    can_tender = True
             return Welfare(
                 hash_value = hash_value,
                 ibid = ibid,
