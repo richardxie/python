@@ -84,7 +84,7 @@ class Welfare(Borrow):
                 if 'display:none' in wks_style:
                     can_tender = True
             if incheck_element:
-                incheck_style = incheck_element[0].getparent.attrib['style']
+                incheck_style = incheck_element[0].getparent().attrib['style']
                 if not 'display:none' in incheck_style:
                     can_tender = True
             return Welfare(
