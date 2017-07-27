@@ -1,0 +1,23 @@
+web:
+  build: ..
+  ports: 
+    - "8082:8082"
+  volumes:
+    - ..:/usr/src/app/python
+  links:
+    - redis
+    - mysql
+redis:
+  image: redis
+mysql:
+  image: mysql
+  ports:
+    - "3306:3306"
+  volumes:
+    - ./db:/var/lib/mysql
+  environment:
+    - MYSQL_DATABASE=mysqldb
+    - MYSQL_ROOT_PASSWORD=admin123
+  command:
+    --character-set-server=utf8mb4 
+    --collation-server=utf8mb4_unicode_ci

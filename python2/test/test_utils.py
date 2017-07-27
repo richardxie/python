@@ -43,7 +43,7 @@ Session.configure(bind=engine)
 Base.metadata.create_all(engine)
 Base.metadata.bind = engine
 
-class TestUtils(unittest.TestCase): 
+class test_utils(unittest.TestCase): 
     def setUp(self):
         utils.initSys()
         
@@ -198,3 +198,5 @@ class TestUtils(unittest.TestCase):
         th, dst = cv2.threshold(enlarge, thresh, maxValue, cv2.THRESH_BINARY);
         cv2.imwrite('./process.png', enlarge)
         return im
+if __name__ =='__main__':  
+    unittest.main()  

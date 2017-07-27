@@ -1,0 +1,36 @@
+version: 1
+formatters:
+  simple:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    datefmt: '%Y/%m/%d %H:%M:%S'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+  file:
+    class : logging.handlers.TimedRotatingFileHandler
+    formatter: simple
+    level: DEBUG
+    filename: E:/SlProject/v2/application.log
+    when: D
+  web:
+    class : logging.FileHandler
+    formatter: simple
+    level: DEBUG
+    filename: E:/SlProject/v2/web.log
+loggers:
+  app:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: no
+  web:
+    level: DEBUG
+    handlers: [web]
+    propagate: no
+  
+root:
+  level: DEBUG
+  handlers: [console]

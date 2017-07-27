@@ -1,0 +1,15 @@
+{
+    "python.pythonPath": "C:/Users/强/AppData/Local/Programs/Python/Python36/python.exe",
+    "python.linting.pylintEnabled": false,
+    "python.unitTest.unittestArgs": [
+        "-v",
+        "-s",
+        ".\\test",
+        "-p",
+        "test_*.py"
+    ],
+    "python.unitTest.unittestEnabled": false,
+    "python.unitTest.promptToConfigure": false,
+    "python.unitTest.pyTestEnabled": false,
+    "python.unitTest.nosetestsEnabled": false
+}
