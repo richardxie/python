@@ -24,12 +24,9 @@ logger = logging.getLogger("app")
 
 class Invest: 
     encryptor = Encryptor()
-    def __init__(self, name, cookie):
-        self.cookie = cookie
+    def __init__(self, name, opener):
         self.name = name
-        if cookie is not None:
-            self.opener = build_opener(HTTPCookieProcessor(self.cookie), HTTPRedirectHandler())
-            install_opener(self.opener)
+        self.opener = opener
               
     def tender(self, asset, user_info):
         logger.info(self.name + " is tendering a Loan.")
@@ -160,19 +157,70 @@ class Invest:
            
         return jsonresp
     
+    def investListRequest(self, typeList=[5]):
+        values = {
+            'mode':1,
+            'tpage[page]':1,
+            'tpage[size]':20
+        }
+        data = urlencode(values)
+        headers = {
+            'User-Agent': yatang.YT_USER_AGENT,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        }
+        req = Request(yatang.YTURLBASESSL + 'index.php?s=/Invest/GetBorrowlist', data.encode(encoding='UTF8'), headers)
+        aList = []
+        try:
+            response = self.opener.open(req, timeout=30)
+            if response.code == 200:
+                resp_data = response.read().decode()
+                jsonresp = json.loads(resp_data)
+
+                if(len(typeList) and jsonresp):
+                    for loan in jsonresp['data']['Rows']:
+                        bt = int(loan['borrow_type'])
+                        if bt in typeList:
+                            if bt in [1, 9] and int(loan["time_limit"]) == 3:
+                                aList.append(loan)
+                            else:
+                                aList.append(loan)
+                else:
+                    if jsonresp:
+                        aList = jsonresp['data']['Rows']
+        except URLError as e:
+            logger.warn(e)
+        except HTTPError as h:
+            logger.warn(h)
+        except socket.timeout as t:
+            logger.warn(t)
+        except ValueError:
+            logger.warn("data was not valid JSON")
+            logger.warn(resp_data)
+        except:
+            print ("Unexpected error:", sys.exc_info()[0])
+            logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
+        
+        return aList
+
 if __name__ == '__main__':
 
     from Cookies import Cookies
     from Account import Account
+    from Loan import Loan
     c = Cookies()
-    cj = c.readCookie('richardxieq')
+    cj = c.readCookie('emmaye')
     c.dumpCookies(cj)
+    opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
+    install_opener(opener)
 
-    acc = Account(cj)
+    acc = Account(opener)
     accountinfo = acc.accountRequest()
     totalAmount = accountinfo.available
 
-    assets = Assets(cj)
+    i = Invest('emmaye', opener)
+    i.investListRequest()
+
+    assets = Assets(opener)
     assetList = []
     idx = 1
     while len(assetList) < 10:
@@ -180,4 +228,10 @@ if __name__ == '__main__':
         idx += idx
 
     print(assetList)
+
+    for asset in assetList:
+        print(asset)
+        Loan.loanRequest(opener, asset)
+        """c = Coupon(opener, asset.)
+        print(c.couponListRequest())"""
     pass

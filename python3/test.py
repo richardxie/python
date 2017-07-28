@@ -6,14 +6,14 @@ from urllib.request import HTTPCookieProcessor,Request,build_opener,install_open
 initSys()
 initConfig()
 encryptor = Encryptor(); 
-print(encryptor.encryptPassword('richard', '123456'))
-print(encryptor.encryptTradePassword('richard', '123456'))
+print(encryptor.encryptPassword('yourname', 'yourpasswrod'))
+print(encryptor.encryptTradePassword('yourname', 'yourpasswrod'))
 
 cookie = Cookies("./")
-cj = cookie.readCookie('richardxieq')
+cj = cookie.readCookie('yourname')
 
 #login = Login()
-#login.loginRequest('richardxieq','root1234')
+#login.loginRequest('yourname','yourpasswrod')
 
 opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
 install_opener(opener)

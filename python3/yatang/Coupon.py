@@ -16,12 +16,9 @@ import yatang
 from Cookies import Cookies
 
 class Coupon: 
-    def __init__(self, cookie, borrowNum="1214J9ISS0000026"):
-        self.cookie = cookie
+    def __init__(self, opener, borrowNum="1214J9ISS0000026"):
         self.borrowNum = borrowNum
-        if cookie is not None:
-            self.opener = build_opener(HTTPCookieProcessor(self.cookie), HTTPRedirectHandler())
-            install_opener(self.opener)
+        self.opener = opener
 
     def __repr__(self):
         return "<Coupon(borrowNum='%s')>" % (
@@ -30,7 +27,7 @@ class Coupon:
     def couponListRequest(self):
         values = {
             'investMoney': '',
-            'borrowNum': '1216GX1A00000959',
+            'borrowNum': self.borrowNum,
             'pageNum': '1'
         }
         postData = urlencode(values)
@@ -58,8 +55,9 @@ class Coupon:
 if __name__ == '__main__':
     c = Cookies()
     cj = c.readCookie('richardxieq')
-    c.dumpCookies(cj)
-
-    c = Coupon(cj)
+    #c.dumpCookies(cj)
+    opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
+    install_opener(opener)
+    c = Coupon(opener, '1218NWMPS0001125')
     print(c.couponListRequest())
     pass

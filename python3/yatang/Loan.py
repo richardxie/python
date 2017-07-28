@@ -146,16 +146,16 @@ class Loan(Borrow):
     @staticmethod
     def loanRequest(opener, info):
         url =''
-        if 'id' in info:
-            url = yatang.YTURLBASESSL + "/Invest/ViewBorrow/ibid/" + info['id']
-        elif 'path' in info:
-            url = yatang.YTURLBASESSL + info['path']
+        if hasattr(info, 'id'):
+            url = yatang.YTURLBASESSL + "/Invest/ViewBorrow/ibid/" + info.id
+        elif hasattr(a, 'path'):
+            url = yatang.YTURLBASESSL + info.path
         print (url)
-        response = httpRequest(opener, url)
-        if response and response.code == 200:
-            return Loan.loan_info(response, info)
-        else:
-            return None
+        with httpRequest(opener, url) as response:
+            if response and response.code == 200:
+                return Loan.loan_info(response, info)
+
+        return None
     
 
 if __name__ == '__main__':

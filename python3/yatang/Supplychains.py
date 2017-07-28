@@ -1,12 +1,11 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.6
 # -*- coding: utf-8 -*- 
 
-#资产标
+#供应链标
 from urllib.request import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
 from urllib.parse import urlencode
 from marshmallow import Schema, fields, post_load
-
-import json, logging, os, sys, traceback
+import json, logging, os, sys, traceback, socket
 pythonpath = os.path.dirname(__file__)
 pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
 if pythonpath is not None:
@@ -17,12 +16,11 @@ if pythonpath is not None:
 
 from utils import httpRequest
 import yatang
-from modules import LoanSchema
-from Loan import Loan
 
 logger = logging.getLogger('app')
-class Asset:
-    def __init__(self, id, borrow_type, name, account, apr, remain, lowest_account, bar, time_limit):
+
+class Supplychian:
+    def __init__(self, id, borrow_type, name, account, apr, remain, lowest_account, bar, time_limit, award_type, award_rate):
         self.id = id
         self.borrow_type = borrow_type
         self.name = name
@@ -32,12 +30,15 @@ class Asset:
         self.lowest_account = lowest_account
         self.bar = bar
         self.time_limit = time_limit
+        self.award_type = award_type
+        self.award_rate = award_rate
         pass
 
     def __repr__(self):
-        return '<Asset(标的名称={self.name!r}, 年化收益率={self.apr!s}, 剩余金额={self.remain!s})>'.format(self=self)
+        return '<SupplyChain(标的名称={self.name!r}, 年化收益率={self.apr!s}, 剩余金额={self.remain!s})>'.format(self=self)
+    pass
 
-class AssetSchema(Schema):
+class SupplychianSchema(Schema):
     name = fields.Str()
     id = fields.Str()
     borrow_type = fields.Str()
@@ -47,47 +48,56 @@ class AssetSchema(Schema):
     lowest_account = fields.Str()
     bar = fields.Int()
     time_limit = fields.Str()
+    award_type = fields.Str()
+    award_rate = fields.Str()
 
     @post_load
-    def make_asset(self, data):
-        return Asset(**data)
+    def make_supplychain(self, data):
+        return Supplychian(**data)
 
-class Assets: 
+    pass
+
+class Supplychains: 
     def __init__(self, opener):
         self.opener = opener
     
-    def assetRequest(self, page):
+    def supplyChainRequest(self):
         values = {
-            'aprrange': 1,   #desc排序
-            'selectdate': 2, #1个月标
-            'repaystyle': 0,
-            'goto_page': '',
-            'page_href': '/Financial/getAssetList?&p=' + page
+            'mode':1,
+            'tpage[page]':1,
+            'tpage[size]':20
         }
-        data = urlencode(values).encode('utf-8')
+        data = urlencode(values)
         headers = {
             'User-Agent': yatang.YT_USER_AGENT,
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
-        req = Request(yatang.YTURLBASESSL + 'Financial/getAssetList', data,  headers)
-        jsonresp = None
+        req = Request(yatang.YTURLBASESSL + 'index.php?s=/Invest/GetBorrowlist', data.encode(encoding='UTF8'), headers)
+        aList = []
         try:
-            with self.opener.open(req, timeout=300) as response:
+            with self.opener.open(req, timeout=30) as response:
                 if response.code == 200:
-                    d = json.loads(response.read().decode())
-                    jsonresp = AssetSchema().load(d['list'], many=True).data
-                    #过滤剩余金额过小的标的
-                    jsonresp = list(filter(lambda x: x.remain > 10000, jsonresp))
+                    resp_data = response.read().decode()
+                    jsonresp = json.loads(resp_data)
+
+                    for loan in jsonresp['data']['Rows']:
+                        bt = int(loan['borrow_type'])
+                        if bt in [1, 9]:
+                            aList.append(loan)
         except URLError as e:
-            logging.getLogger("app").warn(e)
+            logger.warn(e)
         except HTTPError as h:
-            logging.getLogger("app").warn(h)
+            logger.warn(h)
+        except socket.timeout as t:
+            logger.warn(t)
+        except ValueError:
+            logger.warn("data was not valid JSON")
+            logger.warn(resp_data)
         except:
             print ("Unexpected error:", sys.exc_info()[0])
             logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
-
-        return jsonresp
+        
+        return aList
     
 if __name__ == '__main__':
     from Cookies import Cookies
@@ -96,6 +106,6 @@ if __name__ == '__main__':
     #c.dumpCookies(cj)
     opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
     install_opener(opener)
-    a = Assets(opener)
-    l = a.assetRequest('1')
+    a = Supplychains(opener)
+    l = a.supplyChainRequest()
     print(l)

@@ -22,12 +22,9 @@ import yatang
 logger = logging.getLogger("app")
 
 class Account: 
-    def __init__(self, cookie= None, account_info = None):
-        self.cookie= cookie
+    def __init__(self, opener= None, account_info = None):
         self.account_info = account_info
-        if cookie is not None:
-            self.opener = build_opener(HTTPCookieProcessor(self.cookie), HTTPRedirectHandler())
-            install_opener(self.opener)
+        self.opener = opener
         
     @staticmethod
     def account_info(html):
@@ -75,15 +72,17 @@ class Account:
 
     
     def accountRequest(self):
-        response = httpRequest(self.opener, yatang.YTURLBASESSL + "/Account/home")
-        if response and response.code == 200 :
-            return Account.account_info(response)
+        with httpRequest(self.opener, yatang.YTURLBASESSL + "/Account/home") as response:
+            if response and response.code == 200 :
+                return Account.account_info(response)
 
 if __name__ == '__main__':
     c = Cookies()
     cj = c.readCookie('richardxieq')
-    c.dumpCookies(cj)
+    #c.dumpCookies(cj)
+    opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
+    install_opener(opener)
 
-    acc = Account(cj)
+    acc = Account(opener)
     print(acc.accountRequest())
     pass
