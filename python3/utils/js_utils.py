@@ -1,49 +1,48 @@
+#!/usr/bin/python3.6
+# -*- coding: utf-8 -*- 
 import execjs, threading, os
 class Encryptor: 
-    def __init__(self, js_str = None):
-        self.js_str = js_str
+    def __init__(self):
         pass
 
     def encrypt(self, password, timestamp):
-        if self.js_str is None:
-            self.js_str = ''
-            path = os.path.dirname(os.path.abspath(__file__))
-            print(path)
-            with open(path + '/aes.js') as f:
-                for line in f:
-                    self.js_str = self.js_str + line
+        js_str = ''
+        path = os.path.dirname(os.path.abspath(__file__))
+        print(path)
+        with open(path + '/aes.js') as f:
+             for line in f:
+                js_str = js_str + line
 
         default_exec = execjs.get()
-        print(self.js_str)
-        ctx = default_exec.compile(self.js_str)
+        print(js_str)
+        ctx = default_exec.compile(js_str)
         pwd = ctx.call('ytUtil.encrypt',password, timestamp)
         return pwd
 
     def encryptPassword(self, password, verifycode):
-        if self.js_str is None:
-            self.js_str = ''
-            path = os.path.dirname(os.path.abspath(__file__))
-            print(path)
-            with open(path + '/encrypt.js') as f:
-                for line in f:
-                    self.js_str = self.js_str + line
+        js_str = ''
+        path = os.path.dirname(os.path.abspath(__file__))
+        print(path)
+        with open(path + '/encrypt.js') as f:
+            for line in f:
+                js_str = js_str + line
         
         default_exec = execjs.get()
-        print(self.js_str)
-        ctx = default_exec.compile(self.js_str)
+        print(js_str)
+        ctx = default_exec.compile(js_str)
         pwd = ctx.call('encrypt',password, verifycode)
         return pwd
 
     def encryptTradePassword(self, tradepassword, uniqkey):
         print(threading.current_thread().name)
-        if self.js_str is None:
-            self.js_str = ''
-            with open('encrypt.js') as f:
-                for line in f:
-                    self.js_str = self.js_str + line
+        js_str = ''
+        path = os.path.dirname(os.path.abspath(__file__))
+        with open(path + '/encrypt.js') as f:
+            for line in f:
+                js_str = js_str + line
         
         default_exec = execjs.get()
-        ctx = default_exec.compile(self.js_str)
+        ctx = default_exec.compile(js_str)
         pwd = ctx.call('encrypt2',tradepassword, uniqkey)
         return pwd
 

@@ -1,3 +1,5 @@
+#!/usr/bin/python3.6
+# -*- coding: utf-8 -*- 
 import tesserpy, cv2
 class captcha_utils: 
     def __init__(self, filename = 'vcode.jpg'):

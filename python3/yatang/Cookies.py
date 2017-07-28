@@ -45,7 +45,7 @@ class Cookies:
         return cj
     
     def genCookie(self, username, password):
-        cj = MozillaCookieJar();
+        cj = MozillaCookieJar()
         opener = build_opener(HTTPCookieProcessor(cj))
         opener.open(YTURLBASE + 'NewLogin/index/referer')
         for _ in range(0, 3):
@@ -56,7 +56,7 @@ class Cookies:
                 if(self.loginRequest(opener, username, encryptedpwd)):
                     self.dumpCookies(cj)
                     cj.save(self.basedir + "cookies/" + username + 'Cookie.txt')
-                break;
+                break
             except Exception as e:
                 print (e)
                 continue

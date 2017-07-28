@@ -14,7 +14,8 @@ def initSys():
     #System path
     sys.path.append(os.path.dirname(__file__))
     #pythonpath = os.getenv('PYTHONPATH')
-    pythonpath = "E:/SlProject/v2"
+    pythonpath = os.path.dirname(__file__)
+    pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
     if pythonpath is not None:
         paths = pythonpath.split(':' if os.name=='posix' else ';')
         for path in paths:
