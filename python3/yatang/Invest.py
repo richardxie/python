@@ -23,21 +23,21 @@ from utils import Encryptor
 logger = logging.getLogger("app")
 
 class Invest: 
-    encryptor = Encryptor()
     def __init__(self, name, opener):
+        self.encryptor = Encryptor()
         self.name = name
         self.opener = opener
               
-    def tender(self, asset, user_info):
+    def tender(self, loan, user_info):
         logger.info(self.name + " is tendering a Loan.")
         ammount = int(floor(loan.available_cash)) - yatang.reserved_amount
         if(ammount > loan.minAmount):
                 salt = loan.uniqKey
-                ppay = encryptor.encryptTradePassword(base64.b64decode(user_info.trade_password), salt)
+                ppay = self.encryptor.encryptTradePassword(base64.b64decode(user_info.trade_password).decode('utf-8'), salt)
                 # coupon info
                 lunchid = "0"
                 
-                couponinfo = Coupon(self.cookie, loan.borrowNum).couponListRequest()
+                couponinfo = Coupon(self.opener, loan.borrowNum).couponListRequest()
                 if('data' in couponinfo and len(couponinfo['data'])):
                     lunchid = couponinfo['data'][0]['id']
                     ammount = couponinfo['data'][0]['user_constraint']
@@ -231,7 +231,7 @@ if __name__ == '__main__':
 
     for asset in assetList:
         print(asset)
-        Loan.loanRequest(opener, asset)
-        """c = Coupon(opener, asset.)
-        print(c.couponListRequest())"""
+        loan = Loan.loanRequest(opener, asset)
+        coupon = Coupon(opener, loan.borrowNum)
+        print(coupon.couponListRequest())
     pass

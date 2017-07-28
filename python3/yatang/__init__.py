@@ -7,6 +7,9 @@ sys.path.append(os.path.dirname(__file__))
 from Cookies import Cookies
 from Login import Login
 from Account import Account
+from Assets import Assets
+from Coupon import Coupon
+from Invest import Invest
 from modules import AccountInfo
 from Loan import Loan
 from modules import InvestInfo

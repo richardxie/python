@@ -16,13 +16,13 @@ if pythonpath is not None:
 
 from modules import AccountInfo
 from Cookies import Cookies
-from utils import httpRequest,money
+from utils import httpRequest, money
 import yatang
 
 logger = logging.getLogger("app")
 
 class Account: 
-    def __init__(self, opener= None, account_info = None):
+    def __init__(self, opener = None, account_info = None):
         self.account_info = account_info
         self.opener = opener
         
