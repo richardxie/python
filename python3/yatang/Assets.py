@@ -7,7 +7,8 @@ from urllib.parse import urlencode
 from marshmallow import Schema, fields, post_load
 
 import json, logging, os, sys, traceback
-pythonpath ='E:/SlProject/v2'
+pythonpath = os.path.dirname(__file__)
+pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
 if pythonpath is not None:
     paths = pythonpath.split(':' if os.name=='posix' else ';')
     for path in paths:

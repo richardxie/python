@@ -5,7 +5,8 @@ from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
 import os, sys, logging, traceback
 
-pythonpath ='E:/SlProject/v2'
+pythonpath = os.path.dirname(__file__)
+pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
 if pythonpath is not None:
     paths = pythonpath.split(':' if os.name=='posix' else ';')
     for path in paths:

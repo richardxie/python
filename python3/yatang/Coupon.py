@@ -4,7 +4,8 @@
 from urllib.request import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
 from urllib.parse import urlencode
 import json, logging, os, sys
-pythonpath ='E:/SlProject/v2'
+pythonpath = os.path.dirname(__file__)
+pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
 if pythonpath is not None:
     paths = pythonpath.split(':' if os.name=='posix' else ';')
     for path in paths:
@@ -15,7 +16,7 @@ import yatang
 from Cookies import Cookies
 
 class Coupon: 
-    def __init__(self, cookie, borrowNum="1216Z8ULU0000665"):
+    def __init__(self, cookie, borrowNum="1214J9ISS0000026"):
         self.cookie = cookie
         self.borrowNum = borrowNum
         if cookie is not None:
@@ -29,22 +30,21 @@ class Coupon:
     def couponListRequest(self):
         values = {
             'investMoney': '',
-            'borrowNum': '12196M4GM0000848',
+            'borrowNum': '1216GX1A00000959',
             'pageNum': '1'
         }
-        data = urlencode(values).encode('utf-8')
+        postData = urlencode(values)
         headers = {
             'User-Agent': yatang.YT_USER_AGENT,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'X-Requested-With': 'XMLHttpRequest',
-            'Referer': 'https://jr.yatang.cn/Invest/ViewBorrow/ibid/1084520'
+            'X-Requested-With': 'XMLHttpRequest'
         }
-        req = Request(yatang.YTURLBASE + 'Ajax/getUserCoupon', data,  headers)
+        req = Request(url = yatang.YTURLBASESSL + 'Ajax/getUserCoupon', data= postData.encode(encoding='UTF8'),  headers=headers, method='POST')
         jsonresp = None
         try:
-            response = self.opener.open(req, timeout=300)
-            if response.code == 200:
-                jsonresp = json.loads(response.read().decode())
+            with self.opener.open(req, timeout=30) as response:
+                if response.code == 200:
+                    jsonresp = json.loads(response.read().decode())
         except URLError as e:
             logging.getLogger("app").warn(e)
         except HTTPError as h:
@@ -61,5 +61,5 @@ if __name__ == '__main__':
     c.dumpCookies(cj)
 
     c = Coupon(cj)
-    c.couponListRequest()
+    print(c.couponListRequest())
     pass

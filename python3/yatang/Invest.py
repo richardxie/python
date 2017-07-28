@@ -6,7 +6,8 @@ from urllib.parse import urlencode
 from math import floor
 
 import json, logging, os, sys, math, base64, socket
-pythonpath ='E:/SlProject/v2'
+pythonpath = os.path.dirname(__file__)
+pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
 if pythonpath is not None:
     paths = pythonpath.split(':' if os.name=='posix' else ';')
     for path in paths:
@@ -160,6 +161,7 @@ class Invest:
         return jsonresp
     
 if __name__ == '__main__':
+
     from Cookies import Cookies
     from Account import Account
     c = Cookies()
@@ -177,4 +179,5 @@ if __name__ == '__main__':
         assetList.extend(assets.assetRequest(str(idx)))
         idx += idx
 
+    print(assetList)
     pass
