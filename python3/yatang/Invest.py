@@ -70,12 +70,12 @@ class Invest:
         if welfare == None:
             logger.warn("welfare is none!")
             return
-        logger.debug(self.name +" want to tender a Welfare:" + str(welfare.available_cash) + ":" + str(welfare.can_tender))
+        logger.debug(self.name +" 准备投开心利是:" + str(welfare.available_cash) + ":" + str(welfare.can_tender))
 
         if(welfare.available_cash > welfare.zxtbe and welfare.can_tender):
-            logger.info(self.name +" is tendering a Welfare:" + str(welfare.available_cash)+ ":" + welfare.uniqKey)
+            logger.info(self.name +" 开始投开心利是:" + str(welfare.available_cash)+ ":" + welfare.uniqKey)
             salt = welfare.uniqKey
-            ppay = encryptor.encryptTradePassword(base64.b64decode(user_info.trade_password), salt, self.task)
+            ppay = self.encryptor.encryptTradePassword(base64.b64decode(user_info.trade_password).decode('utf-8'), salt)
             # buy 秒标
             values = {
                 '__hash__': welfare.hash_value,
@@ -135,7 +135,7 @@ class Invest:
             'User-Agent': yatang.YT_USER_AGENT,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
-        req = Request(yatang.YTURLBASE + 'Public/tenderinfo', data.encode(encoding='UTF8'), headers)
+        req = Request(yatang.YTURLBASESSL + 'Public/tenderinfo', data.encode(encoding='UTF8'), headers)
         jsonresp = {}
         try:
             response = self.opener.open(req, timeout=30)
