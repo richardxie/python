@@ -8,6 +8,7 @@ from Cookies import Cookies
 from Login import Login
 from Account import Account
 from Assets import Assets
+from Welfare import Welfare
 from Coupon import Coupon
 from Invest import Invest
 from modules import AccountInfo

@@ -3,7 +3,16 @@
 #秒标
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
-from utils import httpRequest
+import os, sys
+pythonpath = os.path.dirname(__file__)
+pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
+if pythonpath is not None:
+    paths = pythonpath.split(':' if os.name=='posix' else ';')
+    for path in paths:
+        if not path in sys.path:
+            sys.path.append(path)
+
+from utils import httpRequest, money
 import yatang, logging, traceback
 
 logger = logging.getLogger('app')
@@ -26,7 +35,7 @@ class Welfare(Borrow):
     
     @staticmethod
     def welfare_info(html):
-        logger.debug("welfare_info parsing...")
+        logger.debug("开心利是信息解析中...")
         parser = HTMLParser(tree=treebuilders.getTreeBuilder('lxml') , namespaceHTMLElements=False)
         dom = html5parser.parse(html, parser=parser)
         try:
@@ -55,7 +64,7 @@ class Welfare(Borrow):
         
             cash_element = dom.xpath('//*[@id="ktmje_' + ibid + '"]')
             if cash_element and len(cash_element) > 0:
-                cash = utils.money(cash_element[0].attrib["value"])
+                cash = money(cash_element[0].attrib["value"])
             
             zdtbe_element = dom.xpath('//*[@id="zdtbe_' + ibid + '"]')
             if zdtbe_element and len(zdtbe_element) > 0:
@@ -63,31 +72,25 @@ class Welfare(Borrow):
                 if val == '无限制':
                     zdtbe = 80000
                 else:
-                    zdtbe = utils.money(val)
+                    zdtbe = money(val)
             else:
                 zdtbe = -1
 
             zxtbe_element = dom.xpath('//*[@id="zxtbe_' + ibid + '"]')
             if zxtbe_element and len(zxtbe_element) > 0:
-                zxtbe = utils.money(zxtbe_element[0].attrib["value"])
+                zxtbe = money(zxtbe_element[0].attrib["value"])
             else:
                 zxtbe = 1
                 
             hxjk_element = dom.xpath('//*[@id="hxjk_' + ibid + '"]')
             if hxjk_element and len(hxjk_element) > 0:
-                hxjk =  utils.money(hxjk_element[0].attrib["value"])
+                hxjk =  money(hxjk_element[0].attrib["value"])
             
             can_tender = False
-            incheck_element = dom.xpath('//*[@id="incheck_'+ ibid + '"]')
+            incheck_element = dom.xpath('//*[@id="incheck2_'+ ibid + '"]')
             wks_element = dom.xpath('//*[@id="wks_'+ ibid + '"]')
-            if wks_element:
-                wks_style = wks_element[0].getparent().attrib['style']
-                if 'display:none' in wks_style:
-                    can_tender = True
-            if incheck_element:
-                incheck_style = incheck_element[0].getparent().attrib['style']
-                if not 'display:none' in incheck_style:
-                    can_tender = True
+            if not wks_element:
+                can_tender = True
             return Welfare(
                 hash_value = hash_value,
                 ibid = ibid,
@@ -100,10 +103,10 @@ class Welfare(Borrow):
                 can_tender=can_tender,
                 uniqKey=uniqKey
                 )
-        except Exception, e:
-            print e
+        except Exception as e:
+            print (e)
             traceback.print_exc() 
-            logger.warn("oops, parse walfare html failed!")
+            logger.warn("oops, 开心利是页面解析失败!")
         pass
     
     @staticmethod
@@ -112,3 +115,12 @@ class Welfare(Borrow):
         if resp and resp.code == 200:
             return Welfare.welfare_info(resp)
     
+if __name__ == '__main__':
+    from urllib.request import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
+    from Cookies import Cookies
+    c = Cookies()
+    cj = c.readCookie('emmaye')
+    #c.dumpCookies(cj)
+    opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
+    install_opener(opener)
+    print(Welfare.walfareRequest(opener))
