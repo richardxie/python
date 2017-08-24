@@ -9,15 +9,14 @@ from yatang.modules import UserInfo
 
 logger = logging.getLogger("app")
 c = Cookies("./")
-
-#投资资产标
-class Tender:
+#投资秒标
+class TenderWF:
     schedule = scheduler(time, sleep) 
     def __init__(self):
         pass
 
-    def timming_exec(self, inc = 20):
-        self.current_event = self.schedule.enter(inc, 0, self.asset_tender, ( inc, ))
+    def timming_exec(self, inc = 5):
+        self.current_event = self.schedule.enter(inc, 0, self.welfare_tender, ( inc, ))
         self.tender_time = time()
         self.schedule.run()
 

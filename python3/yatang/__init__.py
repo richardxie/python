@@ -11,6 +11,8 @@ from Assets import Assets
 from Welfare import Welfare
 from Coupon import Coupon
 from Invest import Invest
+from Crowdfundings import Crowdfundings
+from Redpacket import Redpacket
 from modules import AccountInfo
 from Loan import Loan
 from modules import InvestInfo

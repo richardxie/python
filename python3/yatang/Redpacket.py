@@ -14,20 +14,21 @@ if pythonpath is not None:
 
 import yatang
 from Cookies import Cookies
-#投资资产标用红包
-class Coupon: 
-    def __init__(self, opener, borrowNum="1214J9ISS0000026"):
-        self.borrowNum = borrowNum
+
+#投资众筹用红包
+class Redpacket: 
+    def __init__(self, opener, projectID="71"):
+        self.projectID = projectID
         self.opener = opener
 
     def __repr__(self):
-        return "<Coupon(borrowNum='%s')>" % (
-                self.borrowNum)
+        return "<Redpacket(项目编号='%s')>" % (
+                self.projectID)
 
-    def couponListRequest(self):
+    def redpacketListRequest(self):
         values = {
-            'investMoney': '',
-            'borrowNum': self.borrowNum,
+            'investMoney': '15000',
+            'projectId': self.projectID,
             'pageNum': '1'
         }
         postData = urlencode(values)
@@ -36,7 +37,7 @@ class Coupon:
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             'X-Requested-With': 'XMLHttpRequest'
         }
-        req = Request(url = yatang.YTURLBASESSL + 'Ajax/getUserCoupon', data= postData.encode(encoding='UTF8'),  headers=headers, method='POST')
+        req = Request(url = yatang.YTURLBASESSL + 'Crowdfunding/ajaxGetUserRedPacket', data= postData.encode(encoding='UTF8'),  headers=headers, method='POST')
         jsonresp = None
         try:
             with self.opener.open(req, timeout=30) as response:
@@ -58,6 +59,6 @@ if __name__ == '__main__':
     #c.dumpCookies(cj)
     opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
     install_opener(opener)
-    c = Coupon(opener, '1218NWMPS0001125')
-    print(c.couponListRequest())
+    c = Redpacket(opener)
+    print(c.redpacketListRequest())
     pass

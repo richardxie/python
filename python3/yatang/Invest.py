@@ -17,6 +17,7 @@ if pythonpath is not None:
 import yatang
 from modules import InvestInfo, WelfareInfo
 from Coupon import Coupon
+from Redpacket import Redpacket
 from Assets import Asset, Assets
 from utils import Encryptor
 
@@ -29,7 +30,7 @@ class Invest:
         self.opener = opener
               
     def tender(self, loan, user_info):
-        logger.info(self.name + " is tendering a Loan.")
+        logger.info(self.name + " 开始投资资产标.")
         ammount = int(floor(loan.available_cash)) - yatang.reserved_amount
         if(ammount > loan.minAmount):
                 salt = loan.uniqKey
@@ -68,7 +69,7 @@ class Invest:
     
     def tenderWF(self, welfare, user_info):
         if welfare == None:
-            logger.warn("welfare is none!")
+            logger.warn("无效的开心利是信息")
             return
         logger.debug(self.name +" 准备投开心利是:" + str(welfare.available_cash) + ":" + str(welfare.can_tender))
 
@@ -94,10 +95,60 @@ class Invest:
                     session.add(welfare_info)
                     session.commit()
                 self.tender_info(welfare.borrowNum, buyinfo['tnum'])
-        pass     
+        pass
+    
+    def tenderCF(self, crowdfunding, user_info):
+        logger.debug(self.name +" 准备投资众筹" )
+        lunchid = "0"
+        redpacket = Redpacket(self.opener, crowdfunding.project_id).redpacketListRequest()
+        if(redpacket['status'] == 1) :
+            if('data' in redpacket and len(redpacket['data'])):
+                found = list(filter(lambda d : d['user_constraint'] == 15000, redpacket['data']))
+                if found and len(found) > 0:
+                    lunchid = found[0]['id']
+        if lunchid == '0':
+            logger.info("没有合适的红包")
+            return
+        salt = crowdfunding.uniqKey
+        ppay = self.encryptor.encryptTradePassword(base64.b64decode(user_info.trade_password).decode('utf-8'), salt)
+        values = {
+                '__hash__': crowdfunding.hash_value,
+                'id': crowdfunding.project_id,
+                'lunchId': '0',  # 红包ID
+                'amount': 15000,
+                'p_pay': ppay,
+                'vcode': ''
+            }
+        data = urlencode(values)
+        headers = {
+            'User-Agent': yatang.YT_USER_AGENT,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        }
+        req = Request(yatang.YTURLBASESSL + '/Crowdfunding/checkPay', data.encode(encoding='UTF8'), headers)
+        jsonresp = {}
+        try:
+            response = self.opener.open(req, timeout=30)
+            if response.code == 200 :
+                resp_data =response.read().decode()
+                jsonresp = json.loads(resp_data)
+        except URLError as e:
+            logger.warn(e)
+        except HTTPError as h:
+            logger.warn(h)
+        except socket.timeout as t:
+            logger.warn(t)
+        except ValueError: 
+            logger.warn("无效的json格式")
+            logger.warn(resp_data)
+        except:
+            print ("Unexpected error:", sys.exc_info()[0])
+            logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
+            
+        
+        pass
     
     def buyRequest(self, values):
-        logging.info('tender start:' + str(values['amount']))
+        logging.info('开始购买标的:' + str(values['amount']))
         data = urlencode(values)
         headers = {
             'User-Agent': yatang.YT_USER_AGENT,
@@ -117,7 +168,7 @@ class Invest:
         except socket.timeout as t:
             logger.warn(t)
         except ValueError: 
-            logger.warn("data was not valid JSON")
+            logger.warn("无效的json格式")
             logger.warn(resp_data)
         except:
             print ("Unexpected error:", sys.exc_info()[0])
@@ -149,7 +200,7 @@ class Invest:
         except socket.timeout as t:
             logger.warn(t)
         except ValueError:
-            logger.warn("data was not valid JSON")
+            logger.warn("无效的json格式")
             logger.warn(resp_data)
         except:
             print ("Unexpected error:", sys.exc_info()[0])
@@ -209,7 +260,7 @@ if __name__ == '__main__':
     from Loan import Loan
     c = Cookies()
     cj = c.readCookie('emmaye')
-    c.dumpCookies(cj)
+    #c.dumpCookies(cj)
     opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
     install_opener(opener)
 
@@ -217,8 +268,8 @@ if __name__ == '__main__':
     accountinfo = acc.accountRequest()
     totalAmount = accountinfo.available
 
-    i = Invest('emmaye', opener)
-    i.investListRequest()
+    #i = Invest('emmaye', opener)
+    #i.investListRequest()
 
     assets = Assets(opener)
     assetList = []
