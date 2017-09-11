@@ -24,11 +24,13 @@ from utils import Encryptor
 logger = logging.getLogger("app")
 
 class Invest: 
-    def __init__(self, name, opener):
+    def __init__(self, name, opener, amount = None):
         self.encryptor = Encryptor()
-        self.name = name
+        self.name = name #用户名
         self.opener = opener
-              
+        self.amount = amount #投资金额
+
+    #根据红包来确定投资金额      
     def tender(self, loan, user_info):
         logger.info(self.name + " 开始投资资产标.")
         ammount = int(floor(loan.available_cash)) - yatang.reserved_amount
@@ -67,6 +69,7 @@ class Invest:
                 
         pass 
     
+    #用户的可投金额来投资
     def tenderWF(self, welfare, user_info):
         if welfare == None:
             logger.warn("无效的开心利是信息")
@@ -87,6 +90,7 @@ class Invest:
                 'user_id': user_info.user_id
             }
             buyinfo = self.buyRequest(values)
+            logger.info("标的购买结果：" + buyinfo)
             if buyinfo and 'tnum' in buyinfo:
                 session = yatang.Session()
                 query = session.query(WelfareInfo).filter(WelfareInfo.ibid == welfare.ibid)
@@ -97,13 +101,14 @@ class Invest:
                 self.tender_info(welfare.borrowNum, buyinfo['tnum'])
         pass
     
+    #用户决定投资金额
     def tenderCF(self, crowdfunding, user_info):
         logger.debug(self.name +" 准备投资众筹" )
         lunchid = "0"
         redpacket = Redpacket(self.opener, crowdfunding.project_id).redpacketListRequest()
         if(redpacket['status'] == 1) :
             if('data' in redpacket and len(redpacket['data'])):
-                found = list(filter(lambda d : d['user_constraint'] == 15000, redpacket['data']))
+                found = list(filter(lambda d : d['user_constraint'] == self.amount, redpacket['data']))
                 if found and len(found) > 0:
                     lunchid = found[0]['id']
         if lunchid == '0':
@@ -115,7 +120,7 @@ class Invest:
                 '__hash__': crowdfunding.hash_value,
                 'id': crowdfunding.project_id,
                 'lunchId': '0',  # 红包ID
-                'amount': 15000,
+                'amount': self.amount,
                 'p_pay': ppay,
                 'vcode': ''
             }

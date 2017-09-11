@@ -12,12 +12,14 @@ logger = logging.getLogger("app")
 c = Cookies("./")
 #投资众筹
 class TenderCF:
-    def __init__(self):
+    def __init__(self, user_name, amount):
+        self.user_name = user_name #投资用户名
+        self.amount = amount #投资金额
         pass
 
     def crowdfunding_tender(self):
         logger.debug('开始投资众筹')
-        cj = c.readCookie('richardxieq')        
+        cj = c.readCookie(self.user_name)        
         #c.dumpCookies(cj)
 
         opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
@@ -28,13 +30,13 @@ class TenderCF:
         totalAmount = accountinfo.available
 
         session = Session()
-        query = session.query(UserInfo).filter(UserInfo.name == "richardxieq", UserInfo.website == 'yt')
+        query = session.query(UserInfo).filter(UserInfo.name == self.user_name, UserInfo.website == 'yt')
         if query.count() == 0:
             return
 
         user_info = query.one()
 
-        invest = Invest(user_info.name, opener)
+        invest = Invest(user_info.name, opener, self.amount)
         crowdfundings = Crowdfundings(opener)
         crowdfunding = crowdfundings.crowdfundingRequest()
         logger.info(crowdfunding)
@@ -54,4 +56,4 @@ if __name__ == '__main__':
     #初始化
     utils.initSys()
     conf.initConfig()
-    TenderCF().crowdfunding_tender()
+    TenderCF('richardxieq', 15000).crowdfunding_tender()

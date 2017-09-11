@@ -17,13 +17,17 @@ if __name__ == '__main__':
     conf.initConfig()
     parser = ArgumentParser()
     parser.add_argument('-t', '--type')
+    parser.add_argument('-amt', '--amount')
+    parser.add_argument('-u', '--user')
     parser.add_argument('-v', dest='verbose', action='store_true')
     args = parser.parse_args()
     try:
         {
             'welfare' : TenderWF().timming_exec,
-            'asset' : Tender().timming_exec,
-            'crowdfunding' : TenderCF().crowdfunding_tender,
+            'asset' : Tender(args.user if args.user is not None else 'richardxieq').timming_exec,
+            'crowdfunding' : TenderCF(args.user if args.user is not None else 'richardxieq', 
+                                        args.amount if args.amount is not None else 15000)
+                                        .crowdfunding_tender,
             'test' : lambda : logger.info("未实现")
         }[args.type]()
     except AttributeError as attrerr:
