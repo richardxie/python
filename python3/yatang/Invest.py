@@ -149,7 +149,7 @@ class Invest:
             print ("Unexpected error:", sys.exc_info()[0])
             logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
             
-        
+        logger.info("标的购买结果：" + str(jsonresp))
         pass
     
     def buyRequest(self, values):

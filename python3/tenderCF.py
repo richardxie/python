@@ -7,14 +7,20 @@ from datetime import datetime,timedelta
 import logging,utils,conf
 from yatang import Cookies, Account, Invest, Crowdfundings, Redpacket, Session
 from yatang.modules import UserInfo
+from threading import Thread, current_thread
 
 logger = logging.getLogger("app")
 c = Cookies("./")
 #投资众筹
-class TenderCF:
+class TenderCF(Thread):
     def __init__(self, user_name, amount):
+        Thread.__init__(self)
         self.user_name = user_name #投资用户名
         self.amount = amount #投资金额
+        pass
+
+    def run(self):
+        self.crowdfunding_tender()
         pass
 
     def crowdfunding_tender(self):
@@ -37,23 +43,40 @@ class TenderCF:
         user_info = query.one()
 
         invest = Invest(user_info.name, opener, self.amount)
-        crowdfundings = Crowdfundings(opener)
-        crowdfunding = crowdfundings.crowdfundingRequest()
-        logger.info(crowdfunding)
+        for i in range(2):
+            crowdfundings = Crowdfundings(opener)
+            crowdfunding = crowdfundings.crowdfundingRequest()
+            logger.info(crowdfunding)
 
-        now = datetime.now()
-        delta = (crowdfunding.starttime - now).total_seconds()
-        
-        if delta < 0 :
-            logger.warn(' 开始时间已过， 众筹投资任务未执行！%d' % delta)
-        else:
-            logger.info(' %d秒后开始执行众筹投资任务！ ' % (delta))
-            sleep(delta)
-            invest.tenderCF(crowdfunding, user_info)
+            now = datetime.now()
+            delta = (crowdfunding.starttime - now).total_seconds()
+            
+            if delta < 0 :
+                logger.warn(' 开始时间已过， 众筹投资任务未执行！%d' % delta)
+                break
+            elif delta > 600:
+                logger.info(' 先等待%d秒后开始执行众筹投资任务！ ' % (delta - 600))
+                sleep(delta - 600)
+            else:
+                logger.info(' %d秒后开始执行众筹投资任务！ ' % (delta))
+                sleep(delta)
+                invest.tenderCF(crowdfunding, user_info)
+                break
 
 if __name__ == '__main__':
    
     #初始化
     utils.initSys()
     conf.initConfig()
-    TenderCF('richardxieq', 15000).crowdfunding_tender()
+    from conf import auto_tender_names
+    threads = []
+    for username in auto_tender_names:
+        t = TenderCF(username, 4000)
+        t.start()
+        threads.append(t)
+
+    for thread in threads:
+        thread.join()
+    
+    logger.info('众筹投标任务 %s 完成.' % current_thread().name)
+    

@@ -6,15 +6,21 @@ from time import time, sleep
 import logging,utils,conf
 from yatang import Cookies, Account, Invest, Assets, Welfare, Coupon, Loan, Session
 from yatang.modules import UserInfo
+from threading import Thread, current_thread
 
 logger = logging.getLogger("app")
 c = Cookies("./")
 
 #投资资产标
-class Tender:
+class Tender(Thread):
     schedule = scheduler(time, sleep) 
     def __init__(self, name):
+        Thread.__init__(self)
         self.name = name #投资人姓名
+        pass
+
+    def run(self):
+        self.timming_exec()
         pass
 
     def timming_exec(self, inc = 20):
@@ -51,7 +57,7 @@ class Tender:
         while len(assetList) < 2:
             assetList.extend(assets.assetRequest(str(idx)))
             idx += 1
-            if idx == 3:
+            if idx == 5:
                 break
 
         print(assetList)
@@ -67,4 +73,14 @@ if __name__ == '__main__':
     #初始化
     utils.initSys()
     conf.initConfig()
-    Tender("emmaye").timming_exec()
+     from conf import auto_tender_names
+    threads = []
+    for username in auto_tender_names:
+        t = Tender(username)
+        t.start()
+        threads.append(t)
+
+    for thread in threads:
+        thread.join()
+    
+    logger.info('资产投标任务 %s 完成.' % current_thread().name)
