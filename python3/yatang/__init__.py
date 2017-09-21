@@ -25,16 +25,22 @@ YTURLBASESSL = "https://jr.yatang.cn/"
 YTAPIBASESSL = "https://yztapi.yatang.cn/"
 YT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
 
-
-db_name = 'mysql+pymysql://%s:%s@%s:%s/%s?charset=utf8mb4'%(db_config['mysql']['user'],
+USE_MYSQL = False
+if USE_MYSQL:
+    db_name = 'mysql+pymysql://%s:%s@%s:%s/%s?charset=utf8mb4'%(db_config['mysql']['user'],
                                                           db_config['mysql']['password'],
                                                           db_config['mysql']['host'],
                                                           db_config['mysql']['port'],
                                                           db_config['mysql']['instancename'])
+else:
+    db_name = 'sqlite:///%s'%(db_config['sqlite3']['dbname'])
 
 
 from sqlalchemy import create_engine
-engine = create_engine(db_name, pool_size=100, pool_recycle=3600, echo=True)
+if USE_MYSQL:
+    engine = create_engine(db_name, pool_size=100, pool_recycle=3600, echo=True)
+else:
+    engine = create_engine(db_name, echo=True)
 
 from sqlalchemy.orm import sessionmaker
 Session = sessionmaker()
