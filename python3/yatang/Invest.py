@@ -74,9 +74,9 @@ class Invest:
         if welfare == None:
             logger.warn("无效的开心利是信息")
             return
-        logger.debug(self.name +" 准备投开心利是:" + str(welfare.available_cash) + ":" + str(welfare.can_tender))
+        logger.debug(self.name +" 准备投开心利是:" + str(welfare.available_cash))
 
-        if(welfare.available_cash > welfare.zxtbe and welfare.can_tender):
+        if(welfare.available_cash > welfare.zxtbe):
             logger.info(self.name +" 开始投开心利是:" + str(welfare.available_cash)+ ":" + welfare.uniqKey)
             salt = welfare.uniqKey
             ppay = self.encryptor.encryptTradePassword(base64.b64decode(user_info.trade_password).decode('utf-8'), salt)
@@ -90,7 +90,7 @@ class Invest:
                 'user_id': user_info.user_id
             }
             buyinfo = self.buyRequest(values)
-            logger.info("标的购买结果：" + buyinfo)
+            logger.info("标的购买结果：%s" % str(buyinfo))
             if buyinfo and 'tnum' in buyinfo:
                 session = yatang.Session()
                 query = session.query(WelfareInfo).filter(WelfareInfo.ibid == welfare.ibid)
@@ -105,7 +105,7 @@ class Invest:
     def tenderCF(self, crowdfunding, user_info):
         logger.debug(self.name +" 准备投资众筹" )
         lunchid = "0"
-        redpacket = Redpacket(self.opener, crowdfunding.project_id).redpacketListRequest()
+        redpacket = Redpacket(self.opener, crowdfunding.project_id).redpacketListRequest(self.amount)
         if(redpacket['status'] == 1) :
             if('data' in redpacket and len(redpacket['data'])):
                 found = list(filter(lambda d : d['user_constraint'] == self.amount, redpacket['data']))
@@ -113,13 +113,13 @@ class Invest:
                     lunchid = found[0]['id']
         if lunchid == '0':
             logger.info("没有合适的红包")
-            return
+            #return
         salt = crowdfunding.uniqKey
         ppay = self.encryptor.encryptTradePassword(base64.b64decode(user_info.trade_password).decode('utf-8'), salt)
         values = {
                 '__hash__': crowdfunding.hash_value,
                 'id': crowdfunding.project_id,
-                'lunchId': '0',  # 红包ID
+                'lunchId': lunchid,  # 红包ID
                 'amount': self.amount,
                 'p_pay': ppay,
                 'vcode': ''

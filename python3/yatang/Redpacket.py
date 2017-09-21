@@ -17,7 +17,7 @@ from Cookies import Cookies
 
 #投资众筹用红包
 class Redpacket: 
-    def __init__(self, opener, projectID="71"):
+    def __init__(self, opener, projectID="97"):
         self.projectID = projectID
         self.opener = opener
 
@@ -25,9 +25,9 @@ class Redpacket:
         return "<Redpacket(项目编号='%s')>" % (
                 self.projectID)
 
-    def redpacketListRequest(self):
+    def redpacketListRequest(self, amnt):
         values = {
-            'investMoney': '15000',
+            'investMoney': amnt,
             'projectId': self.projectID,
             'pageNum': '1'
         }
@@ -55,10 +55,10 @@ class Redpacket:
 
 if __name__ == '__main__':
     c = Cookies()
-    cj = c.readCookie('richardxieq')
+    cj = c.readCookie('emmaye')
     #c.dumpCookies(cj)
     opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
     install_opener(opener)
     c = Redpacket(opener)
-    print(c.redpacketListRequest())
+    print(c.redpacketListRequest('4000'))
     pass

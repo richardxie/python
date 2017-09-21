@@ -13,6 +13,7 @@ handlers:
   file:
     class : logging.handlers.TimedRotatingFileHandler
     formatter: simple
+    encoding : utf-8
     level: DEBUG
     filename: E:/SlProject/v2/application.log
     when: D

@@ -3,7 +3,8 @@
 #秒标
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
-import os, sys
+import os, sys, re
+from datetime import datetime
 pythonpath = os.path.dirname(__file__)
 pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
 if pythonpath is not None:
@@ -19,19 +20,19 @@ logger = logging.getLogger('app')
 
 from Borrow import Borrow
 class Welfare(Borrow): 
-    def __init__(self,hash_value, ibid, borrowType, borrowNum, available_cash,zxtbe, zdtbe, remain_amount, can_tender, uniqKey):
+    def __init__(self,hash_value, ibid, borrowType, borrowNum, available_cash,zxtbe, zdtbe, remain_amount, uniqKey, starttime):
         Borrow.__init__(self, ibid, borrowType, borrowNum)
         self.hash_value = hash_value
         self.available_cash = available_cash
         self.zdtbe = zdtbe #最多投标额
         self.zxtbe = zxtbe #最小投标额
         self.remain_amount=remain_amount #剩余金额
-        self.can_tender = can_tender
         self.uniqKey = uniqKey
+        self.starttime = starttime #开始时间
           
     def __repr__(self):
-        return "<Welfare(ibid='%s', type='%s', number='%s', minAmount='%f', cash='%f', hash_value='%s', uniqkey='%s', can_tender='%s')>" % (
-                self.ibid, self.borrowType, self.borrowNum, self.zxtbe, self.available_cash, self.hash_value, self.uniqKey, self.can_tender)
+        return "<Welfare(ibid='%s', type='%s', number='%s', minAmount='%f', cash='%f', hash_value='%s', uniqkey='%s', starttime='%s')>" % (
+                self.ibid, self.borrowType, self.borrowNum, self.zxtbe, self.available_cash, self.hash_value, self.uniqKey, self.starttime)
     
     @staticmethod
     def welfare_info(html):
@@ -86,11 +87,15 @@ class Welfare(Borrow):
             if hxjk_element and len(hxjk_element) > 0:
                 hxjk =  money(hxjk_element[0].attrib["value"])
             
-            can_tender = False
+            starttime_element = dom.xpath('//*[@id="wks_'+ ibid + '"]')
+            if starttime_element and len(starttime_element) > 0:
+                m = re.match('(\d{2})月(\d{2})日\s(\d{2}):(\d{2}):(\d{2})', starttime_element[0].text)
+                starttime = datetime(datetime.now().year, int(m.group(1)), int(m.group(2)), int(m.group(3)),  int(m.group(4)))
+            else: 
+                raise ValueError('开始时间未获取')
+
             incheck_element = dom.xpath('//*[@id="incheck2_'+ ibid + '"]')
-            wks_element = dom.xpath('//*[@id="wks_'+ ibid + '"]')
-            if not wks_element:
-                can_tender = True
+
             return Welfare(
                 hash_value = hash_value,
                 ibid = ibid,
@@ -100,8 +105,8 @@ class Welfare(Borrow):
                 zdtbe = zdtbe,
                 zxtbe = zxtbe,
                 remain_amount = hxjk,
-                can_tender=can_tender,
-                uniqKey=uniqKey
+                uniqKey=uniqKey,
+                starttime = starttime
                 )
         except Exception as e:
             print (e)
