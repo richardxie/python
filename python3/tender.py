@@ -41,7 +41,7 @@ class Tender(Thread):
 
         acc = Account(opener)
         accountinfo = acc.accountRequest()
-        totalAmount = accountinfo.available
+        totalAmount = accountinfo.available if accountinfo is not None else 0
 
         session = Session()
         query = session.query(UserInfo).filter(UserInfo.name == self.name, UserInfo.website == 'yt')
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     #初始化
     utils.initSys()
     conf.initConfig()
-     from conf import auto_tender_names
+    from conf import auto_tender_names
     threads = []
     for username in auto_tender_names:
         t = Tender(username)

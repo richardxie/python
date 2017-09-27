@@ -60,11 +60,11 @@ def borrowTypeName(borrowType):
             ,'9':'供应链金融标-创业标'
             ,'10':'股权净值标-资产四号'
             } 
-    return names[borrowType];
+    return names[borrowType]
 
 def repayTypeName(repayStyle):
     names = {
             '4':'按天到期'
             ,'0':'按月分期'
             } 
-    return names[repayStyle];
+    return names[repayStyle]

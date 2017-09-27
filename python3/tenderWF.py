@@ -46,7 +46,6 @@ class TenderWF(Thread):
             elif delta > 600:
                 logger.info(' 先等待%d秒后开始执行秒标投资任务！ ' % (delta - 600))
                 sleep(delta - 600)
-                break
             else:
                 sleep(delta)
                 invest = Invest(user_info.name, opener)

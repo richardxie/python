@@ -32,7 +32,7 @@ class TenderSC:
 
         opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
         install_opener(opener)
-
+        
         acc = Account(opener)
         accountinfo = acc.accountRequest()
         totalAmount = accountinfo.available

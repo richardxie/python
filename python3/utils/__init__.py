@@ -4,7 +4,7 @@ from urllib.request import Request, URLError, HTTPError
 import sys, os, socket, logging
 sys.path.append(os.path.dirname(__file__))
 from js_utils import Encryptor
-
+Salt = '1234qwer'
 def initSys():
     # UTF-8
     if sys.getdefaultencoding() != 'utf-8':
