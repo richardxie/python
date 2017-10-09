@@ -59,7 +59,7 @@ class TenderCF(Thread):
                 sleep(delta - 600)
             else:
                 logger.info(' %d秒后开始执行众筹投资任务！ ' % (delta))
-                sleep(delta)
+                sleep(delta - 0.5)
                 invest.tenderCF(crowdfunding, user_info)
                 break
 

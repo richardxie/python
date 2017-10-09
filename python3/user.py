@@ -22,7 +22,7 @@ if query.count() == 0:
                 website='yt',                         
                 name= name,
                 password=md5((name + passwd + Salt).encode("UTF-8")).hexdigest(),
-                trade_password=b64encode(tradePassword)
+                trade_password=b64encode(tradePassword.encode('UTF-8'))
     )
     session.add(user_info)
     session.commit()
