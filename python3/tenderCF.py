@@ -65,13 +65,16 @@ class TenderCF(Thread):
 
 if __name__ == '__main__':
    
+    auto_tender_names = [
+        {'username':'emmaye', 'amount':4000},
+        {'username':'richardxieq', 'amount':4000}
+        ]
     #初始化
     utils.initSys()
     conf.initConfig()
-    from conf import auto_tender_names
     threads = []
-    for username in auto_tender_names:
-        t = TenderCF(username, 4000)
+    for user in auto_tender_names:
+        t = TenderCF(user['username'], user['amount'])
         t.start()
         threads.append(t)
 
