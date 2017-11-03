@@ -13,10 +13,11 @@ logger = logging.getLogger("app")
 c = Cookies("./")
 #投资众筹
 class TenderCF(Thread):
-    def __init__(self, user_name, amount):
+    def __init__(self, user_name, amount,useRedpacket):
         Thread.__init__(self)
         self.user_name = user_name #投资用户名
         self.amount = amount #投资金额
+        self.useRedpacket = useRedpacket #是否必须使用红包
         pass
 
     def run(self):
@@ -60,21 +61,21 @@ class TenderCF(Thread):
             else:
                 logger.info(' %d秒后开始执行众筹投资任务！ ' % (delta))
                 sleep(delta - 0.5)
-                invest.tenderCF(crowdfunding, user_info)
+                invest.tenderCF(crowdfunding, user_info, self.useRedpacket)
                 break
 
 if __name__ == '__main__':
    
     auto_tender_names = [
-        {'username':'emmaye', 'amount':4000},
-        {'username':'richardxieq', 'amount':4000}
+        {'username':'emmaye', 'amount':8000, 'redpacket':True},
+        {'username':'richardxieq', 'amount':9000, 'redpacket':True}
         ]
     #初始化
     utils.initSys()
     conf.initConfig()
     threads = []
     for user in auto_tender_names:
-        t = TenderCF(user['username'], user['amount'])
+        t = TenderCF(user['username'], user['amount'], user['redpacket'])
         t.start()
         threads.append(t)
 

@@ -4,6 +4,7 @@
 from urllib.request import Request, install_opener,build_opener,HTTPCookieProcessor, HTTPRedirectHandler, URLError, HTTPError
 from urllib.parse import urlencode
 from math import floor
+from threading import Lock
 
 import json, logging, os, sys, math, base64, socket
 pythonpath = os.path.dirname(__file__)
@@ -29,6 +30,7 @@ class Invest:
         self.name = name #用户名
         self.opener = opener
         self.amount = amount #投资金额
+        self.lock = Lock()
 
     #根据红包来确定投资金额      
     def tender(self, loan, user_info):
@@ -92,28 +94,32 @@ class Invest:
             buyinfo = self.buyRequest(values)
             logger.info("标的购买结果：%s" % str(buyinfo))
             if buyinfo and 'tnum' in buyinfo:
-                session = yatang.Session()
-                query = session.query(WelfareInfo).filter(WelfareInfo.ibid == welfare.ibid)
-                if query.count() == 0:
-                    welfare_info = WelfareInfo.fromWelfare(welfare)
-                    session.add(welfare_info)
-                    session.commit()
-                self.tender_info(welfare.borrowNum, buyinfo['tnum'])
+                with self.lock:
+                    session = yatang.Session()
+                    query = session.query(WelfareInfo).filter(WelfareInfo.ibid == welfare.ibid)
+                    if query.count() == 0:
+                        welfare_info = WelfareInfo.fromWelfare(welfare)
+                        session.add(welfare_info)
+                        session.commit()
+                tenderInfo = self.tender_info(welfare.borrowNum, buyinfo['tnum'])
+                logger.info("标的购买信息：%s" % str(tenderInfo))
+                
         pass
     
     #用户决定投资金额
-    def tenderCF(self, crowdfunding, user_info):
+    def tenderCF(self, crowdfunding, user_info, useRedPacket):
         logger.debug(self.name +" 准备投资众筹" )
         lunchid = "0"
         redpacket = Redpacket(self.opener, crowdfunding.project_id).redpacketListRequest(self.amount)
-        if(redpacket['status'] == 1) :
+        if(redpacket and redpacket['status'] == 1) :
             if('data' in redpacket and len(redpacket['data'])):
                 found = list(filter(lambda d : d['user_constraint'] == self.amount, redpacket['data']))
                 if found and len(found) > 0:
                     lunchid = found[0]['id']
         if lunchid == '0':
             logger.info("没有合适的红包")
-            #return
+            if useRedPacket:
+                return
         salt = crowdfunding.uniqKey
         ppay = self.encryptor.encryptTradePassword(base64.b64decode(user_info.trade_password).decode('utf-8'), salt)
         values = {

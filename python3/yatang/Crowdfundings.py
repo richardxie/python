@@ -111,5 +111,4 @@ class Crowdfundings:
         projectURL_e = dom.xpath("////div[@class='zc_detail_box']/a")
         return projectURL_e[0].attrib['href']
 
-
     
