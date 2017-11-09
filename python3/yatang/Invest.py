@@ -91,18 +91,23 @@ class Invest:
                 'p_pay': ppay,
                 'user_id': user_info.user_id
             }
-            buyinfo = self.buyRequest(values)
-            logger.info("标的购买结果：%s" % str(buyinfo))
-            if buyinfo and 'tnum' in buyinfo:
-                with self.lock:
-                    session = yatang.Session()
-                    query = session.query(WelfareInfo).filter(WelfareInfo.ibid == welfare.ibid)
-                    if query.count() == 0:
-                        welfare_info = WelfareInfo.fromWelfare(welfare)
-                        session.add(welfare_info)
-                        session.commit()
-                tenderInfo = self.tender_info(welfare.borrowNum, buyinfo['tnum'])
-                logger.info("标的购买信息：%s" % str(tenderInfo))
+            for i in range(3):
+                buyinfo = self.buyRequest(values)
+                logger.info("标的购买结果：%s" % str(buyinfo))
+                if buyinfo and 'status' in buyinfo:
+                    if int(buyinfo['status']) == 119:
+                        break
+                
+                if buyinfo and 'tnum' in buyinfo:
+                    with self.lock:
+                        session = yatang.Session()
+                        query = session.query(WelfareInfo).filter(WelfareInfo.ibid == welfare.ibid)
+                        if query.count() == 0:
+                            welfare_info = WelfareInfo.fromWelfare(welfare)
+                            session.add(welfare_info)
+                            session.commit()
+                    tenderInfo = self.tender_info(welfare.borrowNum, buyinfo['tnum'])
+                    logger.info("标的购买信息：%s" % str(tenderInfo))
                 
         pass
     
