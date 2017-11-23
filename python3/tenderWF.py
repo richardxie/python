@@ -49,7 +49,8 @@ class TenderWF(Thread):
             else:
                 sleep(delta - 0.1)
                 invest = Invest(user_info.name, opener)
-                invest.tenderWF(loaninfo, user_info)    
+                invest.tenderWF(loaninfo, user_info)
+                break 
         pass
     pass
 

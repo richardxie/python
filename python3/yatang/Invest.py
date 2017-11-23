@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from math import floor
 from threading import Lock
 
-import json, logging, os, sys, math, base64, socket
+import json, logging, os, sys, math, base64, socket, time
 pythonpath = os.path.dirname(__file__)
 pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
 if pythonpath is not None:
@@ -91,12 +91,14 @@ class Invest:
                 'p_pay': ppay,
                 'user_id': user_info.user_id
             }
-            for i in range(3):
+            for i in range(10):
                 buyinfo = self.buyRequest(values)
                 logger.info("标的购买结果：%s" % str(buyinfo))
                 if buyinfo and 'status' in buyinfo:
                     if int(buyinfo['status']) == 119:
                         break
+                
+                time.sleep(0.5)
                 
                 if buyinfo and 'tnum' in buyinfo:
                     with self.lock:

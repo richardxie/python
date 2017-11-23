@@ -15,17 +15,20 @@ if pythonpath is not None:
 
 import yatang, logging, traceback
 from utils import httpRequest, money
+from time import time, sleep
+from threading import Thread, current_thread
 
 logger = logging.getLogger('app')
 
 #抢红包
 class RedEnvelope: 
-    def __init__(self, projectId, usableMoney, redPacketVal, redPacketUseVal):
+    def __init__(self, projectId, usableMoney, redPacketVal, redPacketUseVal,leftTime):
         self.opener = opener
         self.projectId = projectId
         self.usableMoney = usableMoney
         self.redPacketVal = redPacketVal
         self.redPacketUseVal = redPacketUseVal
+        self.leftTime = leftTime
 
     def __repr__(self):
         return "<Redpacket(项目编号='%s')>" % (
@@ -50,20 +53,35 @@ class RedEnvelope:
             if redPacketUseVal_element and len(redPacketUseVal_element) > 0:
                 redPacketUseVal = money(redPacketUseVal_element[0].attrib['value'])
             
+            leftTime_element = dom.xpath("//*[@id='leftTime']")
+            if leftTime_element and len(leftTime_element) > 0:
+                leftTime = int(leftTime_element[0].attrib['value'])
+            
             return RedEnvelope(
                 projectId = projectID,
                 usableMoney = usableMoney,
                 redPacketVal = redPacketVal,
-                redPacketUseVal = redPacketUseVal
+                redPacketUseVal = redPacketUseVal,
+                leftTime = leftTime
             )
         except Exception as e:
             print (e)
             traceback.print_exc() 
             logger.warn("oops, 抢红包页面解析失败!")
 
-class GradRedPacket:
-    def __init__(self, opener):
+class GradRedPacket(Thread):
+    def __init__(self, opener, vcode):
+        Thread.__init__(self)
         self.opener = opener
+        self.vcode = vcode
+
+    def run(self):
+        re = self.gradRedPacketRequest()
+        delta = re.leftTime
+        sleep( delta )
+        res = c.gradStart(re)
+        logging.getLogger("app").log(res)
+        pass
 
     def gradRedPacketRequest(self):
         resp = httpRequest(opener, yatang.YTURLBASESSL + "/GradRedPacket")
@@ -74,7 +92,7 @@ class GradRedPacket:
         values = {
             'money': int(redEnvelope.usableMoney / redEnvelope.redPacketUseVal) * redEnvelope.redPacketUseVal,
             'projectId': redEnvelope.projectId,
-            'vcode': '5648'
+            'vcode': self.vcode
         }
         postData = urlencode(values)
         headers = {
@@ -101,13 +119,26 @@ class GradRedPacket:
 if __name__ == '__main__':
     from urllib.request import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
     from Cookies import Cookies
-    c = Cookies()
-    cj = c.readCookie('richardxieq')
-    #c.dumpCookies(cj)
-    opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
-    install_opener(opener)
-    c = GradRedPacket(opener)
-    res = c.gradStart(c.gradRedPacketRequest())
-
-    print(res)
+    
+   
+    auto_tender_names = [
+        {'username':'emmaye',  'vcode':'123'},
+        {'username':'richardxieq', 'vcode':'123'}
+        ]
+    threads = []
+    for user in auto_tender_names:
+        c = Cookies()
+        cj = c.readCookie(user['username'])
+        #c.dumpCookies(cj)
+        opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
+        install_opener(opener)
+        t = GradRedPacket(opener, user['vcode'])
+        t.start()
+        threads.append(t)
+    
+    for thread in threads:
+        thread.join()
+    
+    logger.info('抢红包任务 %s 完成.' % current_thread().name)
+    
     pass
