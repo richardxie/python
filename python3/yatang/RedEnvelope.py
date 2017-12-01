@@ -120,10 +120,8 @@ if __name__ == '__main__':
     from urllib.request import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
     from Cookies import Cookies
     
-   
     auto_tender_names = [
-        {'username':'emmaye',  'vcode':'123'},
-        {'username':'richardxieq', 'vcode':'123'}
+        {'username':'richardxieq', 'vcode':'2060'}
         ]
     threads = []
     for user in auto_tender_names:
