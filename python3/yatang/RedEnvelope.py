@@ -79,7 +79,7 @@ class GradRedPacket(Thread):
         re = self.gradRedPacketRequest()
         delta = re.leftTime
         sleep( delta )
-        res = c.gradStart(re)
+        res = self.gradStart(re)
         logging.getLogger("app").log(res)
         pass
 
@@ -120,7 +120,9 @@ if __name__ == '__main__':
     from urllib.request import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
     from Cookies import Cookies
     
+    #https://jr.yatang.cn/GradRedPacket/getVCode
     auto_tender_names = [
+        {'username':'emmaye',  'vcode':'7490'},
         {'username':'richardxieq', 'vcode':'2060'}
         ]
     threads = []
