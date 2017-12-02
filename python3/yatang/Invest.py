@@ -129,40 +129,46 @@ class Invest:
                 return
         salt = crowdfunding.uniqKey
         ppay = self.encryptor.encryptTradePassword(base64.b64decode(user_info.trade_password).decode('utf-8'), salt)
-        values = {
-                '__hash__': crowdfunding.hash_value,
-                'id': crowdfunding.project_id,
-                'lunchId': lunchid,  # 红包ID
-                'amount': self.amount,
-                'p_pay': ppay,
-                'vcode': ''
+        #重试
+        for i in range(10):
+            values = {
+                    '__hash__': crowdfunding.hash_value,
+                    'id': crowdfunding.project_id,
+                    'lunchId': lunchid,  # 红包ID
+                    'amount': self.amount,
+                    'p_pay': ppay,
+                    'vcode': ''
+                }
+            data = urlencode(values)
+            headers = {
+                'User-Agent': yatang.YT_USER_AGENT,
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             }
-        data = urlencode(values)
-        headers = {
-            'User-Agent': yatang.YT_USER_AGENT,
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        }
-        req = Request(yatang.YTURLBASESSL + '/Crowdfunding/checkPay', data.encode(encoding='UTF8'), headers)
-        jsonresp = {}
-        try:
-            response = self.opener.open(req, timeout=30)
-            if response.code == 200 :
-                resp_data =response.read().decode()
-                jsonresp = json.loads(resp_data)
-        except URLError as e:
-            logger.warn(e)
-        except HTTPError as h:
-            logger.warn(h)
-        except socket.timeout as t:
-            logger.warn(t)
-        except ValueError: 
-            logger.warn("无效的json格式")
-            logger.warn(resp_data)
-        except:
-            print ("Unexpected error:", sys.exc_info()[0])
-            logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
-            
-        logger.info("标的购买结果：" + str(jsonresp))
+            req = Request(yatang.YTURLBASESSL + '/Crowdfunding/checkPay', data.encode(encoding='UTF8'), headers)
+            jsonresp = {}
+            try:
+                response = self.opener.open(req, timeout=30)
+                if response.code == 200 :
+                    resp_data =response.read().decode()
+                    jsonresp = json.loads(resp_data) 
+                    if jsonresp and 'status' in jsonresp:
+                        if int(jsonrep['status']) == 119:
+                            break
+            except URLError as e:
+                logger.warn(e)
+            except HTTPError as h:
+                logger.warn(h)
+            except socket.timeout as t:
+                logger.warn(t)
+            except ValueError: 
+                logger.warn("无效的json格式")
+                logger.warn(resp_data)
+            except:
+                print ("Unexpected error:", sys.exc_info()[0])
+                logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
+                
+            logger.info("标的购买结果：" + str(jsonresp))
+            time.sleep(0.5)
         pass
     
     def buyRequest(self, values):

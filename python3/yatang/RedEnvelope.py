@@ -78,7 +78,8 @@ class GradRedPacket(Thread):
     def run(self):
         re = self.gradRedPacketRequest()
         delta = re.leftTime
-        sleep( delta )
+        logger.info(' %d秒后开始执行抢红包任务！ ' % (delta))
+        sleep( delta ) 
         res = self.gradStart(re)
         logging.getLogger("app").log(res)
         pass

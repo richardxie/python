@@ -25,7 +25,7 @@ class TenderCF(Thread):
         pass
 
     def crowdfunding_tender(self):
-        logger.debug('开始投资众筹')
+        logger.debug(self.user_name + '开始投资众筹')
         cj = c.readCookie(self.user_name)        
         #c.dumpCookies(cj)
 
