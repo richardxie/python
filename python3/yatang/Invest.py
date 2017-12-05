@@ -152,7 +152,7 @@ class Invest:
                     resp_data =response.read().decode()
                     jsonresp = json.loads(resp_data) 
                     if jsonresp and 'status' in jsonresp:
-                        if int(jsonrep['status']) == 119:
+                        if int(jsonresp['status']) == 119:
                             break
             except URLError as e:
                 logger.warn(e)

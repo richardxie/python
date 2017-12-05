@@ -64,7 +64,7 @@ class Crowdfunding:
         if starttime_element and len(starttime_element) > 0:
             starttime = datetime.strptime( starttime_element[0].attrib['value'], "%Y-%m-%d %H:%M:%S")
         else: 
-            raise ValueError('开始时间未获取')
+            starttime = datetime.now()
 
         hash_element = dom.xpath("//input[@type='hidden' and @name='__hash__']/@value")
         if hash_element and len(hash_element) > 0:

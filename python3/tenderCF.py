@@ -53,14 +53,15 @@ class TenderCF(Thread):
             delta = (crowdfunding.starttime - now).total_seconds()
             
             if delta < 0 :
-                logger.warn(' 开始时间已过， 众筹投资任务未执行！%d' % delta)
+                logger.warn(' 开始时间已过， 众筹投资任务直接执行！%d' % delta)
+                invest.tenderCF(crowdfunding, user_info, self.useRedpacket)
                 break
             elif delta > 600:
                 logger.info(' 先等待%d秒后开始执行众筹投资任务！ ' % (delta - 600))
                 sleep(delta - 600)
             else:
                 logger.info(' %d秒后开始执行众筹投资任务！ ' % (delta))
-                sleep(delta - 0.5)
+                sleep(delta)
                 invest.tenderCF(crowdfunding, user_info, self.useRedpacket)
                 break
 

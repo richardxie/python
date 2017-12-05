@@ -47,7 +47,7 @@ class TenderWF(Thread):
                 logger.info(' 先等待%d秒后开始执行秒标投资任务！ ' % (delta - 600))
                 sleep(delta - 600)
             else:
-                sleep(delta - 0.1)
+                sleep( delta )
                 invest = Invest(user_info.name, opener)
                 invest.tenderWF(loaninfo, user_info)
                 break 
