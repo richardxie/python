@@ -100,20 +100,23 @@ class GrabTicketCash(Thread):
                 break
 
             delta = res.time
-            endTime = datetime.fromtimestamp(res.activityEndTime)
+            startTime = datetime.fromtimestamp(res.activityStartTime)
+            print(startTime.strftime("%Y-%m-%d %H:%M:%S"))
             now = datetime.now()
-            delta2 = (endTime - now).seconds
+            delta2 = (startTime - now).seconds
 
-            if delta < 0 :
-                logger.warn(' 开始时间已过， 直接执行！%d' % delta)
+            print("time delta: %d"%(delta2 - delta))
+
+            if delta2 < 0 :
+                logger.warn(' 开始时间已过， 直接执行！%d' % delta2)
                 res = self.grabTicketCash(res)
                 break
-            elif delta > 600:
-                logger.info('%s 先等待%d秒后开始执行抢现金券任务！ ' % (self.user_info.name, delta - 600))
-                sleep(delta - 600)
+            elif delta2 > 600:
+                logger.info('%s 先等待%d秒后开始执行抢现金券任务！ ' % (self.user_info.name, delta2 - 600))
+                sleep(delta2 - 600)
             else:
                 logger.info('%s %d秒后开始执行抢现金券任务！ ' % (self.user_info.name, delta))
-                sleep(delta)
+                sleep(delta2)
                 res = self.grabTicketCash(res)
                 break
 
@@ -153,6 +156,7 @@ class GrabTicketCash(Thread):
                     logger.debug("提交抢现金券请求结果：%s", jsonresp)
                     if jsonresp and 'status' in jsonresp:
                         if int(jsonresp['status']) == 1:
+                            sleep(1) #稍等一下在查询结果
                             self.pollingResult(ticketCash.activityCode, jsonresp['data'])
         except URLError as e:
             logger.warn(e)
