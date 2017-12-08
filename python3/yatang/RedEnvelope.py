@@ -4,6 +4,7 @@
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
 from urllib.parse import urlencode
+from configparser import ConfigParser
 import json, logging, os, sys
 pythonpath = os.path.dirname(__file__)
 pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
@@ -70,10 +71,10 @@ class RedEnvelope:
             logger.warn("oops, 抢红包页面解析失败!")
 
 class GradRedPacket(Thread):
-    def __init__(self, opener, vcode):
+    def __init__(self, opener, username):
         Thread.__init__(self)
         self.opener = opener
-        self.vcode = vcode
+        self.username = username
 
     def run(self):
         re = self.gradRedPacketRequest()
@@ -81,7 +82,7 @@ class GradRedPacket(Thread):
         logger.info(' %d秒后开始执行抢红包任务！ ' % (delta))
         sleep( delta ) 
         res = self.gradStart(re)
-        logging.getLogger("app").log(res)
+        logger.info(res)
         pass
 
     def gradRedPacketRequest(self):
@@ -90,10 +91,14 @@ class GradRedPacket(Thread):
             return RedEnvelope.redEnvelope_info(resp)
     
     def gradStart(self, redEnvelope):
+        #read vcode form local file
+        conf = ConfigParser()
+        conf.read('redEnvelope.ini')
+        vcode = conf.get(self.username, "vcode") 
         values = {
             'money': int(redEnvelope.usableMoney / redEnvelope.redPacketUseVal) * redEnvelope.redPacketUseVal,
             'projectId': redEnvelope.projectId,
-            'vcode': self.vcode
+            'vcode': vcode
         }
         postData = urlencode(values)
         headers = {
@@ -108,12 +113,12 @@ class GradRedPacket(Thread):
                 if response.code == 200:
                     jsonresp = json.loads(response.read().decode())
         except URLError as e:
-            logging.getLogger("app").warn(e)
+            logger.warn(e)
         except HTTPError as h:
-            logging.getLogger("app").warn(h)
+            logger.warn(h)
         except:
             print ("Unexpected error:", sys.exc_info()[0])
-            logging.getLogger("app").warn('Unexpected error:',  sys.exc_info()[0])
+            logger.warn('Unexpected error:',  sys.exc_info()[0])
 
         return jsonresp
 
@@ -122,18 +127,15 @@ if __name__ == '__main__':
     from Cookies import Cookies
     
     #https://jr.yatang.cn/GradRedPacket/getVCode
-    auto_tender_names = [
-        {'username':'emmaye',  'vcode':'7490'},
-        {'username':'richardxieq', 'vcode':'2060'}
-        ]
+    from conf import auto_tender_names
     threads = []
     for user in auto_tender_names:
         c = Cookies()
-        cj = c.readCookie(user['username'])
+        cj = c.readCookie(user)
         #c.dumpCookies(cj)
         opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
         install_opener(opener)
-        t = GradRedPacket(opener, user['vcode'])
+        t = GradRedPacket(opener, user)
         t.start()
         threads.append(t)
     
