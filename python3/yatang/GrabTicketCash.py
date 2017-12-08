@@ -45,14 +45,27 @@ https://jr.yatang.cn/GrabTicketCash/getActivityInfo
     "info":"success
     """
 class TicketCash: 
-    def __init__(self,activityName=None, activityTotalMoney=None, activityConfineMoney=None, 
-                    useMoney = None,activityStartTime=None, time = None, activityStartMoney = None, 
-                    activityRate = None, key = None, activityCode = None):
+    def __init__(self,
+                    activityName = None,        #名称
+                    activityTotalMoney = None,  #现金券总额
+                    activityConfineMoney=None,  #限抢额
+                    useMoney = None,            #可用金额
+                    useInvestMaxMoney = None,   #最大可投金额
+                    activityStartTime=None,     #开始时间
+                    activityEndTime = None,     #结束时间
+                    time = None,                #等待时间（现在时间 - 开始时间）
+                    activityStartMoney = None,  #起投金额
+                    activityRate = None,        #年回报率
+                    key = None,                 #加密盐值
+                    activityCode = None         #编号
+                    ):
         self.activityName = activityName
         self.activityTotalMoney = activityTotalMoney
         self.activityConfineMoney = activityConfineMoney
         self.useMoney = useMoney
+        self.useInvestMaxMoney = useInvestMaxMoney
         self.activityStartTime = activityStartTime
+        self.activityEndTime = activityEndTime
         self.time = time
         self.activityStartMoney = activityStartMoney
         self.activityRate = activityRate
@@ -61,7 +74,7 @@ class TicketCash:
           
     def __repr__(self):
         return "<现金券(项目名称='%s',项目金额='%.2f', 起投金额='%.2f',可投金额='%.2f',编号='%s', 键值='%s')>" % (
-               self.activityName, self.activityTotalMoney, self.activityStartMoney, self.useMoney, self.activityCode, self.key)
+               self.activityName, self.activityTotalMoney, self.activityStartMoney, self.useInvestMaxMoney, self.activityCode, self.key)
     
     @staticmethod
     def ticketCash_detail(jsonObj):
@@ -87,6 +100,9 @@ class GrabTicketCash(Thread):
                 break
 
             delta = res.time
+            endTime = datetime.fromtimestamp(res.activityEndTime)
+            now = datetime.now()
+            delta2 = (endTime - now).seconds
 
             if delta < 0 :
                 logger.warn(' 开始时间已过， 直接执行！%d' % delta)
@@ -101,7 +117,8 @@ class GrabTicketCash(Thread):
                 res = self.grabTicketCash(res)
                 break
 
-            logger.log(res)
+            logger.debug(res)
+            pass
 
     def ticketCashDetailRequest(self):
         resp = httpRequest(self.opener,  yatang.YTURLBASESSL + "/GrabTicketCash/getActivityInfo")
@@ -118,7 +135,7 @@ class GrabTicketCash(Thread):
 
         values = {
             'id': ticketCash.activityCode,
-            'money': ticketCash.useMoney,
+            'money': ticketCash.useInvestMaxMoney,
             'pwd': ppay
         }
         postData = urlencode(values)
@@ -133,10 +150,10 @@ class GrabTicketCash(Thread):
             with self.opener.open(req, timeout=30) as response:
                 if response.code == 200:
                     jsonresp = json.loads(response.read().decode())
+                    logger.debug("提交抢现金券请求结果：%s", jsonresp)
                     if jsonresp and 'status' in jsonresp:
                         if int(jsonresp['status']) == 1:
-                            logger.debug(jsonresp)
-                            self.pollingResult(jsonresp)
+                            self.pollingResult(ticketCash.activityCode, jsonresp['data'])
         except URLError as e:
             logger.warn(e)
         except HTTPError as h:
@@ -147,9 +164,36 @@ class GrabTicketCash(Thread):
 
         return jsonresp
 
-    def pollingResult(self, jsonObj):
+    def pollingResult(self, code, jsonObj):
         logger.debug("查询提交结果")
-        pass
+        values = {
+            'gradnum': jsonObj['gradNum'],
+            'id': code
+        }
+        postData = urlencode(values)
+        headers = {
+            'User-Agent': yatang.YT_USER_AGENT,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+        req = Request(url = yatang.YTURLBASESSL + 'GrabTicketCash/checkTicketCashQueen', data= postData.encode(encoding='UTF8'),  headers=headers, method='POST')
+        jsonresp = None
+        try:
+            with self.opener.open(req, timeout=30) as response:
+                if response.code == 200:
+                    jsonresp = json.loads(response.read().decode())
+                    if jsonresp and 'status' in jsonresp:
+                        if int(jsonresp['status']) == 1:
+                            logger.debug('查询抢现金券状态成功')
+        except URLError as e:
+            logger.warn(e)
+        except HTTPError as h:
+            logger.warn(h)
+        except:
+            print ("Unexpected error:", sys.exc_info()[0])
+            logger.warn('Unexpected error:',  sys.exc_info()[0])
+        logger.debug("查询提交结果: %s", jsonresp)
+        return jsonresp
     
 if __name__ == '__main__':
     from Cookies import Cookies
