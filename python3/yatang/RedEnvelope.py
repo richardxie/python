@@ -14,8 +14,8 @@ if pythonpath is not None:
         if not path in sys.path:
             sys.path.append(path)
 
-import yatang, logging, traceback
-from utils import httpRequest, money
+import yatang, traceback
+from utils import httpRequest, money, initSys
 from time import time, sleep
 from threading import Thread, current_thread
 
@@ -77,10 +77,12 @@ class GradRedPacket(Thread):
         self.username = username
 
     def run(self):
+        logger.info("进入抢红包进程")
         re = self.gradRedPacketRequest()
+        logger.info('获取抢红包信息：%s' % (re) )
         delta = re.leftTime
         logger.info(' %d秒后开始执行抢红包任务！ ' % (delta))
-        sleep( delta ) 
+        sleep( delta  + 0.5) 
         res = self.gradStart(re)
         logger.info(res)
         pass
@@ -95,6 +97,7 @@ class GradRedPacket(Thread):
         conf = ConfigParser()
         conf.read('redEnvelope.ini')
         vcode = conf.get(self.username, "vcode") 
+        logger.info('开始抢红包，验证码：%s' % (vcode) )
         values = {
             'money': int(redEnvelope.usableMoney / redEnvelope.redPacketUseVal) * redEnvelope.redPacketUseVal,
             'projectId': redEnvelope.projectId,
@@ -112,6 +115,7 @@ class GradRedPacket(Thread):
             with self.opener.open(req, timeout=30) as response:
                 if response.code == 200:
                     jsonresp = json.loads(response.read().decode())
+                    logger.info("抢红包结果：%s" % (jsonresp) )
         except URLError as e:
             logger.warn(e)
         except HTTPError as h:
@@ -125,8 +129,12 @@ class GradRedPacket(Thread):
 if __name__ == '__main__':
     from urllib.request import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
     from Cookies import Cookies
+    from conf import initConfig
     
     #https://jr.yatang.cn/GradRedPacket/getVCode
+    #初始化
+    initSys()
+    initConfig()
     from conf import auto_tender_names
     threads = []
     for user in auto_tender_names:
