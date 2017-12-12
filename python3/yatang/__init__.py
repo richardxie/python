@@ -13,6 +13,8 @@ from Coupon import Coupon
 from Invest import Invest
 from Crowdfundings import Crowdfundings
 from Redpacket import Redpacket
+from GrabTicketCash import GrabTicketCash
+from RedEnvelope import GradRedPacket
 from modules import AccountInfo
 from Loan import Loan
 from modules import InvestInfo

@@ -1,7 +1,12 @@
 #!/usr/bin/python3.6
 # -*- coding: utf-8 -*- 
 #抢现金券
+from urllib.request import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
+from urllib.parse import urlencode
 from datetime import datetime,timedelta
+from time import time, sleep
+from threading import Thread, current_thread
+
 import os, sys, json, base64
 pythonpath = os.path.dirname(__file__)
 pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
@@ -12,10 +17,10 @@ if pythonpath is not None:
             sys.path.append(path)
 
 from utils import httpRequest, money, Encryptor
-import yatang, logging, traceback
-import logging,utils,conf
-from time import time, sleep
-from threading import Thread, current_thread
+import logging, traceback
+from yatang import Cookies, GrabTicketCash
+from yatang.modules import UserInfo
+import yatang,utils,conf
 
 logger = logging.getLogger('app')
 
@@ -87,13 +92,26 @@ class TicketCash:
 
 
 class GrabTicketCash(Thread): 
-    def __init__(self, opener, user_info):
+    def __init__(self, username):
         Thread.__init__(self)
-        self.opener = opener
-        self.user_info = user_info
+        self.username = username
         self.encryptor = Encryptor()
     
     def run(self):
+        c = Cookies()
+        cj = c.readCookie(self.username)
+        #c.dumpCookies(cj)
+        self.opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
+        install_opener(self.opener)
+
+        session = yatang.Session()
+        query = session.query(UserInfo).filter(UserInfo.name == username, UserInfo.website == 'yt')
+        if query.count() != 0:
+            self.user_info = query.one()
+        else:
+            logger.warn('用户不存在：%s' % (self.username))
+            return
+
         for i in range(2):
             res = self.ticketCashDetailRequest()
             if res == None:
@@ -200,30 +218,22 @@ class GrabTicketCash(Thread):
         return jsonresp
     
 if __name__ == '__main__':
+    '''
     from Cookies import Cookies
     from yatang import Session
     from yatang.modules import UserInfo
     from urllib.parse import urlencode
     from urllib.request import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
+   '''
     #初始化
     utils.initSys()
     conf.initConfig()
     from conf import auto_tender_names
     threads = []
     for username in auto_tender_names:
-        c = Cookies()
-        cj = c.readCookie(username)
-        #c.dumpCookies(cj)
-        opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
-        install_opener(opener)
-
-        session = Session()
-        query = session.query(UserInfo).filter(UserInfo.name == username, UserInfo.website == 'yt')
-        if query.count() != 0:
-            user_info = query.one()
-            t = GrabTicketCash(opener, user_info)
-            t.start()
-            threads.append(t)
+        t = GrabTicketCash(username)
+        t.start()
+        threads.append(t)
 
     for thread in threads:
         thread.join()

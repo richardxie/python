@@ -1,11 +1,15 @@
 #!/usr/bin/python3.6
 # -*- coding: utf-8 -*- 
 
+from time import time, sleep
+from urllib.request import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
 from lxml.html import html5parser
 from html5lib import HTMLParser, treebuilders
 from urllib.parse import urlencode
 from configparser import ConfigParser
 import json, logging, os, sys
+from threading import Thread, current_thread
+
 pythonpath = os.path.dirname(__file__)
 pythonpath = os.path.abspath(os.path.join(pythonpath, os.pardir))
 if pythonpath is not None:
@@ -16,15 +20,14 @@ if pythonpath is not None:
 
 import yatang, traceback
 from utils import httpRequest, money, initSys
-from time import time, sleep
-from threading import Thread, current_thread
+from Cookies import Cookies
+from conf import initConfig
 
 logger = logging.getLogger('app')
 
 #抢红包
 class RedEnvelope: 
     def __init__(self, projectId, usableMoney, redPacketVal, redPacketUseVal,leftTime):
-        self.opener = opener
         self.projectId = projectId
         self.usableMoney = usableMoney
         self.redPacketVal = redPacketVal
@@ -71,13 +74,17 @@ class RedEnvelope:
             logger.warn("oops, 抢红包页面解析失败!")
 
 class GradRedPacket(Thread):
-    def __init__(self, opener, username):
+    def __init__(self, username):
         Thread.__init__(self)
-        self.opener = opener
         self.username = username
 
     def run(self):
         logger.info("进入抢红包进程")
+        c = Cookies('./')
+        cj = c.readCookie(self.username)
+        #c.dumpCookies(cj)
+        self.opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
+        install_opener(self.opener)
         re = self.gradRedPacketRequest()
         logger.info('获取抢红包信息：%s' % (re) )
         delta = re.leftTime
@@ -88,7 +95,7 @@ class GradRedPacket(Thread):
         pass
 
     def gradRedPacketRequest(self):
-        resp = httpRequest(opener, yatang.YTURLBASESSL + "/GradRedPacket")
+        resp = httpRequest(self.opener, yatang.YTURLBASESSL + "/GradRedPacket")
         if resp and resp.code == 200:
             return RedEnvelope.redEnvelope_info(resp)
     
@@ -127,23 +134,16 @@ class GradRedPacket(Thread):
         return jsonresp
 
 if __name__ == '__main__':
-    from urllib.request import HTTPCookieProcessor,Request,build_opener,install_opener,HTTPRedirectHandler, URLError, HTTPError
-    from Cookies import Cookies
-    from conf import initConfig
     
     #https://jr.yatang.cn/GradRedPacket/getVCode
+    #$('.nolShade,#checkTips').show();  
     #初始化
     initSys()
     initConfig()
     from conf import auto_tender_names
     threads = []
     for user in auto_tender_names:
-        c = Cookies()
-        cj = c.readCookie(user)
-        #c.dumpCookies(cj)
-        opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
-        install_opener(opener)
-        t = GradRedPacket(opener, user)
+        t = GradRedPacket(user)
         t.start()
         threads.append(t)
     
