@@ -127,10 +127,11 @@ class Invest:
             logger.info("没有合适的红包")
             if useRedPacket:
                 return
+        logger.debug("%s 开始投资众筹 %s" % (self.name, crowdfunding))
         salt = crowdfunding.uniqKey
         ppay = self.encryptor.encryptTradePassword(base64.b64decode(user_info.trade_password).decode('utf-8'), salt)
         #重试
-        for i in range(10):
+        for i in range(2):
             values = {
                     '__hash__': crowdfunding.hash_value,
                     'id': crowdfunding.project_id,
@@ -149,8 +150,9 @@ class Invest:
             try:
                 response = self.opener.open(req, timeout=30)
                 if response.code == 200 :
-                    resp_data =response.read().decode()
-                    jsonresp = json.loads(resp_data) 
+                    resp_data =response.read().decode(encoding='UTF8')
+                    jsonresp = json.loads(resp_data)
+                    logger.info('%s 购买众筹结果：%s' % (self.name, jsonresp))
                     if jsonresp and 'status' in jsonresp:
                         if int(jsonresp['status']) == 119:
                             break
