@@ -74,21 +74,21 @@ class RedEnvelope:
             logger.warn("oops, 抢红包页面解析失败!")
 
 class GradRedPacket(Thread):
-    def __init__(self, username):
+    def __init__(self, cfg):
         Thread.__init__(self)
-        self.username = username
+        self.cfg = cfg
 
     def run(self):
         logger.info("进入抢红包进程")
-        c = Cookies('./')
-        cj = c.readCookie(self.username)
+        c = Cookies(self.cfg['cwd'])
+        cj = c.readCookie(self.cfg['username'])
         #c.dumpCookies(cj)
         self.opener = build_opener(HTTPCookieProcessor(cj), HTTPRedirectHandler())
         install_opener(self.opener)
         re = self.gradRedPacketRequest()
-        logger.info('获取抢红包信息：%s' % (re) )
+        logger.info('%s 获取抢红包信息：%s' % (self.cfg['username'], re) )
         delta = re.leftTime
-        logger.info(' %d秒后开始执行抢红包任务！ ' % (delta))
+        logger.info('%s %d秒后开始执行抢红包任务！ ' % (self.cfg['username'], delta))
         sleep( delta  + 0.5) 
         res = self.gradStart(re)
         logger.info(res)
@@ -103,8 +103,8 @@ class GradRedPacket(Thread):
         #read vcode form local file
         conf = ConfigParser()
         conf.read('redEnvelope.ini')
-        vcode = conf.get(self.username, "vcode") 
-        logger.info('开始抢红包，验证码：%s' % (vcode) )
+        vcode = conf.get(self.cfg['username'], "vcode") 
+        logger.info('%s 开始抢红包，验证码：%s' % (self.cfg['username'], vcode) )
         values = {
             'money': int(redEnvelope.usableMoney / redEnvelope.redPacketUseVal) * redEnvelope.redPacketUseVal,
             'projectId': redEnvelope.projectId,
@@ -122,7 +122,7 @@ class GradRedPacket(Thread):
             with self.opener.open(req, timeout=30) as response:
                 if response.code == 200:
                     jsonresp = json.loads(response.read().decode())
-                    logger.info("抢红包结果：%s" % (jsonresp) )
+                    logger.info("%s 抢红包结果：%s" % (self.cfg['username'], jsonresp) )
         except URLError as e:
             logger.warn(e)
         except HTTPError as h:
@@ -143,7 +143,8 @@ if __name__ == '__main__':
     from conf import auto_tender_names
     threads = []
     for user in auto_tender_names:
-        t = GradRedPacket(user)
+        myConfig = {'username': user, 'cwd':'../'}
+        t = GradRedPacket(myConfig)
         t.start()
         threads.append(t)
     

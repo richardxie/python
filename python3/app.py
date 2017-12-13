@@ -68,9 +68,11 @@ def actIngressAddress():
                         pass
                     if 'gradRedPacketInfo' in jsonresp['data'] and len(jsonresp['data']['gradRedPacketInfo']['returnDatas']):
                         logger.info('红包来了......')
-                        t = GradRedPacket(username)
-                        t.start()
-                        threads.append(t)
+                        for username in auto_tender_names:
+                            myConfig = {'username': username, 'cwd':'./'}
+                            t = GradRedPacket(myConfig)
+                            t.start()
+                            threads.append(t)
                         pass
                     if 'TicketCash' in jsonresp['data'] and len(jsonresp['data']['TicketCash']['returnDatas']):
                         logger.info('现金券来了 ......')
