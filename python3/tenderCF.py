@@ -13,10 +13,10 @@ logger = logging.getLogger("app")
 c = Cookies("./")
 #投资众筹
 class TenderCF(Thread):
-    def __init__(self, user_name, amount,useRedpacket):
+    def __init__(self, user_name, amounts,useRedpacket):
         Thread.__init__(self)
         self.user_name = user_name #投资用户名
-        self.amount = amount #投资金额
+        self.amounts = amounts #投资金额列表
         self.useRedpacket = useRedpacket #是否必须使用红包
         pass
 
@@ -43,7 +43,6 @@ class TenderCF(Thread):
 
         user_info = query.one()
 
-        invest = Invest(user_info.name, opener, self.amount)
         for i in range(2):
             crowdfundings = Crowdfundings(opener)
             crowdfunding = crowdfundings.crowdfundingRequest()
@@ -51,25 +50,34 @@ class TenderCF(Thread):
 
             now = datetime.now()
             delta = (crowdfunding.starttime - now).total_seconds()
-            
-            if delta < 0 :
+
+            if delta < 0:
                 logger.warn(' 开始时间已过， 众筹投资任务直接执行！%d' % delta)
-                invest.tenderCF(crowdfunding, user_info, self.useRedpacket)
+                for i, amount in enumerate(self.amounts):
+                    if i != 0:
+                        crowdfunding = crowdfundings.crowdfundingRequest() #重新获取数据
+                    invest = Invest(user_info.name, opener, amount)
+                    invest.tenderCF(crowdfunding, user_info, self.useRedpacket)
                 break
             elif delta > 600:
-                logger.info('%s 先等待%d秒后开始执行众筹投资任务！ ' % (self.user_name, delta - 600))
+                logger.info('%s 先等待%d秒后开始执行众筹投资任务！ ' %
+                                (self.user_name, delta - 600))
                 sleep(delta - 600)
             else:
                 logger.info('%s %d秒后开始执行众筹投资任务！ ' % (self.user_name, delta))
-                sleep( delta + 0.5 )
-                invest.tenderCF(crowdfunding, user_info, self.useRedpacket)
+                sleep(delta + 0.5)
+                for i, amount in enumerate(self.amounts):
+                    if i != 0:
+                        crowdfunding = crowdfundings.crowdfundingRequest() #重新获取数据
+                    invest = Invest(user_info.name, opener, amount)
+                    invest.tenderCF(crowdfunding, user_info, self.useRedpacket)
                 break
 
 if __name__ == '__main__':
    
     auto_tender_names = [
-        {'username':'emmaye', 'amount':8000, 'redpacket':True},
-        {'username':'richardxieq', 'amount':9000, 'redpacket':True}
+        {'username':'richardxieq', 'amount':[6000,6000], 'redpacket':True},
+        {'username':'emmaye', 'amount':[6000], 'redpacket':False}
         ]
     #初始化
     utils.initSys()
