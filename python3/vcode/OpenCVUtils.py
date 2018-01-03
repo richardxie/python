@@ -151,6 +151,27 @@ class OpenCVUtils:
         cv2.imwrite('ocr.png', drawing)
 
         pass
+    
+    @staticmethod
+    def histogram( my_image ):
+        '''
+        color = ('b','g','r')
+        for i,col in enumerate(color):
+            histr = cv2.calcHist([img],[i],None,[256],[0,256])
+            minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(histr)
+            plt.plot(histr,color = col)
+            plt.xlim([0,256])
+        plt.show()
+        '''
+
+        b,g,r = cv2.split(my_image)
+        hist = cv2.calcHist([b],[0],None, [256], [0,256])
+        _, maxVal, _, maxLoc = cv2.minMaxLoc(hist)
+
+        mask = np.zeros(my_image.shape, my_image.dtype)
+        dst = cv2.inRange(b, maxLoc[1] - 10, maxLoc[1] + 10)
+        cv2.imwrite('dst.png', dst)
+        pass
 
 if __name__ == '__main__':
     img = cv2.imread("vcode-20171220164034.png")
