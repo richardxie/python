@@ -14,7 +14,7 @@ class Encryptor:
                 js_str = js_str + line
 
         default_exec = execjs.get()
-        print(js_str)
+        #print(js_str)
         ctx = default_exec.compile(js_str)
         pwd = ctx.call('ytUtil.encrypt',password, timestamp)
         return pwd
@@ -28,7 +28,7 @@ class Encryptor:
                 js_str = js_str + line
         
         default_exec = execjs.get()
-        print(js_str)
+        #print(js_str)
         ctx = default_exec.compile(js_str)
         pwd = ctx.call('encrypt',password, verifycode)
         return pwd
@@ -50,4 +50,4 @@ if __name__ == '__main__':
     encryptor = Encryptor(); 
     print(encryptor.encryptPassword("richard", '123456'))
     encryptor = Encryptor(); 
-    print(encryptor.encrpyt('123456', '2017-07-26 12:12:12'))
+    print(encryptor.encrypt('123456', '2017-07-26 12:12:12'))
