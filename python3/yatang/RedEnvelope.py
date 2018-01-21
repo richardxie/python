@@ -89,6 +89,7 @@ class GradRedPacket(Thread):
         logger.info('%s 获取抢红包信息：%s' % (self.cfg['username'], re) )
         delta = re.leftTime
         logger.info('%s %d秒后开始执行抢红包任务！ ' % (self.cfg['username'], delta))
+        self.vcodeRequest(re)
         sleep( delta  + 0.5) 
         res = self.gradStart(re)
         logger.info(res)
@@ -99,6 +100,17 @@ class GradRedPacket(Thread):
         if resp and resp.code == 200:
             return RedEnvelope.redEnvelope_info(resp)
     
+    def vcodeRequest(self, redEnvelope):
+        response = self.opener.open(yatang.YTURLBASESSL + "/GradRedPacket/getVCode")
+        content_type = response.info()['Content-Type']
+        if(content_type.startswith("image\/")):
+            return ""
+        
+        image_type = content_type[6:]
+        with open("vcode%s_%s.%s"%(self.cfg['username'],redEnvelope.projectId, image_type), "wb") as img:
+            img.write(response.read())
+        pass
+    
     def gradStart(self, redEnvelope):
         #read vcode form local file
         conf = ConfigParser()
@@ -107,7 +119,7 @@ class GradRedPacket(Thread):
         logger.info('%s 开始抢红包，验证码：%s' % (self.cfg['username'], vcode) )
         values = {
             'money': int(redEnvelope.usableMoney / redEnvelope.redPacketUseVal) * redEnvelope.redPacketUseVal,
-            'projectId': redEnvelope.projectId,
+            'id': redEnvelope.projectId,
             'vcode': vcode
         }
         postData = urlencode(values)
